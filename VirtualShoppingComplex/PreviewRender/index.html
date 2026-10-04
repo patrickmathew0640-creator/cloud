@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Virtual Shopping Complex preview</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+  #wrap { position: relative; width: 1280px; height: 720px; }
+  canvas { display: block; }
+  /* UI is laid out in UIManager's 1920x1080 reference space and scaled down */
+  #ui { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform: scale(0.6666667); transform-origin: 0 0;
+        font-family: "Liberation Sans", Arial, "DejaVu Sans", sans-serif; color: #fff; pointer-events: none; }
+  .abs { position: absolute; box-sizing: border-box; }
+  .hidden { display: none !important; }
+  #crosshair { left: 956px; top: 536px; width: 8px; height: 8px; background: rgba(255,255,255,.9); }
+  #loc { left: 20px; top: 20px; width: 620px; height: 46px; background: rgba(0,0,0,.45); font-weight: bold; font-size: 24px; line-height: 46px; padding-left: 14px; }
+  #hint { left: 20px; bottom: 20px; width: 1060px; height: 40px; background: rgba(0,0,0,.35); font-size: 20px; line-height: 40px; padding-left: 14px; color: #e6e6e6; }
+  #prompt { left: 680px; bottom: 170px; width: 560px; height: 96px; background: rgba(0,0,0,.65); text-align: center; }
+  #prompt .p { font-weight: bold; font-size: 32px; height: 52px; line-height: 56px; }
+  #prompt .t { font-size: 24px; color: #ffd152; line-height: 40px; }
+  #welcome { left: 410px; top: 90px; width: 1100px; height: 130px; background: rgba(0,0,0,.6); text-align: center; }
+  #welcome .a { font-weight: bold; font-size: 46px; color: #ffd152; height: 78px; line-height: 86px; }
+  #welcome .b { font-size: 24px; line-height: 40px; }
+  .panel { background: rgba(18,23,33,.94); }
+  .bar { position: absolute; left: 0; top: 0; width: 100%; height: 10px; }
+  .btn { position: absolute; font-weight: bold; font-size: 26px; text-align: center; color: #fff; }
+  #info { left: 600px; top: 290px; width: 720px; height: 460px; }
+  #info .h { left: 36px; top: 24px; width: 648px; height: 30px; font-weight: bold; font-size: 22px; line-height: 30px; }
+  #info .ti { left: 36px; top: 58px; width: 648px; height: 62px; font-weight: bold; font-size: 46px; line-height: 62px; }
+  #info .su { left: 36px; top: 124px; width: 648px; height: 44px; font-weight: bold; font-size: 30px; line-height: 44px; color: #ffd152; }
+  #info .de { left: 36px; top: 182px; width: 648px; height: 180px; font-size: 26px; line-height: 1.25; color: #e0e5f0; white-space: pre-wrap; }
+  #info .ch { left: 36px; top: 390px; height: 40px; font-style: italic; font-size: 20px; line-height: 40px; color: #99a0b3; }
+  #info .cb { right: 30px; bottom: 26px; width: 190px; height: 58px; line-height: 58px; background: #cc3838; }
+  #start { left: 490px; top: 200px; width: 940px; height: 680px; text-align: center; }
+  #start .t1 { left: 20px; top: 36px; width: 900px; height: 76px; font-weight: bold; font-size: 58px; line-height: 76px; color: #ffd152; }
+  #start .t2 { left: 20px; top: 112px; width: 900px; height: 40px; font-size: 26px; line-height: 40px; color: #ccd4e6; }
+  #start .t3 { left: 20px; top: 176px; width: 900px; height: 46px; font-weight: bold; font-size: 32px; line-height: 46px; }
+  #start .keys { left: 120px; top: 232px; width: 250px; text-align: right; font-weight: bold; font-size: 28px; line-height: 1.32; color: #ffd152; }
+  #start .dash { left: 370px; top: 232px; width: 30px; font-size: 28px; line-height: 1.32; color: #999aa6; }
+  #start .acts { left: 400px; top: 232px; width: 500px; text-align: left; font-size: 28px; line-height: 1.32; }
+  #start .sb { left: 200px; bottom: 60px; width: 320px; height: 74px; line-height: 74px; background: #2e9e52; }
+  #start .qb { left: 540px; bottom: 60px; width: 200px; height: 74px; line-height: 74px; background: #595e6b; }
+  #start .eh { left: 20px; top: 636px; width: 900px; font-style: italic; font-size: 20px; color: #99a0b3; }
+  #exit { left: 550px; top: 340px; width: 820px; height: 400px; text-align: center; }
+  #exit .t1 { left: 20px; top: 40px; width: 780px; height: 70px; font-weight: bold; font-size: 48px; line-height: 70px; color: #ffd152; }
+  #exit .t2 { left: 20px; top: 120px; width: 780px; font-size: 26px; line-height: 1.4; }
+  #exit .b1 { left: 15px; bottom: 50px; width: 320px; height: 66px; line-height: 66px; background: #2e80d9; }
+  #exit .b2 { left: 370px; bottom: 50px; width: 250px; height: 66px; line-height: 66px; background: #2e9e52; left: 370px; }
+  #exit .b3 { left: 635px; bottom: 50px; width: 160px; height: 66px; line-height: 66px; background: #595e6b; }
+  #caption { position: absolute; right: 12px; top: 10px; font: 13px "Liberation Sans", Arial, sans-serif; color: rgba(255,255,255,.75);
+             background: rgba(0,0,0,.35); padding: 3px 8px; border-radius: 3px; }
+  .cursor { position: absolute; width: 0; height: 0; border-left: 9px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; transform: rotate(-30deg); filter: drop-shadow(0 0 1px #000); }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<div id="wrap">
+  <div id="ui">
+    <div id="crosshair" class="abs hidden"></div>
+    <div id="loc" class="abs hidden">Location:  Main Entrance</div>
+    <div id="hint" class="abs hidden">WASD Move &nbsp;·&nbsp; Mouse Look &nbsp;·&nbsp; E Interact &nbsp;·&nbsp; Space Jump &nbsp;·&nbsp; Shift Run &nbsp;·&nbsp; Esc Unlock Cursor</div>
+    <div id="prompt" class="abs hidden"><div class="p">Press E to Interact</div><div class="t">Jacket</div></div>
+    <div id="welcome" class="abs hidden"><div class="a">Welcome to the Virtual Shopping Complex</div><div class="b">Walk through the main entrance and explore all six shops</div></div>
+    <div id="info" class="abs panel hidden"><div class="bar"></div>
+      <div class="abs h">PRODUCT INFORMATION</div><div class="abs ti">NAME</div><div class="abs su">Price</div>
+      <div class="abs de">Description</div><div class="abs ch">Press E or Esc to close</div><div class="btn cb">CLOSE</div></div>
+    <div id="start" class="abs panel"><div class="bar" style="background:#ffd152"></div>
+      <div class="abs t1">VIRTUAL SHOPPING COMPLEX</div>
+      <div class="abs t2">AR/VR Project  -  First-Person Desktop Demo</div>
+      <div class="abs t3">CONTROLS:</div>
+      <div class="abs keys">WASD<br>Mouse<br>E<br>Space<br>Shift<br>ESC</div>
+      <div class="abs dash">-<br>-<br>-<br>-<br>-<br>-</div>
+      <div class="abs acts">Move<br>Look Around<br>Interact<br>Jump<br>Run<br>Unlock Cursor  (click to lock again)</div>
+      <div class="btn sb">START TOUR</div><div class="btn qb">QUIT</div>
+      <div class="abs eh">or press Enter to start</div></div>
+    <div id="exit" class="abs panel hidden"><div class="bar" style="background:#33bf59"></div>
+      <div class="abs t1">Thank you for visiting!</div>
+      <div class="abs t2">You have exited the Virtual Shopping Complex.<br>We hope you enjoyed exploring all six shops.</div>
+      <div class="btn b1">CONTINUE EXPLORING</div><div class="btn b2">RESTART TOUR</div><div class="btn b3">QUIT</div></div>
+    <div id="mouse" class="cursor hidden"></div>
+  </div>
+  <div id="intro" class="hidden" style="position:absolute;left:0;right:0;bottom:70px;text-align:center;font-family:'Liberation Sans',Arial,sans-serif;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.7)">
+    <div style="font-size:44px;font-weight:bold;color:#ffd152">Virtual Shopping Complex – AR/VR</div>
+    <div style="font-size:22px;margin-top:6px">First-person walkthrough · 6 shops · interactive products</div></div>
+  <div id="caption">Preview render of the Unity project layout (three.js) – not captured in Unity</div>
+</div>
+<script type="module" src="./tour.js"></script>
+</body>
+</html>
