@@ -18,8 +18,13 @@ namespace VirtualMall
         [SerializeField] private float maxPitch = 85f;
         [SerializeField] private bool invertY = false;
 
+        [Tooltip("Largest mouse movement accepted in one frame (filters the jump that happens when the cursor gets locked).")]
+        [SerializeField] private float maxDeltaPerFrame = 25f;
+
         private float pitch;
         private Vector2 smoothedDelta;
+        private bool wasLocked;
+        private int ignoreFrames;
 
         private void Start()
         {
@@ -29,7 +34,20 @@ namespace VirtualMall
 
         private void Update()
         {
-            Vector2 raw = InputReader.Look * sensitivity;
+            // When the cursor is (re)locked, the OS reports one big jump of mouse movement.
+            // Ignore the first frames after locking so the camera does not snap to the floor.
+            bool locked = Cursor.lockState == CursorLockMode.Locked;
+            if (locked && !wasLocked) ignoreFrames = 3;
+            wasLocked = locked;
+
+            Vector2 input = InputReader.Look;
+            if (ignoreFrames > 0)
+            {
+                ignoreFrames--;
+                input = Vector2.zero;
+            }
+            input = Vector2.ClampMagnitude(input, maxDeltaPerFrame);
+            Vector2 raw = input * sensitivity;
 
             if (smoothing > 0f)
             {

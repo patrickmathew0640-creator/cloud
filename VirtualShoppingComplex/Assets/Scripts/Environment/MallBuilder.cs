@@ -54,9 +54,9 @@ namespace VirtualMall
         public static void ApplyRenderSettings()
         {
             RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(0.80f, 0.82f, 0.86f);
-            RenderSettings.ambientEquatorColor = new Color(0.62f, 0.62f, 0.64f);
-            RenderSettings.ambientGroundColor = new Color(0.40f, 0.38f, 0.36f);
+            RenderSettings.ambientSkyColor = new Color(0.50f, 0.52f, 0.56f);
+            RenderSettings.ambientEquatorColor = new Color(0.40f, 0.40f, 0.42f);
+            RenderSettings.ambientGroundColor = new Color(0.26f, 0.25f, 0.24f);
             RenderSettings.ambientIntensity = 1f;
             RenderSettings.fog = false;
         }
@@ -112,7 +112,7 @@ namespace VirtualMall
             var sun = sunGo.AddComponent<Light>();
             sun.type = LightType.Directional;
             sun.color = new Color(1f, 0.96f, 0.9f);
-            sun.intensity = 1.1f;
+            sun.intensity = 0.85f;
             sun.shadows = LightShadows.Soft;
             sun.shadowStrength = 0.6f;
             RenderSettings.sun = sun;
@@ -163,7 +163,7 @@ namespace VirtualMall
         private static void BuildExterior(Transform ext)
         {
             MallAssets.CreateBlock("Ground", ext, new Vector3(0f, -0.25f, 25f), new Vector3(100f, 0.5f, 120f), M(0.36f, 0.55f, 0.30f, 0.05f));
-            Material paving = MallAssets.GetMaterial(new Color(0.78f, 0.77f, 0.74f), 0.1f, MallAssets.FloorTexture, new Vector2(16f, 9f));
+            Material paving = MallAssets.GetMaterial(new Color(0.62f, 0.61f, 0.59f), 0.1f, MallAssets.FloorTexture, new Vector2(16f, 9f));
             MallAssets.CreateBlock("EntrancePlaza", ext, new Vector3(0f, 0.005f, -9f), new Vector3(32f, 0.01f, 18f), paving, false);
             MallAssets.CreateBlock("ExitPlaza", ext, new Vector3(0f, 0.005f, 67f), new Vector3(16f, 0.01f, 10f), paving, false);
             MallAssets.CreateBlock("Road", ext, new Vector3(0f, 0.004f, -22f), new Vector3(100f, 0.01f, 8f), M(0.2f, 0.2f, 0.22f), false);
@@ -232,7 +232,7 @@ namespace VirtualMall
             Material wall = M(0.93f, 0.92f, 0.89f);
             Material facade = M(0.28f, 0.31f, 0.36f, 0.3f);
             Material gold = M(0.95f, 0.72f, 0.25f, 0.5f);
-            Material floor = MallAssets.GetMaterial(new Color(0.96f, 0.95f, 0.93f), 0.35f, MallAssets.FloorTexture, new Vector2(20f, 31f));
+            Material floor = MallAssets.GetMaterial(new Color(0.80f, 0.79f, 0.77f), 0.35f, MallAssets.FloorTexture, new Vector2(20f, 31f));
 
             MallAssets.CreateBlock("Floor", b, new Vector3(0f, 0.01f, Length * 0.5f), new Vector3(HalfWidth * 2f, 0.02f, Length), floor);
             MallAssets.CreateBlock("Ceiling", b, new Vector3(0f, H + 0.1f, Length * 0.5f), new Vector3(HalfWidth * 2f + 0.6f, 0.2f, Length + 0.6f),
@@ -319,9 +319,9 @@ namespace VirtualMall
                 hanging.position + Vector3.forward * 0.05f, Vector3.forward, new Vector2(7.4f, 0.7f), 64, Color.white);
 
             Color warm = new Color(1f, 0.95f, 0.88f);
-            PointLight("LobbyLight_C", lobby, new Vector3(0f, 4.4f, 6f), 18f, 1.2f, warm);
-            PointLight("LobbyLight_L", lobby, new Vector3(-12f, 4.4f, 6f), 12f, 0.8f, warm);
-            PointLight("LobbyLight_R", lobby, new Vector3(12f, 4.4f, 6f), 12f, 0.8f, warm);
+            PointLight("LobbyLight_C", lobby, new Vector3(0f, 4.4f, 6f), 18f, 0.9f, warm);
+            PointLight("LobbyLight_L", lobby, new Vector3(-12f, 4.4f, 6f), 12f, 0.6f, warm);
+            PointLight("LobbyLight_R", lobby, new Vector3(12f, 4.4f, 6f), 12f, 0.6f, warm);
             for (int i = -2; i <= 2; i++) CeilingPanel(lobby, new Vector3(i * 7.5f, 4.98f, 6f), new Vector3(3f, 0.04f, 1f));
         }
 
@@ -365,7 +365,7 @@ namespace VirtualMall
                 MallAssets.CreateLabel("Back", sign, L + " " + rightShop + "        " + leftShop + " " + R,
                     sign.position + Vector3.forward * 0.05f, Vector3.forward, new Vector2(7.4f, 0.62f), 56, Color.white);
 
-                PointLight("CorridorLight_" + (row + 1), corridor, new Vector3(0f, 4.4f, shopZ), 12f, 1.0f, new Color(1f, 0.97f, 0.92f));
+                PointLight("CorridorLight_" + (row + 1), corridor, new Vector3(0f, 4.4f, shopZ), 12f, 0.8f, new Color(1f, 0.97f, 0.92f));
                 CeilingPanel(corridor, new Vector3(0f, 4.98f, shopZ - 3.5f), new Vector3(1.2f, 0.04f, 3f));
                 CeilingPanel(corridor, new Vector3(0f, 4.98f, shopZ + 3.5f), new Vector3(1.2f, 0.04f, 3f));
             }
@@ -395,7 +395,7 @@ namespace VirtualMall
             Planter(hall, new Vector3(-18.8f, 0f, 61f));
             Planter(hall, new Vector3(18.8f, 0f, 61f));
 
-            PointLight("ExitHallLight", hall, new Vector3(0f, 4.4f, 58f), 16f, 1.1f, new Color(1f, 0.97f, 0.92f));
+            PointLight("ExitHallLight", hall, new Vector3(0f, 4.4f, 58f), 16f, 0.9f, new Color(1f, 0.97f, 0.92f));
             CeilingPanel(hall, new Vector3(-8f, 4.98f, 58f), new Vector3(3f, 0.04f, 1f));
             CeilingPanel(hall, new Vector3(8f, 4.98f, 58f), new Vector3(3f, 0.04f, 1f));
 
@@ -466,7 +466,7 @@ namespace VirtualMall
             LabelLocal(shop, interior, "BackSign", def.Name, new Vector3(0f, 3.55f, -hd + 0.27f), Vector3.forward, new Vector2(8f, 1f), 110, Opaque(def.Accent * 0.8f));
             MallAssets.CreateBlock("PosterBoard", interior, new Vector3(-hw + 0.23f, 2.3f, 1f), new Vector3(0.06f, 1.6f, 3.4f), accent, false);
             LabelLocal(shop, interior, "PosterText", def.Description, new Vector3(-hw + 0.27f, 2.3f, 1f), Vector3.right, new Vector2(3.2f, 1.4f), 48, Color.white);
-            PointLight("ShopLight", interior, new Vector3(0f, 4.2f, 0f), 13f, 1.4f, Color.Lerp(Color.white, def.Accent, 0.12f));
+            PointLight("ShopLight", interior, new Vector3(0f, 4.2f, 0f), 13f, 1.0f, Color.Lerp(Color.white, def.Accent, 0.12f));
             CeilingPanel(interior, new Vector3(-3f, 4.98f, 0f), new Vector3(2.5f, 0.04f, 0.8f));
             CeilingPanel(interior, new Vector3(3f, 4.98f, 0f), new Vector3(2.5f, 0.04f, 0.8f));
             CeilingPanel(interior, new Vector3(0f, 4.98f, -5f), new Vector3(2.5f, 0.04f, 0.8f));
