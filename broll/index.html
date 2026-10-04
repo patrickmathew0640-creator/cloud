@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cormorant Garamond";
+        font-weight: 600;
+        src: url("assets/fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Cormorant Garamond";
+        font-weight: 700;
+        src: url("assets/fonts/cormorant-garamond-latin-700-normal.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Great Vibes";
+        font-weight: 400;
+        src: url("assets/fonts/great-vibes-latin-400-normal.woff2") format("woff2");
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #1a0f0a;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      .shot {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+      }
+      /* Lower-third caption pill */
+      .cap {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 260px;
+        display: flex;
+        justify-content: center;
+        z-index: 10;
+      }
+      .cap span {
+        padding: 22px 44px;
+        border-radius: 999px;
+        background: rgba(40, 18, 10, 0.72);
+        border: 2px solid rgba(232, 176, 120, 0.55);
+        color: #fbeee0;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 64px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+      #shade {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(26, 12, 6, 0.55) 0%, rgba(26, 12, 6, 0.85) 100%);
+        z-index: 5;
+      }
+      #endcard {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #fbeee0;
+        gap: 28px;
+      }
+      #endcard .t1 {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 128px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      #endcard .t2 {
+        font-family: "Great Vibes", cursive;
+        font-size: 120px;
+        color: #e8b078;
+        line-height: 1;
+      }
+      #endcard .rule {
+        width: 220px;
+        height: 3px;
+        background: #e8b078;
+      }
+      #endcard .t3 {
+        font-size: 44px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #f1d9c2;
+      }
+      #endcard .credit {
+        position: absolute;
+        bottom: 70px;
+        left: 60px;
+        right: 60px;
+        font-size: 24px;
+        line-height: 1.4;
+        color: rgba(251, 238, 224, 0.8);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="15.9"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- Shots: A-roll (model) interleaved with B-roll (craft footage + product close-ups) -->
+      <video id="v1" class="shot clip" src="assets/a1.mp4" muted playsinline data-start="0" data-duration="2" data-track-index="0"></video>
+      <video id="v2" class="shot clip" src="assets/b1.mp4" muted playsinline data-start="2" data-duration="2.4" data-track-index="0"></video>
+      <video id="v3" class="shot clip" src="assets/cu_pendant.mp4" muted playsinline data-start="4.4" data-duration="1.8" data-track-index="0"></video>
+      <video id="v4" class="shot clip" src="assets/a2.mp4" muted playsinline data-start="6.2" data-duration="1.6" data-track-index="0"></video>
+      <video id="v5" class="shot clip" src="assets/b2.mp4" muted playsinline data-start="7.8" data-duration="2.2" data-track-index="0"></video>
+      <video id="v6" class="shot clip" src="assets/cu_earring.mp4" muted playsinline data-start="10" data-duration="1.6" data-track-index="0"></video>
+      <video id="v7" class="shot clip" src="assets/a3.mp4" muted playsinline data-start="11.6" data-duration="1.5" data-track-index="0"></video>
+      <video id="v8" class="shot clip" src="assets/b3.mp4" muted playsinline data-start="13.1" data-duration="2.8" data-track-index="0"></video>
+
+      <!-- Captions -->
+      <div id="c1" class="cap clip" data-start="0.3" data-duration="1.6" data-track-index="1"><span>Handcrafted with tradition</span></div>
+      <div id="c2" class="cap clip" data-start="2.2" data-duration="2.1" data-track-index="1"><span>Shaped from natural clay</span></div>
+      <div id="c3" class="cap clip" data-start="4.6" data-duration="1.5" data-track-index="1"><span>Light weight</span></div>
+      <div id="c4" class="cap clip" data-start="6.3" data-duration="1.4" data-track-index="1"><span>Skin friendly</span></div>
+      <div id="c5" class="cap clip" data-start="8.0" data-duration="1.9" data-track-index="1"><span>Rooted in heritage</span></div>
+      <div id="c6" class="cap clip" data-start="10.1" data-duration="1.4" data-track-index="1"><span>Perfect for saree</span></div>
+      <div id="c7" class="cap clip" data-start="11.7" data-duration="1.3" data-track-index="1"><span>A timeless traditional look</span></div>
+
+      <!-- End card over the final B-roll shot -->
+      <div id="shade" class="clip" data-start="13.1" data-duration="2.8" data-track-index="2"></div>
+      <div id="endcard" class="clip" data-start="13.1" data-duration="2.8" data-track-index="3">
+        <div class="t1">Terracotta</div>
+        <div class="t2">Jewellery</div>
+        <div class="rule"></div>
+        <div class="t3">Handcrafted with Tradition</div>
+        <div class="credit">
+          B-roll: “Making of Terracotta in Asharikandi Village, Dhubri, Assam” by Nayan j Nath,
+          Wikimedia Commons, CC BY-SA 4.0
+        </div>
+      </div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Slow push-in on every shot so nothing feels static
+      const shots = [
+        ["#v1", 0, 2, 1.0, 1.06],
+        ["#v2", 2, 2.4, 1.0, 1.08],
+        ["#v3", 4.4, 1.8, 1.0, 1.12],
+        ["#v4", 6.2, 1.6, 1.04, 1.0],
+        ["#v5", 7.8, 2.2, 1.0, 1.08],
+        ["#v6", 10, 1.6, 1.0, 1.12],
+        ["#v7", 11.6, 1.5, 1.0, 1.06],
+        ["#v8", 13.1, 2.8, 1.0, 1.08],
+      ];
+      shots.forEach(([sel, start, dur, from, to]) => {
+        tl.fromTo(sel, { scale: from }, { scale: to, duration: dur, ease: "none" }, start);
+        // Quick fade-in at each cut (except the first)
+        if (start > 0) tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, start);
+      });
+
+      // Captions: rise in, fade out
+      const caps = [
+        ["#c1", 0.3, 1.6],
+        ["#c2", 2.2, 2.1],
+        ["#c3", 4.6, 1.5],
+        ["#c4", 6.3, 1.4],
+        ["#c5", 8.0, 1.9],
+        ["#c6", 10.1, 1.4],
+        ["#c7", 11.7, 1.3],
+      ];
+      caps.forEach(([sel, start, dur]) => {
+        tl.fromTo(sel, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, start);
+        tl.to(sel, { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, start + dur - 0.25);
+      });
+
+      // End card
+      tl.fromTo("#shade", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 13.1);
+      tl.fromTo("#endcard .t1", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 13.3);
+      tl.fromTo("#endcard .t2", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 13.5);
+      tl.fromTo("#endcard .rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 13.9);
+      tl.fromTo("#endcard .t3", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 14.1);
+      tl.fromTo("#endcard .credit", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 14.3);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
