@@ -106,15 +106,64 @@ def end_html(h, p):
     return f'<div class="end"><h1 class="shadow">{esc(h)}</h1><p class="shadow">{esc(p)}</p></div>'
 
 
-def render(jobs, outdir, scale=1):
+# ---------------------------------------------------------------- vertical (Shorts) variants, 1080x1920
+VERT_CSS = """
+html, body { width: 1080px; height: 1920px; }
+.vsub { position: absolute; left: 50%; top: 1290px; transform: translateX(-50%); width: max-content; max-width: 940px;
+        background: rgba(20,14,14,.62); color: #fff; font-weight: 700; font-size: 58px; line-height: 76px;
+        padding: 6px 22px 10px; text-align: center; }
+.vhook { position: absolute; left: 0; right: 0; top: 190px; text-align: center; }
+.vhook .tag { font-size: 40px; padding: 4px 28px 8px; }
+.vhook h1 { color: #fff; font-weight: 700; font-size: 96px; line-height: 112px; margin-top: 22px;
+            text-shadow: 0 4px 18px rgba(0,0,0,.85), 0 2px 4px rgba(0,0,0,.8); }
+.vcall { position: absolute; left: 0; right: 0; top: 230px; display: flex; justify-content: center; }
+.vcall .wrap { position: relative; }
+.vcall .k { position: absolute; left: 14px; top: -22px; background: #111; color: #FFC20E; font-weight: 700; font-size: 28px;
+            padding: 2px 16px 5px; border-radius: 999px; z-index: 2; }
+.vcall .box { display: flex; align-items: center; gap: 18px; background: #fff; border-radius: 20px; border-left: 12px solid #FFC20E;
+              max-width: 960px; padding: 22px 30px 22px 24px; box-shadow: 0 8px 22px rgba(0,0,0,.3); }
+.vcall .box .emo { font-size: 46px; }
+.vcall .box .t { font-weight: 700; font-size: 43px; line-height: 56px; color: #111; }
+.vsubs { position: absolute; left: 0; right: 0; top: 250px; display: flex; justify-content: center; align-items: center; gap: 22px; }
+.vsubs .like { width: 150px; height: 100px; border-radius: 999px; background: #fff; display: flex; justify-content: center;
+               align-items: flex-start; padding-top: 8px; font-size: 46px; box-shadow: 0 6px 16px rgba(0,0,0,.3); }
+.vsubs .btn { height: 100px; padding: 0 48px; border-radius: 999px; background: #E8120C; color: #fff; font-weight: 700; font-size: 46px;
+              display: flex; align-items: center; box-shadow: 0 6px 16px rgba(0,0,0,.3); }
+.vsubs .btn.done { background: #5a5a5a; }
+.vsubs .bell { font-size: 50px; margin-top: -44px; }
+.vcursor { position: absolute; left: 640px; top: 360px; font-size: 64px; transform: rotate(-20deg); }
+"""
+
+
+def vsub_html(text):
+    return f'<div class="vsub">{esc(text)}</div>'
+
+
+def vhook_html(tag, l1, l2):
+    return f'<div class="vhook"><span class="tag">{esc(tag)}</span><h1 class="shadow">{esc(l1)}<br>{esc(l2)}</h1></div>'
+
+
+def vcall_html(kicker, emoji, text):
+    t = esc(text).replace("→", "<span class=ar>→</span>")
+    return (f'<div class="vcall"><div class="wrap"><div class="k">{esc(kicker)}</div><div class="box">'
+            f'<span class="emo">{emoji}</span><span class="t">{t}</span></div></div></div>')
+
+
+def vsubs_html(done, cursor):
+    btn = '<div class="btn done">SUBSCRIBED</div>' if done else '<div class="btn">SUBSCRIBE</div>'
+    cur = '<div class="vcursor emo">👆</div>' if cursor else ''
+    return f'<div class="vsubs"><div class="like emo">👍</div>{btn}<div class="bell emo">🔔</div></div>{cur}'
+
+
+def render(jobs, outdir, scale=1, size=(1920, 1080), extra_css=""):
     """jobs: list of (filename, inner_html)."""
     os.makedirs(outdir, exist_ok=True)
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path=CHROME)
-        pg = b.new_page(viewport={"width": 1920, "height": 1080}, device_scale_factor=scale)
+        pg = b.new_page(viewport={"width": size[0], "height": size[1]}, device_scale_factor=scale)
         for name, inner in jobs:
             tmp = HERE / "_render.html"
-            tmp.write_text(f"<!doctype html><html><head><meta charset='utf-8'><style>{BASE_CSS}</style></head>"
+            tmp.write_text(f"<!doctype html><html><head><meta charset='utf-8'><style>{BASE_CSS}{extra_css}</style></head>"
                            f"<body>{inner}</body></html>")
             pg.goto(tmp.as_uri())
             pg.evaluate("document.fonts.ready")

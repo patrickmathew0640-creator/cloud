@@ -42,3 +42,15 @@ EDIT=edit_v2 python3 render.py raw2.mp4 out2.mp4 --work build2
 ```
 
 Output: `../deliverables/ai-skills-tamil-edit-1080p.mp4`.
+
+## Shorts (from video 2)
+
+`shorts.py` cuts four vertical 1080x1920 Shorts from video 2, reusing `edit_v2.py`'s subtitles, callouts, grade
+and music: a 9:16 window around the speaker straight from the 4K source, hook title, centred top callouts,
+big captions and a like/subscribe click at the end.
+
+```sh
+python3 shorts.py raw2.mp4 out_shorts --work build_shorts [--only N]
+```
+
+Outputs: `../deliverables/shorts/`.
