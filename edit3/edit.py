@@ -115,3 +115,13 @@ END_CARD = 4.0                   # seconds of blurred freeze-frame end card
 # ---------------------------------------------------------------- audio
 MUSIC = "Wallpaper.mp3"          # "Wallpaper" by Kevin MacLeod (incompetech.com), CC BY 4.0
 MUSIC_VOL = 0.11                 # soft bed under the voice, as in the reference
+
+# ---------------------------------------------------------------- Shorts (EDIT=edit python3 shorts.py ...)
+VCROP = "crop=558:992:921:1424"       # 9:16 window on the speaker inside the 2160x992 picture band
+VZOOM_CENTER = (540, 720)
+SHORTS = [   # name, source windows, hook (tag, line 1, line 2)
+    ("ml-short1-will-ai-take-your-job", [(2.04, 20.50)], ("AI & JOBS", "Will AI Take", "Your Job?")),
+    ("ml-short2-2hours-vs-30min", [(21.66, 49.10)], ("AI AT WORK", "Same Job:", "2 Hours vs 30 Min")),
+    ("ml-short3-the-real-question", [(50.98, 80.84)], ("THE REAL QUESTION", "Will AI", "Replace You?")),
+    ("ml-short4-what-to-learn", [(80.84, 115.06)], ("HOW TO START", "Don't Memorise", "100 AI Tools!")),
+]

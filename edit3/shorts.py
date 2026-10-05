@@ -1,35 +1,32 @@
-"""Cut vertical Shorts (1080x1920) out of video 2, reusing its subtitles, callouts, grade and music.
+"""Cut vertical Shorts (1080x1920) out of an edited video, reusing its subtitles, callouts, grade and music.
 
-Usage: python3 shorts.py <raw2.mp4> <outdir> [--work DIR] [--only N]
+Usage: [EDIT=edit|edit_v2] python3 shorts.py <raw.mp4> <outdir> [--work DIR] [--only N]
 
 Each short: 9:16 window around the speaker taken straight from the 4K source, pauses removed,
 wide / punch-in framing alternating, hook title for the first seconds, top callouts, big captions,
 like/subscribe click at the end, cleaned voice + soft ducked music.
 """
 import argparse
+import importlib
 import os
 import subprocess
 
 from PIL import Image
 
-import edit_v2 as ed
 import graphics as g
 
+ed = importlib.import_module(os.environ.get("EDIT", "edit_v2"))   # which video: EDIT=edit (Malayalam) / edit_v2 (Tamil)
+
 W, H, FPS = 1080, 1920, 30
-VCROP = "crop=675:1200:800:1320"      # 9:16 window centred on the speaker inside the 2160x1200 picture band
 PUNCH = 1.12
-ZOOM_CENTER = (540, 860)              # speaker's face on the 1080x1920 frame
 MIN_HOLD = 2.5
 HOOK_DUR = 3.6
 SUBS_DUR = 4.6
 MUSIC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "edit2", "audio", ed.MUSIC)
 
-SHORTS = [   # name, source windows, hook (tag, line 1, line 2)
-    ("short1-2hours-vs-30min", [(16.14, 46.08)], ("AI AT WORK", "Same Job:", "2 Hours vs 30 Min")),
-    ("short2-will-ai-replace-you", [(46.24, 70.30)], ("THE REAL QUESTION", "Will AI", "Replace You?")),
-    ("short3-dont-learn-100-tools", [(70.38, 100.60)], ("HOW TO START", "Don't Learn", "100 AI Tools!")),
-    ("short4-ai-is-your-assistant", [(100.70, 118.03), (131.16, 135.80)], ("MINDSET", "Don't Fear AI,", "Use It!")),
-]
+VCROP = ed.VCROP                      # 9:16 window centred on the speaker inside the letterboxed picture
+ZOOM_CENTER = ed.VZOOM_CENTER         # speaker's face on the 1080x1920 frame
+SHORTS = ed.SHORTS                    # name, source windows, hook (tag, line 1, line 2)
 
 
 def run(args):
@@ -44,7 +41,7 @@ def pieces_for(windows):
             s, e = max(s, w0 - 0.10), min(e, w1 + 0.25)
             if e - s < 0.2:
                 continue
-            cuts = [s] + [x for x in ed.SPLITS if s < x < e] + [e]
+            cuts = [s] + [x for x in ed.SPLITS if s + 0.3 < x < e - 0.3] + [e]   # no sliver pieces
             out += list(zip(cuts[:-1], cuts[1:]))
     segs, z, held = [], PUNCH, MIN_HOLD
     for s, e in out:

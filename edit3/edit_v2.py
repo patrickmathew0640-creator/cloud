@@ -105,3 +105,13 @@ CALLOUTS = [   # (kicker, emoji, text, start, end) – top-right card
     ("BOTTOM LINE", "🚀", "Learning AI is very important", 131.16, 135.70),
 ]
 SUBSCRIBE = [11.50, 138.80]
+
+# ---------------------------------------------------------------- Shorts (shorts.py)
+VCROP = "crop=675:1200:800:1320"      # 9:16 window on the speaker inside the 2160x1200 picture band
+VZOOM_CENTER = (540, 860)
+SHORTS = [   # name, source windows, hook (tag, line 1, line 2)
+    ("short1-2hours-vs-30min", [(16.14, 46.08)], ("AI AT WORK", "Same Job:", "2 Hours vs 30 Min")),
+    ("short2-will-ai-replace-you", [(46.24, 70.30)], ("THE REAL QUESTION", "Will AI", "Replace You?")),
+    ("short3-dont-learn-100-tools", [(70.38, 100.60)], ("HOW TO START", "Don't Learn", "100 AI Tools!")),
+    ("short4-ai-is-your-assistant", [(100.70, 118.03), (131.16, 135.80)], ("MINDSET", "Don't Fear AI,", "Use It!")),
+]
