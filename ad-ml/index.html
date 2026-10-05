@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "NSM"; font-weight: 400; src: url("assets/fonts/ml-400.woff2") format("woff2"); }
+      @font-face { font-family: "NSM"; font-weight: 600; src: url("assets/fonts/ml-600.woff2") format("woff2"); }
+      @font-face { font-family: "NSM"; font-weight: 700; src: url("assets/fonts/ml-700.woff2") format("woff2"); }
+      @font-face { font-family: "NSM"; font-weight: 800; src: url("assets/fonts/ml-800.woff2") format("woff2"); }
+      :root { --bg:#0a0a0b; --accent:#e0663f; --accent2:#d4573b; --teal:#2dd4bf; --amber:#ffc46b; --ink:#f5f6f8; --muted:#8a909c; }
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1080px; height:1920px; overflow:hidden; background:var(--bg); }
+      #root { position:relative; width:1080px; height:1920px; overflow:hidden; color:var(--ink);
+              font-family:"NSM", sans-serif; }
+      #bg { position:absolute; inset:0; background:
+              radial-gradient(circle at 20% 15%, rgba(224,102,63,.28) 0%, rgba(10,10,11,0) 45%),
+              radial-gradient(circle at 85% 80%, rgba(45,212,191,.18) 0%, rgba(10,10,11,0) 45%), var(--bg); }
+      #grid { position:absolute; inset:-60px; opacity:.10;
+              background-image:linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px);
+              background-size:72px 72px; }
+      .scene { position:absolute; inset:0; }
+      .center { display:flex; flex-direction:column; align-items:center; text-align:center; }
+      .kicker { font-weight:700; font-size:40px; letter-spacing:.06em; color:var(--teal); }
+      .big { font-weight:800; font-size:104px; line-height:1.25; }
+      .acc { color:var(--accent); }
+      .teal { color:var(--teal); }
+
+      /* s1 hook */
+      #s1 .clock { position:absolute; top:260px; left:390px; width:300px; height:300px; border-radius:50%;
+                   border:14px solid var(--accent); box-shadow:0 0 60px rgba(224,102,63,.5); }
+      #s1 .hand { position:absolute; left:50%; top:50%; width:12px; border-radius:6px; background:#fff; transform-origin:50% 100%; }
+      #s1 .h1 { height:100px; margin:-100px 0 0 -6px; }
+      #s1 .h2 { height:70px; margin:-70px 0 0 -6px; background:var(--accent); }
+      #s1 .t { position:absolute; top:640px; left:0; right:0; }
+      #s1 .cal { display:flex; gap:16px; justify-content:center; margin-top:48px; }
+      #s1 .day { width:110px; height:120px; border-radius:22px; background:#1b1b1f; border:3px solid #2a2a30;
+                 font-weight:700; font-size:34px; display:flex; align-items:center; justify-content:center; flex-direction:column; color:#c8ccd4; }
+      #s1 .day b { font-size:46px; color:var(--teal); }
+
+      /* s2 no camera */
+      #s2 .t { position:absolute; top:220px; left:0; right:0; }
+      #s2 .items { position:absolute; top:470px; left:120px; right:120px; display:flex; flex-direction:column; gap:40px; }
+      #s2 .item { position:relative; display:flex; align-items:center; gap:40px; padding:36px 48px; border-radius:36px;
+                  background:#141416; border:3px solid #2a2a30; font-weight:800; font-size:56px; }
+      #s2 .item .ic { font-size:84px; }
+      #s2 .item .x { margin-left:auto; width:96px; height:96px; border-radius:50%; background:var(--accent2);
+                     display:flex; align-items:center; justify-content:center; font-size:60px; color:#fff; }
+      #s2 .strike { position:absolute; left:170px; top:50%; height:10px; width:420px; background:var(--accent); border-radius:5px; transform-origin:0 50%; }
+
+      /* s3 type a sentence */
+      #s3 .brand { position:absolute; top:170px; left:0; right:0; }
+      #s3 .logo { display:inline-flex; align-items:center; gap:24px; font-family:system-ui, sans-serif; font-weight:800; font-size:96px; letter-spacing:-.01em; }
+      #s3 .logo i { width:100px; height:100px; border-radius:28px; background:linear-gradient(135deg, var(--accent), var(--accent2));
+                    display:inline-flex; align-items:center; justify-content:center; font-style:normal; font-size:56px; }
+      #s3 .shot { position:absolute; top:420px; left:70px; width:940px; border-radius:28px; overflow:hidden; border:3px solid #2a2a30;
+                  box-shadow:0 30px 90px rgba(0,0,0,.6); }
+      #s3 .shot img { display:block; width:100%; }
+      #s3 .prompt { position:absolute; top:1000px; left:70px; width:940px; padding:36px 40px; border-radius:28px; background:#141416;
+                    border:3px solid var(--teal); box-shadow:0 0 50px rgba(45,212,191,.35); font-family:ui-monospace, monospace;
+                    font-size:40px; line-height:1.45; color:#fff; min-height:220px; }
+      #s3 .prompt .gt { color:var(--teal); font-weight:700; }
+      #s3 .typed { display:inline-block; overflow:hidden; white-space:nowrap; vertical-align:bottom; }
+      #s3 .caret { display:inline-block; width:18px; height:44px; background:var(--teal); vertical-align:middle; margin-left:4px; }
+
+      /* s4 phone with Malayalam demo */
+      .phone { position:absolute; width:500px; height:889px; border-radius:56px; overflow:hidden; border:10px solid #23232a;
+               background:#000; box-shadow:0 40px 100px rgba(0,0,0,.7); }
+      .phone video { width:100%; height:100%; object-fit:cover; }
+      #phone4 { top:180px; left:290px; z-index:1; }
+      #s4, #s5 { z-index:3; }
+      #grid5 { position:absolute; inset:0; z-index:2; }
+      #s4 .chip { position:absolute; padding:22px 36px; border-radius:999px; font-weight:800; font-size:46px; background:#141416;
+                  border:3px solid var(--accent); box-shadow:0 10px 40px rgba(0,0,0,.6); white-space:nowrap; }
+      #s4 .c1 { top:260px; left:40px; } #s4 .c2 { top:470px; right:40px; border-color:var(--teal); }
+      #s4 .c3 { top:700px; left:30px; border-color:var(--amber); } #s4 .c4 { top:900px; right:30px; }
+      #s4 .ml { position:absolute; top:1120px; left:0; right:0; }
+
+      /* s5 grid */
+      #s5 .t { position:absolute; top:110px; left:0; right:0; }
+      #grid5 .tile { position:absolute; width:440px; height:580px; border-radius:36px; overflow:hidden; border:6px solid #23232a; background:#000; }
+      #grid5 .tile video { width:100%; height:100%; object-fit:cover; }
+      #grid5 .tile span { position:absolute; left:0; right:0; bottom:0; padding:16px 0 18px; text-align:center; font-weight:800; font-size:40px;
+                       background:linear-gradient(transparent, rgba(0,0,0,.85)); }
+      #grid5 .g1 { top:260px; left:80px; } #grid5 .g2 { top:260px; right:80px; }
+      #grid5 .g3 { top:870px; left:80px; } #grid5 .g4 { top:870px; right:80px; }
+      #s5 .lap { position:absolute; top:1620px; left:0; right:0; display:none; }
+
+      /* s6 price */
+      #s6 .zero { position:absolute; top:200px; left:0; right:0; }
+      #s6 .zero .num { font-family:system-ui, sans-serif; font-weight:900; font-size:260px; line-height:1; color:var(--teal);
+                       text-shadow:0 0 60px rgba(45,212,191,.5); }
+      #s6 .zero .lbl { font-weight:800; font-size:64px; margin-top:10px; }
+      #s6 .card { position:absolute; top:720px; left:140px; right:140px; padding:56px 40px 60px; border-radius:44px;
+                  background:linear-gradient(160deg, #1b1b1f, #121214); border:4px solid var(--accent); box-shadow:0 0 80px rgba(224,102,63,.35); }
+      #s6 .old { position:relative; display:inline-block; font-family:system-ui, sans-serif; font-weight:700; font-size:80px; color:var(--muted); }
+      #s6 .old::after { content:""; position:absolute; left:-6px; right:-6px; top:52%; height:8px; background:var(--accent2); transform:rotate(-8deg); }
+      #s6 .new { font-family:system-ui, sans-serif; font-weight:900; font-size:200px; line-height:1.05; color:#fff; }
+      #s6 .once { font-weight:800; font-size:56px; color:var(--amber); }
+      #s6 .off { position:absolute; top:-40px; right:-24px; padding:16px 30px; border-radius:24px; background:var(--accent2);
+                 font-family:system-ui, sans-serif; font-weight:900; font-size:44px; transform:rotate(8deg); }
+
+      /* s7 CTA */
+      #s7 .logo { position:absolute; top:300px; left:0; right:0; }
+      #s7 .logo .l { display:inline-flex; align-items:center; gap:24px; font-family:system-ui, sans-serif; font-weight:800; font-size:100px; }
+      #s7 .logo i { width:110px; height:110px; border-radius:30px; background:linear-gradient(135deg, var(--accent), var(--accent2));
+                    display:inline-flex; align-items:center; justify-content:center; font-style:normal; font-size:60px; }
+      #s7 .buy { position:absolute; top:640px; left:0; right:0; }
+      #s7 .btn { display:inline-block; padding:44px 90px; border-radius:999px; background:linear-gradient(90deg, var(--accent), var(--accent2));
+                 font-weight:800; font-size:76px; box-shadow:0 20px 70px rgba(224,102,63,.55); }
+      #s7 .url { position:absolute; top:960px; left:60px; right:60px; padding:34px 20px; border-radius:30px; background:#141416;
+                 border:4px solid var(--teal); font-family:system-ui, sans-serif; font-weight:800; font-size:64px; color:#fff; text-align:center; }
+      #s7 .url span { color:var(--teal); }
+      #s7 .note { position:absolute; top:1140px; left:0; right:0; font-weight:600; font-size:40px; color:var(--muted); }
+      #tap { position:absolute; top:690px; left:700px; width:120px; height:120px; border-radius:50%; border:8px solid #fff; z-index:20; }
+
+      /* captions */
+      .cap { position:absolute; left:0; right:0; top:1540px; display:flex; justify-content:center; z-index:30; }
+      .capbox { max-width:960px; padding:22px 36px; border-radius:28px; background:rgba(0,0,0,.72); text-align:center;
+                font-weight:800; font-size:62px; line-height:1.35; }
+      .capbox .w { display:inline-block; }
+      .capbox .hl { color:var(--amber); }
+      #prog { position:absolute; left:0; top:0; height:10px; width:1080px; background:linear-gradient(90deg, var(--accent), var(--teal));
+              transform-origin:0 50%; z-index:40; }
+      #flash { position:absolute; inset:0; background:#fff; opacity:0; z-index:50; pointer-events:none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="45.08" data-width="1080" data-height="1920">
+      <div id="bg" class="clip" data-start="0" data-duration="45.08" data-track-index="0"><div id="grid"></div></div>
+
+      <div id="s1" class="scene clip" data-start="0.00" data-duration="6.04" data-track-index="1">
+        <div class="clock"><div class="hand h1"></div><div class="hand h2"></div></div>
+        <div class="t center">
+          <div class="big">എല്ലാ ദിവസവും<br><span class="acc">റീൽസ്?</span></div>
+          <div class="cal">
+            <div class="day">തി<b>✓</b></div><div class="day">ചൊ<b>✓</b></div><div class="day">ബു<b>✓</b></div>
+            <div class="day">വ്യാ<b>?</b></div><div class="day">വെ<b>?</b></div><div class="day">ശ<b>?</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="s2" class="scene clip" data-start="6.04" data-duration="4.93" data-track-index="1">
+        <div class="t center"><div class="kicker">ഇനി ഇതൊന്നും വേണ്ട</div></div>
+        <div class="items">
+          <div class="item i1"><span class="ic">📷</span>ക്യാമറ<div class="strike"></div><span class="x">✕</span></div>
+          <div class="item i2"><span class="ic">🎬</span>എഡിറ്റർ<div class="strike"></div><span class="x">✕</span></div>
+          <div class="item i3"><span class="ic">⏳</span>മണിക്കൂറുകൾ<div class="strike"></div><span class="x">✕</span></div>
+        </div>
+      </div>
+
+      <div id="s3" class="scene clip" data-start="10.98" data-duration="5.01" data-track-index="1">
+        <div class="brand center"><div class="logo"><i>▶</i>Video Studio</div></div>
+        <div class="shot"><img src="assets/dashboard.jpg" alt=""></div>
+        <div class="prompt"><span class="gt">&gt;</span> <span class="typed">Make 3 Instagram reels</span><br><span class="typed t2">in Malayalam ✨</span><span class="caret"></span></div>
+      </div>
+
+      <div id="s4" class="scene clip" data-start="15.98" data-duration="7.41" data-track-index="1">
+        <div class="chip c1">🎙️ വോയ്സ്</div>
+        <div class="chip c2">💬 ക്യാപ്ഷൻ</div>
+        <div class="chip c3">🎵 മ്യൂസിക്</div>
+        <div class="chip c4">✨ ആനിമേഷൻ</div>
+        <div class="ml center"><div class="big" style="font-size:96px">100% <span class="teal">മലയാളം</span></div></div>
+      </div>
+
+      <div id="s5" class="scene clip" data-start="23.39" data-duration="7.91" data-track-index="1">
+        <div class="t center"><div class="big" style="font-size:80px">എന്തും <span class="acc">ഉണ്ടാക്കാം</span></div></div>
+      </div>
+
+      <div id="phone4" class="phone"><video id="vml" class="clip" src="assets/demo-malayalam.mp4" muted playsinline data-start="15.98" data-duration="7.41" data-track-index="2"></video></div>
+      <div id="grid5">
+          <div class="tile g1"><video id="vml2" class="clip" src="assets/demo-ml2.mp4" muted playsinline data-start="23.39" data-duration="7.91" data-track-index="3"></video><span>റീൽസ്</span></div>
+          <div class="tile g2"><video id="vterracotta" class="clip" src="assets/ad-terracotta.mp4" muted playsinline data-start="23.39" data-duration="7.91" data-track-index="4"></video><span>പ്രോഡക്റ്റ് ആഡ്</span></div>
+          <div class="tile g3"><video id="vstory" class="clip" src="assets/story-jesus.mp4" muted playsinline data-start="23.39" data-duration="7.91" data-track-index="5"></video><span>സ്റ്റോറി</span></div>
+          <div class="tile g4"><video id="vpowerbi" class="clip" src="assets/explainer-powerbi.mp4" muted playsinline data-start="23.39" data-duration="7.91" data-track-index="6"></video><span>ഷോർട്ട്സ് / YouTube</span></div>
+      </div>
+
+      <div id="s6" class="scene clip" data-start="31.30" data-duration="6.73" data-track-index="1">
+        <div class="zero center"><div class="num">₹0</div><div class="lbl">ഒരു വീഡിയോയ്ക്ക്</div></div>
+        <div class="card center">
+          <div class="off">50% OFF</div>
+          <div class="old">₹999</div>
+          <div class="new">₹499</div>
+          <div class="once">ഒറ്റത്തവണ പേയ്മെന്റ്</div>
+        </div>
+      </div>
+
+      <div id="s7" class="scene clip" data-start="38.03" data-duration="7.05" data-track-index="1">
+        <div class="logo center"><div class="l"><i>▶</i>Video Studio</div></div>
+        <div class="buy center"><div class="btn">ഇപ്പോൾ വാങ്ങൂ →</div></div>
+        <div class="url">videostudio.<span>growora</span>.live</div>
+        <div class="note center">Windows &amp; Mac · ₹499 · Instant download</div>
+      </div>
+      <div id="tap" class="clip" data-start="38.03" data-duration="7.05" data-track-index="7"></div>
+
+      <div id="cap0_0" class="cap clip" data-start="0.35" data-duration="2.82" data-track-index="9"><div class="capbox"><span class="w">എല്ലാ</span> <span class="w">ദിവസവും</span> <span class="w hl">റീൽസ്</span> <span class="w">ഇടണം</span></div></div>
+      <div id="cap0_1" class="cap clip" data-start="3.17" data-duration="3.02" data-track-index="9"><div class="capbox"><span class="w">പക്ഷേ</span> <span class="w hl">സമയമില്ലേ?</span></div></div>
+      <div id="cap1_0" class="cap clip" data-start="6.24" data-duration="2.34" data-track-index="9"><div class="capbox"><span class="w hl">ക്യാമറ</span> <span class="w">വേണ്ട,</span> <span class="w hl">എഡിറ്റർ</span> <span class="w">വേണ്ട</span></div></div>
+      <div id="cap1_1" class="cap clip" data-start="8.59" data-duration="2.54" data-track-index="9"><div class="capbox"><span class="w">മണിക്കൂറുകളോളം</span> <span class="w hl">എഡിറ്റിംഗും</span> <span class="w">വേണ്ട</span></div></div>
+      <div id="cap2_0" class="cap clip" data-start="11.18" data-duration="2.38" data-track-index="9"><div class="capbox"><span class="w">ഇതാ</span> <span class="w hl">Video</span> <span class="w hl">Studio</span></div></div>
+      <div id="cap2_1" class="cap clip" data-start="13.56" data-duration="2.58" data-track-index="9"><div class="capbox"><span class="w">ഒരു</span> <span class="w hl">വാചകം</span> <span class="w">ടൈപ്പ്</span> <span class="w">ചെയ്താൽ</span> <span class="w">മതി</span></div></div>
+      <div id="cap3_0" class="cap clip" data-start="16.18" data-duration="3.58" data-track-index="9"><div class="capbox"><span class="w hl">വോയ്സ്,</span> <span class="w hl">ക്യാപ്ഷൻ,</span> <span class="w hl">മ്യൂസിക്</span></div></div>
+      <div id="cap3_1" class="cap clip" data-start="19.76" data-duration="3.78" data-track-index="9"><div class="capbox"><span class="w">എല്ലാം</span> <span class="w">റെഡി</span> <span class="w">—</span> <span class="w hl">മലയാളത്തിൽ!</span></div></div>
+      <div id="cap4_0" class="cap clip" data-start="23.59" data-duration="3.83" data-track-index="9"><div class="capbox"><span class="w hl">റീൽസ്,</span> <span class="w hl">ഷോർട്ട്സ്,</span> <span class="w hl">ആഡ്സ്</span></div></div>
+      <div id="cap4_1" class="cap clip" data-start="27.42" data-duration="4.03" data-track-index="9"><div class="capbox"><span class="w">എല്ലാം</span> <span class="w">നിങ്ങളുടെ</span> <span class="w hl">ലാപ്ടോപ്പിൽ</span></div></div>
+      <div id="cap5_0" class="cap clip" data-start="31.50" data-duration="3.24" data-track-index="9"><div class="capbox"><span class="w">ഒരു</span> <span class="w">വീഡിയോയ്ക്ക്</span> <span class="w hl">₹0</span></div></div>
+      <div id="cap5_1" class="cap clip" data-start="34.74" data-duration="3.44" data-track-index="9"><div class="capbox"><span class="w">ഒറ്റത്തവണ</span> <span class="w">—</span> <span class="w">വെറും</span> <span class="w hl">₹499</span></div></div>
+      <div id="cap6_0" class="cap clip" data-start="38.23" data-duration="5.89" data-track-index="9"><div class="capbox"><span class="w">ഇപ്പോൾ</span> <span class="w">തന്നെ</span> <span class="w hl">വാങ്ങൂ!</span></div></div>
+
+      <div id="prog" class="clip" data-start="0" data-duration="45.08" data-track-index="10"></div>
+      <div id="flash" class="clip" data-start="0" data-duration="45.08" data-track-index="11"></div>
+    </div>
+
+    <script>
+      const DUR = 45.08, S = [0.0, 6.04, 10.98, 15.98, 23.39, 31.3, 38.03, 45.08], T = [[0.4, 5.94], [6.29, 10.88], [11.23, 15.88], [16.23, 23.29], [23.64, 31.2], [31.55, 37.93], [38.28, 43.88]], CAPS = [["#cap0_0", 0.35, 3.17], ["#cap0_1", 3.17, 6.19], ["#cap1_0", 6.24, 8.59], ["#cap1_1", 8.59, 11.13], ["#cap2_0", 11.18, 13.56], ["#cap2_1", 13.56, 16.13], ["#cap3_0", 16.18, 19.76], ["#cap3_1", 19.76, 23.54], ["#cap4_0", 23.59, 27.42], ["#cap4_1", 27.42, 31.45], ["#cap5_0", 31.5, 34.74], ["#cap5_1", 34.74, 38.18], ["#cap6_0", 38.23, 44.13]];
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo("#prog", { scaleX: 0 }, { scaleX: 1, duration: DUR, ease: "none" }, 0);
+      tl.to("#grid", { x: 72, y: 72, duration: DUR, ease: "none" }, 0);
+
+      // scene transitions: slide/scale in, flash on the brand reveal and price
+      ["#s2", "#s3", "#s4", "#s5", "#s6", "#s7"].forEach((sel, i) => {
+        tl.from(sel, { opacity: 0, y: 80, scale: 0.96, duration: 0.4, ease: "power3.out" }, S[i + 1]);
+      });
+      tl.set("#flash", { opacity: 0 }, 0);
+      tl.fromTo("#flash", { opacity: 0.55 }, { opacity: 0, duration: 0.35, immediateRender: false }, S[2]);
+      tl.fromTo("#flash", { opacity: 0.55 }, { opacity: 0, duration: 0.35, immediateRender: false }, S[6]);
+
+      // s1
+      tl.from("#s1 .clock", { scale: 0, rotation: -90, duration: 0.6, ease: "back.out(2)" }, S[0] + 0.1);
+      tl.fromTo("#s1 .h1", { rotation: 0 }, { rotation: 1440, duration: S[1] - S[0], ease: "power1.in" }, S[0]);
+      tl.fromTo("#s1 .h2", { rotation: 0 }, { rotation: 360, duration: S[1] - S[0], ease: "power1.in" }, S[0]);
+      tl.from("#s1 .big", { opacity: 0, y: 60, duration: 0.5, ease: "power3.out" }, S[0] + 0.3);
+      tl.from("#s1 .day", { opacity: 0, y: 40, scale: 0.5, duration: 0.3, stagger: 0.12, ease: "back.out(2)" }, S[0] + 0.9);
+      tl.to("#s1 .day:nth-child(n+4)", { borderColor: "#e0663f", duration: 0.2, stagger: 0.15 }, T[0][0] + 3.0);
+      tl.to("#s1 .clock", { x: -12, duration: 0.05, yoyo: true, repeat: 9 }, T[0][0] + 3.4);
+
+      // s2
+      ["i1", "i2", "i3"].forEach((c, j) => {
+        const t = S[1] + 0.4 + 0.9 * j;
+        tl.from(`#s2 .${c}`, { opacity: 0, x: -200, duration: 0.4, ease: "power3.out" }, t - 0.3);
+        tl.from(`#s2 .${c} .strike`, { scaleX: 0, duration: 0.3, ease: "power2.out" }, t + 0.15);
+        tl.from(`#s2 .${c} .x`, { scale: 0, duration: 0.35, ease: "back.out(3)" }, t);
+        tl.to(`#s2 .${c}`, { opacity: 0.55, duration: 0.3 }, t + 0.5);
+      });
+
+      // s3
+      tl.from("#s3 .logo", { scale: 0.4, opacity: 0, duration: 0.5, ease: "back.out(2)" }, S[2] + 0.05);
+      tl.from("#s3 .shot", { y: 140, opacity: 0, duration: 0.6, ease: "power3.out" }, S[2] + 0.3);
+      tl.to("#s3 .shot", { scale: 1.04, duration: S[3] - S[2], ease: "none" }, S[2]);
+      tl.from("#s3 .prompt", { y: 80, opacity: 0, duration: 0.4 }, S[2] + 0.7);
+      tl.fromTo("#s3 .typed:not(.t2)", { width: 0 }, { width: "auto", duration: 1.1, ease: "steps(22)" }, S[2] + 1.2);
+      tl.fromTo("#s3 .t2", { width: 0 }, { width: "auto", duration: 0.7, ease: "steps(14)" }, S[2] + 2.35);
+      tl.to("#s3 .caret", { opacity: 0, duration: 0.01, repeat: 9, yoyo: true, repeatDelay: 0.35 }, S[2]);
+      tl.to("#s3 .prompt", { borderColor: "#e0663f", boxShadow: "0 0 70px rgba(224,102,63,.6)", duration: 0.3 }, S[2] + 3.3);
+
+      // s4
+      tl.set(["#phone4", "#grid5"], { autoAlpha: 0 }, 0);
+      tl.set("#phone4", { autoAlpha: 1 }, S[3]); tl.set("#phone4", { autoAlpha: 0 }, S[4]);
+      tl.set("#grid5", { autoAlpha: 1 }, S[4]); tl.set("#grid5", { autoAlpha: 0 }, S[5]);
+      tl.fromTo("#phone4", { y: 300, rotation: 6, opacity: 0 }, { y: 0, rotation: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, S[3] + 0.05);
+      ["c1", "c2", "c3", "c4"].forEach((c, j) => {
+        tl.from(`#s4 .${c}`, { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2.5)" }, S[3] + 0.6 + 0.6 * j);
+        tl.to(`#s4 .${c}`, { y: j % 2 ? 14 : -14, duration: 1.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, S[3] + 1.1 + 0.6 * j);
+      });
+      tl.from("#s4 .ml", { opacity: 0, scale: 0.6, duration: 0.5, ease: "back.out(2)" }, T[3][0] + 4.2);
+
+      // s5
+      tl.from("#s5 .t", { opacity: 0, y: -40, duration: 0.4 }, S[4] + 0.1);
+      ["g1", "g2", "g3", "g4"].forEach((c, j) => {
+        tl.from(`#grid5 .${c}`, { opacity: 0, scale: 0.5, rotation: j % 2 ? 6 : -6, duration: 0.45, ease: "back.out(1.8)" }, S[4] + 0.2 + 0.35 * j);
+      });
+      tl.to("#grid5 .tile", { borderColor: "#e0663f", duration: 0.25, stagger: 0.3 }, T[4][0] + 1.0);
+
+      // s6
+      tl.from("#s6 .num", { scale: 3, opacity: 0, duration: 0.5, ease: "power4.out" }, S[5] + 0.1);
+      tl.from("#s6 .lbl", { opacity: 0, y: 30, duration: 0.3 }, S[5] + 0.5);
+      tl.from("#s6 .card", { y: 300, opacity: 0, duration: 0.5, ease: "back.out(1.5)" }, S[5] + 1.6);
+      tl.from("#s6 .new", { scale: 0.3, opacity: 0, duration: 0.5, ease: "back.out(2.5)" }, S[5] + 2.3);
+      tl.from("#s6 .off", { scale: 0, rotation: -40, duration: 0.4, ease: "back.out(3)" }, S[5] + 2.7);
+      tl.to("#s6 .new", { scale: 1.08, duration: 0.4, yoyo: true, repeat: 3, ease: "sine.inOut" }, S[5] + 3.2);
+
+      // s7
+      tl.from("#s7 .l", { scale: 0.4, opacity: 0, duration: 0.5, ease: "back.out(2)" }, S[6] + 0.05);
+      tl.from("#s7 .btn", { scale: 0.3, opacity: 0, duration: 0.5, ease: "back.out(2.4)" }, S[6] + 0.4);
+      tl.from("#s7 .url", { y: 80, opacity: 0, duration: 0.4 }, S[6] + 0.8);
+      tl.from("#s7 .note", { opacity: 0, duration: 0.4 }, S[6] + 1.2);
+      tl.set("#tap", { opacity: 0 }, 0);
+      [S[6] + 1.0, S[6] + 3.0].forEach(t => {
+        tl.fromTo("#tap", { opacity: 0.9, scale: 0.4 }, { opacity: 0, scale: 1.7, duration: 0.55, ease: "power2.out" }, t);
+        tl.to("#s7 .btn", { scale: 0.92, duration: 0.09, yoyo: true, repeat: 1 }, t);
+      });
+      tl.to("#s7 .url", { borderColor: "#e0663f", duration: 0.35, yoyo: true, repeat: 5 }, S[6] + 1.6);
+
+      // captions: word pop-in
+      CAPS.forEach(([sel, s, e]) => {
+        tl.from(sel + " .w", { autoAlpha: 0, y: 26, scale: 0.6, duration: 0.2, ease: "back.out(2.5)", stagger: 0.07 }, s);
+        tl.to(sel, { opacity: 0, duration: 0.12 }, e - 0.12);
+      });
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
