@@ -75,7 +75,6 @@ SFX = [
     ("impact", T["neither"], 0.22),                                        # "neither"
     ("whoosh_soft", T["ai"] - 0.15, 0.14),
     ("riser", C2 - 1.0, 0.10), ("whoosh", C2 - 0.15, 0.24),                # into laptop b-roll
-    ("whoosh_soft", C2 + 3.4, 0.16),                                       # dashboard window flies in
     ("whoosh", C3 - 0.15, 0.20),                                           # cut to mug shot
     ("whoosh", C4 - 0.12, 0.20),                                           # cut to sofa shot
     ("whoosh_soft", T["but"] - 0.1, 0.16),                                 # old way -> new way
