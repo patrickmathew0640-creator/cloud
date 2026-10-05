@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Poppins"; font-weight: 500; src: url("assets/fonts/poppins-latin-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Poppins"; font-weight: 700; src: url("assets/fonts/poppins-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Poppins"; font-weight: 800; src: url("assets/fonts/poppins-latin-800-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Poppins"; font-weight: 900; src: url("assets/fonts/poppins-latin-900-normal.woff2") format("woff2"); }
+      :root { --accent: #ffd54a; --blue: #5b6cff; --violet: #9b5bff; --green: #2bd67b; --red: #ff5d6c; --ink: #0b0d1f; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Poppins", sans-serif; color: #fff; }
+
+      #spk { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; z-index: 1; }
+      #spkv { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; transform-origin: 52% 50%; }
+      #vig { position: absolute; inset: 0; z-index: 2; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,.42) 100%); }
+
+      /* ---------- top panel ---------- */
+      #panel { position: absolute; left: 0; top: 0; width: 1080px; height: 840px; z-index: 3; overflow: hidden;
+               background: radial-gradient(circle at 25% 15%, #2a2f78 0%, #14174a 45%, #0b0d1f 100%); }
+      #panel .grid { position: absolute; inset: -60px; opacity: .16;
+               background-image: linear-gradient(rgba(255,255,255,.25) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.25) 1px, transparent 1px);
+               background-size: 60px 60px; }
+      #divider { position: absolute; left: 0; top: 840px; width: 1080px; height: 6px; margin-top: -3px; z-index: 4; transform-origin: 0 50%;
+                 background: linear-gradient(90deg, var(--blue), var(--violet), var(--accent)); box-shadow: 0 0 24px rgba(155,91,255,.8); }
+      .dots { position: absolute; left: 0; right: 0; top: 46px; display: flex; justify-content: center; gap: 16px; z-index: 2; }
+      .dot { width: 52px; height: 12px; border-radius: 8px; background: rgba(255,255,255,.22); transform-origin: 0 50%; }
+      .scene { position: absolute; inset: 0; }
+      .head { position: absolute; left: 60px; right: 60px; top: 100px; display: flex; align-items: center; gap: 30px; }
+      .num { width: 150px; height: 150px; flex: none; border-radius: 36px; display: flex; align-items: center; justify-content: center;
+             font-size: 84px; font-weight: 900; color: var(--ink); background: linear-gradient(160deg, #ffe27a, #ffb22e); box-shadow: 0 12px 40px rgba(255,190,60,.45); }
+      .kick { font-size: 30px; font-weight: 800; letter-spacing: .22em; color: var(--accent); }
+      .name { font-size: 66px; font-weight: 900; line-height: 1.02; text-transform: uppercase; }
+      .stage { position: absolute; left: 0; top: 280px; width: 1080px; height: 560px; }
+
+      /* 1 critical */
+      .doc { position: absolute; left: 110px; top: 40px; width: 420px; height: 440px; border-radius: 26px; background: #fff; padding: 40px 34px; color: var(--ink); }
+      .dl { height: 22px; border-radius: 11px; background: #d6dbf5; margin-bottom: 26px; } .dl.s { width: 60%; }
+      .dtag { margin-top: 30px; font-size: 40px; font-weight: 900; color: var(--red); }
+      .mag { position: absolute; left: 120px; top: 60px; width: 240px; height: 240px; }
+      .mag svg { width: 100%; height: 100%; }
+      .evid { position: absolute; left: 600px; top: 90px; display: flex; flex-direction: column; gap: 34px; }
+      .evid div { display: flex; align-items: center; gap: 22px; font-size: 52px; font-weight: 800; }
+      .evid svg { width: 76px; height: 76px; }
+
+      /* 2 analytical */
+      .bigbox { position: absolute; left: 340px; top: 60px; width: 400px; height: 400px; border-radius: 30px; display: flex; align-items: center; justify-content: center;
+                background: linear-gradient(160deg, #ff5d6c, #c2324a); font-size: 50px; font-weight: 900; text-align: center; box-shadow: 0 18px 50px rgba(255,93,108,.45); }
+      .part { position: absolute; width: 190px; height: 190px; border-radius: 26px; display: flex; align-items: center; justify-content: center; font-size: 80px; font-weight: 900;
+              background: linear-gradient(160deg, #5b6cff, #3a2bb8); box-shadow: 0 12px 30px rgba(91,108,255,.5); }
+      #i2p1 { left: 340px; top: 60px; } #i2p2 { left: 550px; top: 60px; } #i2p3 { left: 340px; top: 270px; } #i2p4 { left: 550px; top: 270px; }
+
+      /* 3 decision */
+      .opt { position: absolute; top: 60px; width: 340px; height: 400px; border-radius: 34px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+             background: rgba(255,255,255,.09); border: 4px solid rgba(255,255,255,.35); }
+      .opt b { font-size: 170px; line-height: 1; font-weight: 900; } .opt span { font-size: 40px; font-weight: 700; opacity: .8; }
+      #i3a { left: 110px; } #i3b { right: 110px; }
+      .vs { position: absolute; left: 480px; top: 200px; width: 120px; height: 120px; border-radius: 50%; background: var(--accent); color: var(--ink);
+            display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: 900; }
+      .opt .ok { position: absolute; top: -34px; right: -26px; width: 100px; height: 100px; } .opt .ok svg { width: 100%; height: 100%; }
+
+      /* 4 problem solving */
+      .puzz, .piece { position: absolute; left: 390px; top: 40px; width: 300px; height: 300px; }
+      .puzz svg, .piece svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      #i4q { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 170px; font-weight: 900; color: var(--red); padding-top: 30px; }
+      .piece span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 52px; font-weight: 900; color: var(--ink); padding-top: 30px; }
+
+      /* 5 creative */
+      .bulb { position: absolute; left: 400px; top: 10px; width: 280px; height: 364px; } .bulb svg { width: 100%; height: 100%; overflow: visible; }
+      .tagline { position: absolute; left: 0; right: 0; top: 400px; text-align: center; font-size: 72px; font-weight: 900; color: var(--accent); }
+
+      /* 6 bias */
+      .brain { position: absolute; left: 330px; top: 140px; width: 300px; height: 255px; } .brain svg { width: 100%; height: 100%; }
+      .paths { position: absolute; inset: 0; width: 1080px; height: 560px; }
+      .ptag { position: absolute; padding: 14px 28px; border-radius: 999px; font-size: 40px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
+      .ptag svg { width: 52px; height: 52px; }
+      .ptag.good { left: 770px; top: 60px; background: rgba(255,255,255,.12); border: 3px solid rgba(255,255,255,.4); }
+      .ptag.bad { left: 600px; top: 440px; background: rgba(255,93,108,.2); border: 3px solid var(--red); }
+      #i6br { transform-origin: 50% 50%; }
+      .stage .brain + .paths { pointer-events: none; }
+
+      /* 7 fatigue */
+      .batt { position: absolute; left: 250px; top: 70px; width: 520px; height: 240px; border: 10px solid #fff; border-radius: 40px; padding: 16px; }
+      .bcap { position: absolute; left: 770px; top: 145px; width: 34px; height: 90px; border-radius: 0 14px 14px 0; background: #fff; }
+      .bfill { width: 100%; height: 100%; border-radius: 22px; background: var(--green); transform-origin: 0 50%; }
+      .bpct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 86px; font-weight: 900; text-shadow: 0 4px 0 rgba(0,0,0,.35); }
+      .counter { position: absolute; left: 0; right: 0; top: 360px; text-align: center; font-size: 56px; font-weight: 800; }
+      .counter b { color: var(--accent); }
+      .qual { position: absolute; left: 0; right: 0; top: 450px; text-align: center; font-size: 60px; font-weight: 900; color: var(--red); }
+
+      /* 8 pareto */
+      .p8020 { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-size: 170px; font-weight: 900; line-height: 1; color: var(--accent); text-shadow: 0 10px 40px rgba(255,213,74,.4); }
+      .p8020 span { color: #fff; opacity: .6; }
+      .prow { position: absolute; left: 110px; right: 110px; display: flex; align-items: center; gap: 30px; }
+      .prow:nth-of-type(2) { top: 250px; } .prow:nth-of-type(3) { top: 390px; }
+      .plab { width: 330px; font-size: 40px; font-weight: 800; }
+      .ptrack { flex: 1; height: 80px; border-radius: 20px; background: rgba(255,255,255,.1); overflow: hidden; }
+      .pbar { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--blue), var(--violet)); transform-origin: 0 50%; }
+      #i8a { width: 20%; } #i8b { width: 80%; } .pbar.gold { background: linear-gradient(90deg, #ffb22e, var(--accent)); }
+
+      /* 9 zeigarnik */
+      .todo { position: absolute; left: 190px; right: 190px; top: 40px; display: flex; flex-direction: column; gap: 30px; }
+      .todo > div { display: flex; align-items: center; gap: 26px; padding: 26px 34px; border-radius: 28px; background: #fff; color: var(--ink); font-size: 50px; font-weight: 800; }
+      .todo svg { width: 70px; height: 70px; flex: none; }
+      .todo .open { background: linear-gradient(90deg, #ffe27a, #ffb22e); }
+      .loop { display: inline-block; width: 70px; text-align: center; font-size: 70px; line-height: 1; font-weight: 900; }
+
+      /* 10 dunning-kruger */
+      .dk { position: absolute; left: 90px; top: 10px; width: 900px; height: 520px; }
+      .dkdot { position: absolute; left: 315px; top: 66px; width: 50px; height: 50px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 10px rgba(255,93,108,.5), 0 0 40px #fff; }
+      .dkbub { position: absolute; left: 400px; top: 20px; padding: 18px 30px; border-radius: 26px; background: #fff; color: var(--ink); font-size: 44px; font-weight: 900; }
+
+      /* ---------- hook ---------- */
+      #hook { position: absolute; top: 120px; left: 40px; right: 40px; z-index: 6; height: 420px; }
+      .hk { position: absolute; left: 0; right: 0; text-align: center; }
+      #hk1 { top: 10px; font-weight: 900; font-size: 120px; line-height: 1; text-transform: uppercase; text-shadow: 0 8px 0 rgba(0,0,0,.35), 0 0 30px rgba(0,0,0,.45); }
+      #hk1 .iq { color: var(--accent); }
+      #hk2 { top: 150px; } #hk2 span { display: inline-block; font-weight: 900; font-size: 84px; text-transform: uppercase; color: var(--ink); background: var(--accent); padding: 4px 30px; border-radius: 20px; }
+      #hk3 { top: 0; }
+      #hk3 .ten { display: block; font-size: 260px; font-weight: 900; line-height: .95; color: var(--accent); text-shadow: 0 12px 0 rgba(0,0,0,.3), 0 0 60px rgba(255,213,74,.6); }
+      #hk3 .lbl { display: inline-block; margin-top: 34px; font-size: 76px; font-weight: 900; text-transform: uppercase; background: var(--ink); padding: 4px 30px; border-radius: 20px; }
+      #flash { position: absolute; inset: 0; background: #fff; z-index: 20; pointer-events: none; opacity: 0; }
+      #sk1, #sk2, #sk3, #sk4, #sk5, #sk6, #sk7, #sk8, #sk9, #hk3 { visibility: hidden; opacity: 0; }
+
+      /* ---------- outro ---------- */
+      #outro { position: absolute; inset: 0; z-index: 8; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px;
+               background: radial-gradient(circle at 50% 40%, #3b2a8f 0%, #151842 55%, #0b0d1f 100%); text-align: center; }
+      #outro .q { font-size: 96px; font-weight: 900; line-height: 1.05; text-transform: uppercase; padding: 0 70px; }
+      #outro .q b { color: var(--accent); }
+      #outro .c { font-size: 50px; font-weight: 700; opacity: .9; }
+      #outro .btn { display: flex; align-items: center; gap: 22px; padding: 28px 70px; border-radius: 999px; background: linear-gradient(90deg, #ff3d6e, #ff7a3d);
+                    font-weight: 900; font-size: 76px; box-shadow: 0 18px 50px rgba(255,61,110,.55); }
+      #outro .plus { width: 76px; height: 76px; border-radius: 50%; background: #fff; color: #ff3d6e; display: flex; align-items: center; justify-content: center; font-size: 70px; line-height: 1; }
+
+      /* ---------- captions ---------- */
+      #capwrap { position: absolute; left: 0; top: 0; width: 1080px; z-index: 10; }
+      .cap { position: absolute; left: 40px; right: 40px; top: 0; display: flex; justify-content: center; }
+      .capbox { text-align: center; font-weight: 800; font-size: 64px; line-height: 1.18; text-transform: uppercase;
+                -webkit-text-stroke: 3px #000; paint-order: stroke fill; text-shadow: 0 6px 0 rgba(0,0,0,.55), 0 0 26px rgba(0,0,0,.6); }
+      .w { display: inline-block; } .hl { color: var(--accent); }
+      #prog { position: absolute; left: 0; top: 0; width: 1080px; height: 10px; z-index: 30; background: linear-gradient(90deg, var(--blue), var(--violet), var(--accent)); transform-origin: 0 50%; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="58.5" data-width="1080" data-height="1920">
+      <div id="spk" data-layout-allow-overflow>
+        <video id="spkv" src="assets/speaker.mp4" muted playsinline data-start="0" data-duration="55.95" data-track-index="0"></video>
+      </div>
+      <div id="vig" class="clip" data-start="0" data-duration="55.95" data-track-index="1"></div>
+
+      <div id="panel" class="clip" data-start="7.2" data-duration="49.05" data-track-index="2">
+        <div class="grid"></div>
+        <div class="dots"><div class="dot" id="dot0"></div><div class="dot" id="dot1"></div><div class="dot" id="dot2"></div><div class="dot" id="dot3"></div><div class="dot" id="dot4"></div><div class="dot" id="dot5"></div><div class="dot" id="dot6"></div><div class="dot" id="dot7"></div><div class="dot" id="dot8"></div><div class="dot" id="dot9"></div></div>
+        <div class="scene" id="sk0">
+          <div class="head"><div class="num">01</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Critical Thinking</div></div></div>
+          <div class="stage"><div class="doc" id="i1doc"><div class="dl"></div><div class="dl"></div><div class="dl s"></div><div class="dl"></div><div class="dtag">“Shocking claim!”</div></div>
+       <div class="mag" id="i1mag"><svg viewBox="0 0 120 120"><circle cx="48" cy="48" r="34" fill="rgba(255,255,255,.15)" stroke="#fff" stroke-width="10"/><path d="M74 74l34 34" stroke="#ffd54a" stroke-width="14" stroke-linecap="round"/></svg></div>
+       <div class="evid"><div id="i1e1"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#2bd67b"/><path d="M20 33l8 8 16-17" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Source</div><div id="i1e2"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#2bd67b"/><path d="M20 33l8 8 16-17" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Facts</div><div id="i1e3"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#2bd67b"/><path d="M20 33l8 8 16-17" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Data</div></div></div>
+        </div>
+        <div class="scene" id="sk1">
+          <div class="head"><div class="num">02</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Analytical Thinking</div></div></div>
+          <div class="stage"><div class="bigbox" id="i2big"><span>BIG PROBLEM</span></div>
+       <div class="part" id="i2p1">1</div><div class="part" id="i2p2">2</div><div class="part" id="i2p3">3</div><div class="part" id="i2p4">4</div></div>
+        </div>
+        <div class="scene" id="sk2">
+          <div class="head"><div class="num">03</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Decision Making</div></div></div>
+          <div class="stage"><div class="opt" id="i3a"><b>A</b><span>Option</span></div><div class="vs" id="i3vs">VS</div>
+       <div class="opt" id="i3b"><b>B</b><span>Option</span><div class="ok" id="i3ok"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#2bd67b"/><path d="M20 33l8 8 16-17" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+        </div>
+        <div class="scene" id="sk3">
+          <div class="head"><div class="num">04</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Problem Solving</div></div></div>
+          <div class="stage"><div class="puzz" id="i4box"><svg viewBox="0 0 300 300"><path d="M20 20h100c0-30 60-30 60 0h100v260H20z" fill="rgba(255,255,255,.08)" stroke="#fff" stroke-width="6" stroke-dasharray="14 10"/></svg><span id="i4q">?</span></div>
+       <div class="piece" id="i4pc"><svg viewBox="0 0 300 300"><path d="M20 20h100c0-30 60-30 60 0h100v260H20z" fill="#ffd54a"/></svg><span>SOLVED</span></div></div>
+        </div>
+        <div class="scene" id="sk4">
+          <div class="head"><div class="num">05</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Creative Thinking</div></div></div>
+          <div class="stage"><div class="bulb" id="i5"><svg viewBox="0 0 200 260"><g id="i5rays" stroke="#ffd54a" stroke-width="10" stroke-linecap="round"><path d="M100 6v26M22 40l18 18M178 40l-18 18M2 110h26M172 110h26"/></g>
+       <path id="i5glass" d="M100 40a66 66 0 0 0-40 118c10 8 14 18 14 30h52c0-12 4-22 14-30a66 66 0 0 0-40-118z" fill="#3a3f6b" stroke="#fff" stroke-width="6"/>
+       <rect x="74" y="196" width="52" height="16" rx="6" fill="#c9cde8"/><rect x="80" y="216" width="40" height="14" rx="6" fill="#c9cde8"/></svg></div>
+       <div class="tagline" id="i5t">NEW IDEA!</div></div>
+        </div>
+        <div class="scene" id="sk5">
+          <div class="head"><div class="num">06</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Cognitive Bias</div></div></div>
+          <div class="stage"><div class="brain" id="i6br"><svg viewBox="0 0 200 170"><path d="M100 20c-20-18-60-12-66 16-26 4-34 36-18 54-10 22 6 48 32 48 8 18 38 22 52 6 14 16 44 12 52-6 26 0 42-26 32-48 16-18 8-50-18-54-6-28-46-34-66-16z" fill="#ff8fb1" stroke="#fff" stroke-width="6"/><path d="M100 22v130M60 60c14 6 20 20 14 34M140 60c-14 6-20 20-14 34" stroke="#c24f7a" stroke-width="6" fill="none" stroke-linecap="round"/></svg></div>
+       <svg class="paths" viewBox="0 0 1080 560"><path id="i6logic" d="M600 280 L960 140" stroke="rgba(255,255,255,.45)" stroke-width="8" stroke-dasharray="18 14" fill="none"/>
+       <path id="i6bias" d="M600 300 C 760 320, 820 520, 960 430" stroke="#ff5d6c" stroke-width="12" fill="none" stroke-linecap="round"/></svg>
+       <div class="ptag good" id="i6g">✓ Logic</div><div class="ptag bad" id="i6b"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#ff5d6c"/><path d="M22 22l20 20M42 22l-20 20" stroke="#fff" stroke-width="7" stroke-linecap="round"/></svg> Wrong decision</div></div>
+        </div>
+        <div class="scene" id="sk6">
+          <div class="head"><div class="num">07</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Decision Fatigue</div></div></div>
+          <div class="stage"><div class="batt" id="i7bat"><div class="bfill" id="i7fill"></div><div class="bpct" id="i7pct">100%</div></div><div class="bcap"></div>
+       <div class="counter">Decisions: <b id="i7n">0</b></div><div class="qual" id="i7q">Quality ↓</div></div>
+        </div>
+        <div class="scene" id="sk7">
+          <div class="head"><div class="num">08</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Pareto Principle</div></div></div>
+          <div class="stage"><div class="p8020" id="i8big">80<span>/</span>20</div>
+       <div class="prow"><div class="plab">Key 20% effort</div><div class="ptrack"><div class="pbar" id="i8a"></div></div></div>
+       <div class="prow"><div class="plab">80% of results</div><div class="ptrack"><div class="pbar gold" id="i8b"></div></div></div></div>
+        </div>
+        <div class="scene" id="sk8">
+          <div class="head"><div class="num">09</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Zeigarnik Effect</div></div></div>
+          <div class="stage"><div class="todo">
+         <div id="i9a"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#2bd67b"/><path d="M20 33l8 8 16-17" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Task 1</span></div>
+         <div id="i9b"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#2bd67b"/><path d="M20 33l8 8 16-17" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Task 2</span></div>
+         <div id="i9c" class="open"><span class="loop" id="i9loop">↻</span><span>Unfinished task…</span></div>
+       </div></div>
+        </div>
+        <div class="scene" id="sk9">
+          <div class="head"><div class="num">10</div><div class="ttl"><div class="kick">THINKING SKILL</div><div class="name">Dunning–Kruger Effect</div></div></div>
+          <div class="stage"><svg class="dk" viewBox="0 0 900 520"><path d="M60 470H860M60 470V30" stroke="rgba(255,255,255,.6)" stroke-width="5" fill="none"/>
+       <text x="460" y="510" fill="#c9cde8" font-size="30" font-weight="700" text-anchor="middle">KNOWLEDGE →</text>
+       <text x="30" y="250" fill="#c9cde8" font-size="30" font-weight="700" text-anchor="middle" transform="rotate(-90 30 250)">CONFIDENCE →</text>
+       <path id="i10c" d="M70 460 C 140 460, 170 80, 250 80 C 330 80, 360 380, 470 380 C 600 380, 700 200, 850 150" stroke="url(#dkg)" stroke-width="12" fill="none" stroke-linecap="round"/>
+       <defs><linearGradient id="dkg" gradientUnits="userSpaceOnUse" x1="70" y1="0" x2="850" y2="0"><stop offset="0" stop-color="#ff5d6c"/><stop offset=".5" stop-color="#ffd54a"/><stop offset="1" stop-color="#2bd67b"/></linearGradient></defs></svg>
+       <div class="dkdot" id="i10dot"></div><div class="dkbub" id="i10bub">“I know everything!”</div></div>
+        </div>
+      </div>
+      <div id="divider" class="clip" data-start="7.2" data-duration="49.05" data-track-index="3"></div>
+
+      <div id="hook" class="clip" data-start="0" data-duration="7.5" data-track-index="4">
+        <div class="hk" id="hk1"><span class="iq">IQ</span> isn’t</div>
+        <div class="hk" id="hk2"><span>enough!</span></div>
+        <div class="hk" id="hk3"><span class="ten">10</span><span class="lbl">Thinking Skills</span></div>
+      </div>
+
+      <div id="outro" class="clip" data-start="55.7" data-duration="2.8" data-track-index="6">
+        <div class="q">Which skill do <b>you</b> need most?</div>
+        <div class="c">Comment below 👇</div>
+        <div class="btn"><span class="plus">+</span>FOLLOW</div>
+      </div>
+
+      <div id="capwrap" class="clip" data-start="0" data-duration="55.95" data-track-index="5">
+      <div id="cap0" class="cap clip" data-start="0.05" data-duration="1.57" data-track-index="5"><div class="capbox"><span class="w">If</span> <span class="w">you</span> <span class="w">want</span> <span class="w">to</span> <span class="w">be</span> <span class="w hl">smart</span> <span class="w">…</span></div></div>
+      <div id="cap1" class="cap clip" data-start="1.62" data-duration="1.42" data-track-index="5"><div class="capbox"><span class="w hl">IQ</span> <span class="w hl">alone</span> <span class="w">isn’t</span> <span class="w">enough</span></div></div>
+      <div id="cap2" class="cap clip" data-start="3.06" data-duration="2.2" data-track-index="5"><div class="capbox"><span class="w">With</span> <span class="w">these</span> <span class="w hl">10</span> <span class="w hl">thinking</span> <span class="w hl">skills</span></div></div>
+      <div id="cap3" class="cap clip" data-start="5.28" data-duration="2.22" data-track-index="5"><div class="capbox"><span class="w">you</span> <span class="w">can</span> <span class="w">handle</span> <span class="w hl">any</span> <span class="w hl">situation</span> <span class="w">better</span></div></div>
+      <div id="cap4" class="cap clip" data-start="7.58" data-duration="0.76" data-track-index="5"><div class="capbox"><span class="w hl">Critical</span> <span class="w hl">thinking</span></div></div>
+      <div id="cap5" class="cap clip" data-start="8.36" data-duration="1.24" data-track-index="5"><div class="capbox"><span class="w">Don’t</span> <span class="w">believe</span> <span class="w">things</span> <span class="w hl">instantly</span></div></div>
+      <div id="cap6" class="cap clip" data-start="9.62" data-duration="1.26" data-track-index="5"><div class="capbox"><span class="w">think</span> <span class="w">with</span> <span class="w hl">evidence</span></div></div>
+      <div id="cap7" class="cap clip" data-start="10.92" data-duration="0.86" data-track-index="5"><div class="capbox"><span class="w hl">Analytical</span> <span class="w hl">thinking</span></div></div>
+      <div id="cap8" class="cap clip" data-start="11.8" data-duration="1.06" data-track-index="5"><div class="capbox"><span class="w">Take</span> <span class="w">a</span> <span class="w hl">big</span> <span class="w hl">problem</span></div></div>
+      <div id="cap9" class="cap clip" data-start="12.88" data-duration="1.74" data-track-index="5"><div class="capbox"><span class="w">and</span> <span class="w">break</span> <span class="w">it</span> <span class="w">into</span> <span class="w hl">small</span> <span class="w hl">parts</span></div></div>
+      <div id="cap10" class="cap clip" data-start="14.66" data-duration="0.84" data-track-index="5"><div class="capbox"><span class="w hl">Decision</span> <span class="w hl">making</span></div></div>
+      <div id="cap11" class="cap clip" data-start="15.52" data-duration="1.08" data-track-index="5"><div class="capbox"><span class="w hl">Compare</span> <span class="w hl">your</span> <span class="w hl">options</span></div></div>
+      <div id="cap12" class="cap clip" data-start="16.62" data-duration="1.2" data-track-index="5"><div class="capbox"><span class="w">and</span> <span class="w">make</span> <span class="w">the</span> <span class="w hl">right</span> <span class="w hl">choice</span></div></div>
+      <div id="cap13" class="cap clip" data-start="17.86" data-duration="2.02" data-track-index="5"><div class="capbox"><span class="w hl">Problem</span> <span class="w hl">solving</span></div></div>
+      <div id="cap14" class="cap clip" data-start="19.9" data-duration="1.28" data-track-index="5"><div class="capbox"><span class="w">Don’t</span> <span class="w">just</span> <span class="w">stare</span> <span class="w">at</span> <span class="w">the</span> <span class="w hl">problem</span></div></div>
+      <div id="cap15" class="cap clip" data-start="21.2" data-duration="1.44" data-track-index="5"><div class="capbox"><span class="w hl">find</span> <span class="w hl">the</span> <span class="w hl">solution</span></div></div>
+      <div id="cap16" class="cap clip" data-start="22.68" data-duration="1.04" data-track-index="5"><div class="capbox"><span class="w hl">Creative</span> <span class="w hl">thinking</span></div></div>
+      <div id="cap17" class="cap clip" data-start="23.74" data-duration="2.62" data-track-index="5"><div class="capbox"><span class="w">a</span> <span class="w hl">fresh</span> <span class="w hl">idea</span> <span class="w">for</span> <span class="w">the</span> <span class="w">same</span> <span class="w">old</span> <span class="w">thing</span></div></div>
+      <div id="cap18" class="cap clip" data-start="26.4" data-duration="1.36" data-track-index="5"><div class="capbox"><span class="w hl">Cognitive</span> <span class="w hl">bias</span></div></div>
+      <div id="cap19" class="cap clip" data-start="27.78" data-duration="1.84" data-track-index="5"><div class="capbox"><span class="w">how</span> <span class="w">your</span> <span class="w hl">mind</span> <span class="w hl">tricks</span> <span class="w hl">you</span></div></div>
+      <div id="cap20" class="cap clip" data-start="29.64" data-duration="2.42" data-track-index="5"><div class="capbox"><span class="w">into</span> <span class="w">the</span> <span class="w hl">wrong</span> <span class="w hl">decisions</span></div></div>
+      <div id="cap21" class="cap clip" data-start="32.1" data-duration="1.18" data-track-index="5"><div class="capbox"><span class="w hl">Decision</span> <span class="w hl">fatigue</span></div></div>
+      <div id="cap22" class="cap clip" data-start="33.3" data-duration="1.76" data-track-index="5"><div class="capbox"><span class="w">Make</span> <span class="w hl">too</span> <span class="w hl">many</span> <span class="w hl">decisions</span> <span class="w">…</span></div></div>
+      <div id="cap23" class="cap clip" data-start="35.08" data-duration="2.92" data-track-index="5"><div class="capbox"><span class="w">and</span> <span class="w">your</span> <span class="w hl">decision</span> <span class="w hl">quality</span> <span class="w hl">drops</span></div></div>
+      <div id="cap24" class="cap clip" data-start="38.04" data-duration="1.06" data-track-index="5"><div class="capbox"><span class="w hl">Pareto</span> <span class="w hl">principle</span></div></div>
+      <div id="cap25" class="cap clip" data-start="39.12" data-duration="2.8" data-track-index="5"><div class="capbox"><span class="w">A</span> <span class="w hl">few</span> <span class="w hl">key</span> <span class="w hl">things</span></div></div>
+      <div id="cap26" class="cap clip" data-start="41.94" data-duration="3.22" data-track-index="5"><div class="capbox"><span class="w">create</span> <span class="w hl">most</span> <span class="w hl">of</span> <span class="w hl">your</span> <span class="w hl">results</span></div></div>
+      <div id="cap27" class="cap clip" data-start="45.2" data-duration="0.94" data-track-index="5"><div class="capbox"><span class="w hl">Zeigarnik</span> <span class="w hl">effect</span></div></div>
+      <div id="cap28" class="cap clip" data-start="46.16" data-duration="1.96" data-track-index="5"><div class="capbox"><span class="w hl">Unfinished</span> <span class="w hl">tasks</span></div></div>
+      <div id="cap29" class="cap clip" data-start="48.14" data-duration="2.64" data-track-index="5"><div class="capbox"><span class="w">keep</span> <span class="w hl">replaying</span> <span class="w">in</span> <span class="w">your</span> <span class="w">mind</span></div></div>
+      <div id="cap30" class="cap clip" data-start="50.82" data-duration="1.06" data-track-index="5"><div class="capbox"><span class="w hl">Dunning–Kruger</span> <span class="w hl">effect</span></div></div>
+      <div id="cap31" class="cap clip" data-start="51.9" data-duration="1.56" data-track-index="5"><div class="capbox"><span class="w">When</span> <span class="w">you</span> <span class="w hl">know</span> <span class="w hl">very</span> <span class="w hl">little</span></div></div>
+      <div id="cap32" class="cap clip" data-start="53.48" data-duration="2.42" data-track-index="5"><div class="capbox"><span class="w">you</span> <span class="w">feel</span> <span class="w hl">overconfident</span> <span class="w">you</span> <span class="w">know</span> <span class="w">it</span> <span class="w">all</span></div></div>
+      </div>
+      <div id="prog" class="clip" data-start="0" data-duration="58.5" data-track-index="7"></div>
+      <div id="flash" class="clip" data-start="0" data-duration="58.5" data-track-index="8"></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const D = 58.5, SRC = 55.95, PH = 840;
+      const SCENES = [["full", 0.0, 7.45], ["split", 7.45, 55.95], ["card", 55.95, 58.5]], CAPS = [["#cap0", 0.05, 1.62], ["#cap1", 1.62, 3.04], ["#cap2", 3.06, 5.26], ["#cap3", 5.28, 7.5], ["#cap4", 7.58, 8.34], ["#cap5", 8.36, 9.6], ["#cap6", 9.62, 10.88], ["#cap7", 10.92, 11.78], ["#cap8", 11.8, 12.86], ["#cap9", 12.88, 14.62], ["#cap10", 14.66, 15.5], ["#cap11", 15.52, 16.6], ["#cap12", 16.62, 17.82], ["#cap13", 17.86, 19.88], ["#cap14", 19.9, 21.18], ["#cap15", 21.2, 22.64], ["#cap16", 22.68, 23.72], ["#cap17", 23.74, 26.36], ["#cap18", 26.4, 27.76], ["#cap19", 27.78, 29.62], ["#cap20", 29.64, 32.06], ["#cap21", 32.1, 33.28], ["#cap22", 33.3, 35.06], ["#cap23", 35.08, 38.0], ["#cap24", 38.04, 39.1], ["#cap25", 39.12, 41.92], ["#cap26", 41.94, 45.16], ["#cap27", 45.2, 46.14], ["#cap28", 46.16, 48.12], ["#cap29", 48.14, 50.78], ["#cap30", 50.82, 51.88], ["#cap31", 51.9, 53.46], ["#cap32", 53.48, 55.9]], SK = [7.58, 10.92, 14.66, 17.86, 22.68, 26.4, 32.1, 38.04, 45.2, 50.82];
+      const T = 0.45;
+
+      // ---------- baselines (every element that starts hidden is set here so cold seeks agree)
+      tl.set(".dot", { backgroundColor: "rgba(255,255,255,.22)", scaleY: 1 }, 0);
+      tl.set("#capwrap", { y: 1440 }, 0);
+      tl.fromTo("#prog", { scaleX: 0 }, { scaleX: 1, duration: D, ease: "none" }, 0);
+
+      // ---------- speaker layout: full -> split (bottom 1080px) at 7.25s
+      tl.set("#spk", { y: 0, height: 1920 }, 0);
+      tl.set("#spkv", { y: 0, scale: 1 }, 0);
+      tl.to("#spkv", { scale: 1.08, duration: 3.0, ease: "none" }, 0.1);           // slow push-in on the hook
+      tl.to("#spkv", { scale: 1.16, duration: 0.25, ease: "power3.out" }, 3.4);    // punch-in on "10 thinking skills"
+      tl.to("#spkv", { scale: 1.10, duration: 3.6, ease: "none" }, 3.65);
+      tl.to("#spk", { y: PH, height: 1920 - PH, duration: T, ease: "power3.inOut" }, 7.25);
+      tl.to("#spkv", { y: -350, scale: 1, duration: T, ease: "power3.inOut" }, 7.25);
+      // subtle alternating zoom per skill so the bottom shot keeps moving
+      SK.forEach((s, i) => {
+        const e = i < SK.length - 1 ? SK[i + 1] : SRC;
+        if (i === 0) tl.fromTo("#spkv", { scale: 1 }, { scale: 1.05, duration: e - s - 0.3, ease: "none" }, s);
+        else tl.fromTo("#spkv", { scale: i % 2 ? 1.08 : 1.0 }, { scale: i % 2 ? 1.02 : 1.05, duration: e - s - 0.05, ease: "none" }, s);
+      });
+
+      // ---------- captions
+      tl.to("#capwrap", { y: PH + 18, duration: T, ease: "power3.inOut" }, 7.25);
+      CAPS.forEach(([sel, s, e]) => {
+        tl.from(sel + " .w", { autoAlpha: 0, y: 30, scale: 0.6, duration: 0.2, ease: "back.out(2.5)", stagger: 0.045 }, s);
+        tl.to(sel, { opacity: 0, duration: 0.1 }, e - 0.1);
+      });
+
+      // ---------- hook
+      tl.from("#hk1", { autoAlpha: 0, y: -60, scale: 0.7, duration: 0.4, ease: "back.out(2)" }, 0.3);
+      tl.from("#hk2", { autoAlpha: 0, scale: 0.3, rotation: -8, duration: 0.4, ease: "back.out(2.6)" }, 1.62);
+      tl.to("#hk1 .iq", { scale: 1.25, duration: 0.15, yoyo: true, repeat: 1 }, 1.86);
+      tl.fromTo("#flash", { opacity: 0 }, { opacity: 0.6, duration: 0.05, yoyo: true, repeat: 1 }, 3.45);
+      tl.to(["#hk1", "#hk2"], { autoAlpha: 0, y: -50, duration: 0.2 }, 3.3);
+      tl.fromTo("#hk3", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 3.45);
+      tl.from("#hk3 .ten", { scale: 3, filter: "blur(24px)", duration: 0.4, ease: "expo.out" }, 3.45);
+      tl.from("#hk3 .lbl", { autoAlpha: 0, y: 40, duration: 0.35, ease: "back.out(2)" }, 4.05);
+      tl.to("#hk3 .ten", { scale: 1.06, duration: 2.6, ease: "none" }, 3.9);
+      tl.to("#hook", { opacity: 0, y: -60, duration: 0.3, ease: "power2.in" }, 7.05);
+
+      // ---------- panel in, dots, scene switching
+      tl.fromTo("#panel", { y: -PH }, { y: 0, duration: T, ease: "power3.out" }, 7.25);
+      tl.fromTo("#divider", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 7.35);
+      tl.to(".grid", { y: 60, x: -60, duration: SRC - 7.2, ease: "none" }, 7.2);
+      tl.to("#panel", { y: -PH, duration: 0.35, ease: "power3.in" }, SRC - 0.3);
+      SK.forEach((s, i) => {
+        const sel = "#sk" + i, e = i < SK.length - 1 ? SK[i + 1] : SRC;
+        if (i > 0) tl.fromTo(sel, { autoAlpha: 0, x: 260, filter: "blur(18px)" }, { autoAlpha: 1, x: 0, filter: "blur(0px)", duration: 0.38, ease: "power3.out" }, s - 0.15);
+        if (i < SK.length - 1) tl.to(sel, { autoAlpha: 0, x: -260, filter: "blur(18px)", duration: 0.3, ease: "power3.in" }, e - 0.3);
+        tl.to("#dot" + i, { backgroundColor: "#ffd54a", duration: 0.25 }, s);
+        tl.fromTo("#dot" + i, { scaleY: 1 }, { scaleY: 1.6, duration: 0.15, yoyo: true, repeat: 1 }, s);
+        tl.from(sel + " .num", { scale: 0.2, rotation: -25, duration: 0.45, ease: "back.out(2.4)" }, s);
+        tl.from(sel + " .kick", { autoAlpha: 0, x: 40, duration: 0.3 }, s + 0.08);
+        tl.from(sel + " .name", { autoAlpha: 0, x: 60, duration: 0.35, ease: "power3.out" }, s + 0.12);
+      });
+
+      // ---------- 1 critical thinking
+      tl.from("#i1doc", { autoAlpha: 0, y: 60, rotation: -4, duration: 0.4, ease: "back.out(1.8)" }, 7.85);
+      tl.from("#i1mag", { autoAlpha: 0, scale: 0.5, duration: 0.3 }, 8.35);
+      tl.to("#i1mag", { x: 160, y: 150, duration: 0.7, ease: "power1.inOut" }, 8.4);
+      tl.to("#i1mag", { x: 220, y: -30, duration: 0.6, ease: "power1.inOut" }, 9.1);
+      [["#i1e1", 9.7], ["#i1e2", 10.0], ["#i1e3", 10.3]].forEach(([s, t]) => tl.from(s, { autoAlpha: 0, x: 60, duration: 0.3, ease: "back.out(2)" }, t));
+
+      // ---------- 2 analytical
+      tl.set(".part", { autoAlpha: 0 }, 0);
+      tl.from("#i2big", { autoAlpha: 0, scale: 0.4, duration: 0.4, ease: "back.out(2)" }, 11.95);
+      tl.to("#i2big", { x: -6, duration: 0.05, yoyo: true, repeat: 5 }, 12.5);
+      tl.to("#i2big", { autoAlpha: 0, scale: 1.1, duration: 0.15 }, 13.2);
+      tl.to(".part", { autoAlpha: 1, duration: 0.05 }, 13.2);
+      tl.from("#i2p1", { x: 105, y: 105, duration: 0.45, ease: "back.out(2)" }, 13.2);
+      tl.from("#i2p2", { x: -105, y: 105, duration: 0.45, ease: "back.out(2)" }, 13.2);
+      tl.from("#i2p3", { x: 105, y: -105, duration: 0.45, ease: "back.out(2)" }, 13.2);
+      tl.from("#i2p4", { x: -105, y: -105, duration: 0.45, ease: "back.out(2)" }, 13.2);
+      tl.to("#i2p1", { x: -60, y: -20, duration: 0.4, ease: "power2.out" }, 13.7);
+      tl.to("#i2p2", { x: 60, y: -20, duration: 0.4, ease: "power2.out" }, 13.7);
+      tl.to("#i2p3", { x: -60, y: 20, duration: 0.4, ease: "power2.out" }, 13.7);
+      tl.to("#i2p4", { x: 60, y: 20, duration: 0.4, ease: "power2.out" }, 13.7);
+      tl.to(".part", { background: "linear-gradient(160deg, #2bd67b, #17a65b)", duration: 0.3, stagger: 0.08 }, 14.05);
+
+      // ---------- 3 decision
+      tl.from("#i3a", { autoAlpha: 0, x: -120, duration: 0.4, ease: "back.out(1.8)" }, 15.5);
+      tl.from("#i3b", { autoAlpha: 0, x: 120, duration: 0.4, ease: "back.out(1.8)" }, 15.75);
+      tl.from("#i3vs", { autoAlpha: 0, scale: 0, rotation: 180, duration: 0.4, ease: "back.out(2.5)" }, 16.1);
+      tl.to("#i3a", { opacity: 0.35, scale: 0.92, duration: 0.3 }, 16.8);
+      tl.to("#i3b", { scale: 1.06, borderColor: "#2bd67b", backgroundColor: "rgba(43,214,123,.18)", duration: 0.3 }, 16.8);
+      tl.from("#i3ok", { scale: 0, duration: 0.35, ease: "back.out(3)" }, 16.8);
+
+      // ---------- 4 problem solving
+      tl.set("#i4pc", { autoAlpha: 0 }, 0);
+      tl.from("#i4box", { autoAlpha: 0, scale: 0.5, duration: 0.4, ease: "back.out(2)" }, 18.2);
+      tl.to("#i4q", { rotation: 12, duration: 0.08, yoyo: true, repeat: 7 }, 19.9);
+      tl.fromTo("#i4pc", { autoAlpha: 1, x: 420, y: 260, rotation: 25 }, { autoAlpha: 1, x: 0, y: 0, rotation: 0, duration: 0.45, ease: "back.out(1.6)" }, 21.5);
+      tl.to("#i4q", { opacity: 0, duration: 0.15 }, 21.55);
+      tl.to("#i4pc", { scale: 1.08, duration: 0.15, yoyo: true, repeat: 1 }, 21.95);
+
+      // ---------- 5 creative
+      tl.set("#i5rays", { opacity: 0 }, 0);
+      tl.from("#i5", { autoAlpha: 0, y: 60, duration: 0.4, ease: "back.out(1.8)" }, 22.95);
+      tl.to("#i5", { rotation: -4, duration: 0.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 23.6);
+      tl.to("#i5glass", { fill: "#ffd54a", duration: 0.15 }, 25.3);
+      tl.to("#i5rays", { opacity: 1, duration: 0.15 }, 25.3);
+      tl.from("#i5rays", { scale: 0.6, transformOrigin: "100px 110px", duration: 0.35, ease: "back.out(3)" }, 25.3);
+      tl.from("#i5t", { autoAlpha: 0, scale: 0.4, duration: 0.35, ease: "back.out(2.5)" }, 25.4);
+
+      // ---------- 6 cognitive bias
+      tl.set(["#i6logic", "#i6bias"], { strokeDasharray: 700, strokeDashoffset: 700 }, 0);
+      tl.set("#i6logic", { strokeDasharray: 700 }, 0);
+      tl.from("#i6br", { autoAlpha: 0, scale: 0.4, duration: 0.45, ease: "back.out(2)" }, 27.0);
+      tl.to("#i6logic", { strokeDashoffset: 0, duration: 0.6 }, 27.9);
+      tl.from("#i6g", { autoAlpha: 0, x: 40, duration: 0.3 }, 28.4);
+      tl.to("#i6br", { rotation: 8, duration: 0.12, yoyo: true, repeat: 5 }, 28.6);
+      tl.to("#i6bias", { strokeDashoffset: 0, duration: 0.6, ease: "power2.in" }, 29.6);
+      tl.to(["#i6logic", "#i6g"], { opacity: 0.3, duration: 0.3 }, 29.8);
+      tl.from("#i6b", { autoAlpha: 0, scale: 0.4, duration: 0.35, ease: "back.out(2.5)" }, 30.1);
+
+      // ---------- 7 decision fatigue
+      tl.set("#i7n", { innerText: 0 }, 0);
+      tl.set("#i7pct", { innerText: "100%" }, 0);
+      tl.from(["#i7bat", ".bcap"], { autoAlpha: 0, scale: 0.6, duration: 0.4, ease: "back.out(2)" }, 32.3);
+      tl.from(".counter", { autoAlpha: 0, y: 30, duration: 0.3 }, 32.6);
+      tl.fromTo("#i7fill", { scaleX: 1, backgroundColor: "#2bd67b" }, { scaleX: 0.1, backgroundColor: "#ff5d6c", duration: 3.3, ease: "power1.in" }, 33.3);
+      tl.to("#i7n", { innerText: 35, snap: { innerText: 1 }, duration: 3.3, ease: "power1.in" }, 33.3);
+      tl.to({ v: 100 }, { v: 10, duration: 3.3, ease: "power1.in", onUpdate() { document.querySelector("#i7pct").textContent = Math.round(this.targets()[0].v) + "%"; } }, 33.3);
+      tl.from("#i7q", { autoAlpha: 0, scale: 0.4, duration: 0.35, ease: "back.out(2.5)" }, 36.45);
+      tl.to("#i7bat", { x: 6, duration: 0.05, yoyo: true, repeat: 5 }, 36.6);
+
+      // ---------- 8 pareto
+      tl.from("#i8big", { autoAlpha: 0, scale: 2.2, filter: "blur(20px)", duration: 0.4, ease: "expo.out" }, 38.3);
+      tl.from(".prow", { autoAlpha: 0, x: -60, duration: 0.35, stagger: 0.2 }, 39.2);
+      tl.fromTo("#i8a", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power2.out" }, 39.45);
+      tl.fromTo("#i8b", { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: "power2.out" }, 42.5);
+      tl.to("#i8b", { boxShadow: "0 0 40px rgba(255,213,74,.9)", duration: 0.3, yoyo: true, repeat: 1 }, 43.4);
+
+      // ---------- 9 zeigarnik
+      tl.from("#i9a", { autoAlpha: 0, x: -80, duration: 0.3, ease: "power3.out" }, 46.25);
+      tl.from("#i9b", { autoAlpha: 0, x: -80, duration: 0.3, ease: "power3.out" }, 46.55);
+      tl.from("#i9c", { autoAlpha: 0, x: -80, duration: 0.3, ease: "power3.out" }, 46.85);
+      tl.fromTo("#i9loop", { rotation: 0 }, { rotation: 720, duration: 3.6, ease: "none" }, 47.1);
+      tl.to("#i9c", { scale: 1.05, duration: 0.3, yoyo: true, repeat: 5, ease: "sine.inOut" }, 48.6);
+
+      // ---------- 10 dunning-kruger
+      tl.set("#i10c", { strokeDasharray: 1400, strokeDashoffset: 1400 }, 0);
+      tl.from(".dk", { autoAlpha: 0, duration: 0.3 }, 51.0);
+      tl.to("#i10c", { strokeDashoffset: 0, duration: 1.4, ease: "power1.inOut" }, 51.3);
+      tl.from("#i10dot", { autoAlpha: 0, scale: 0, duration: 0.35, ease: "back.out(3)" }, 53.5);
+      tl.from("#i10bub", { autoAlpha: 0, scale: 0.4, x: -40, duration: 0.35, ease: "back.out(2.2)" }, 54.2);
+      tl.to("#i10dot", { scale: 1.3, duration: 0.25, yoyo: true, repeat: 3 }, 54.6);
+
+      // ---------- outro
+      tl.fromTo("#outro", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 55.75);
+      tl.from("#outro .q", { scale: 1.8, filter: "blur(20px)", opacity: 0, duration: 0.45, ease: "expo.out" }, 56.0);
+      tl.from("#outro .c", { opacity: 0, y: 30, duration: 0.3 }, 56.6);
+      tl.from("#outro .btn", { opacity: 0, scale: 0.3, duration: 0.4, ease: "back.out(2.4)" }, 56.75);
+      tl.to("#outro .btn", { scale: 0.9, duration: 0.09, yoyo: true, repeat: 1 }, 57.25);
+      tl.to("#outro .btn", { background: "linear-gradient(90deg, #2bd67b, #19b866)", duration: 0.2 }, 57.35);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
