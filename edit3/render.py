@@ -18,7 +18,8 @@ from PIL import Image
 import edit
 import graphics as g
 
-W, H, FPS = 1920, 1080, 30
+S = int(os.environ.get("RENDER_SCALE", "1"))   # 1 = 1080p, 2 = 4K (3840x2160)
+W, H, FPS = 1920 * S, 1080 * S, 30
 CROP = "crop=1764:992:198:1424"          # 16:9 window inside the letterboxed picture
 MUSIC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "edit2", "audio", edit.MUSIC)
 
@@ -95,7 +96,7 @@ def make_overlays(work):
     h, p = edit.END_TEXT
     add("end.png", g.end_html(h, p), CUT_DUR + 0.15, TOTAL, "fade_in")
 
-    g.render(jobs, gdir)
+    g.render(jobs, gdir, scale=S)
     for it in items:
         it["x"], it["y"], it["w"], it["h"] = autocrop(it["file"])
     return items
@@ -103,7 +104,7 @@ def make_overlays(work):
 
 # ------------------------------------------------------------------ passes
 def make_base(raw, work):
-    base = os.path.join(work, "base.mp4")
+    base = os.path.join(work, "base.mp4" if S == 1 else f"base_x{S}.mp4")
     if not os.path.exists(base):
         run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-vf",
              f"{CROP},scale={W}:{H}:flags=lanczos,fps={FPS},format=yuv420p",
@@ -123,7 +124,7 @@ def make_cut(base, work):
             fr = edit.GRADE
         else:
             cw, ch = round(W / z / 2) * 2, round(H / z / 2) * 2
-            cx, cy = edit.ZOOM_CENTER
+            cx, cy = edit.ZOOM_CENTER[0] * S, edit.ZOOM_CENTER[1] * S
             x = min(max(0, round(cx - cw / 2)), W - cw)
             y = min(max(0, round(cy - ch / 2)), H - ch)
             fr = f"crop={cw}:{ch}:{x}:{y},scale={W}:{H}:flags=lanczos,{edit.GRADE}"
@@ -143,7 +144,7 @@ def make_cut(base, work):
     run(["ffmpeg", "-v", "error", "-y", "-i", joined, "-filter_complex",
          f"[0:v]split[a][b];[b]trim=start={CUT_DUR - 2 / FPS:.3f},setpts=PTS-STARTPTS,"
          f"tpad=stop_mode=clone:stop_duration={edit.END_CARD + 1},trim=0:{edit.END_CARD},setpts=PTS-STARTPTS,"
-         f"gblur=sigma=28,eq=brightness=-0.16:saturation=0.8,fade=t=in:d=0.35[e];"
+         f"gblur=sigma={28 * S},eq=brightness=-0.16:saturation=0.8,fade=t=in:d=0.35[e];"
          f"[a]trim=0:{CUT_DUR:.4f},setpts=PTS-STARTPTS[a2];[a2][e]concat=n=2:v=1:a=0,format=yuv420p[v];"
          f"[0:a]apad=whole_dur={TOTAL:.4f}[au]",
          "-map", "[v]", "-map", "[au]", "-r", str(FPS), "-c:v", "libx264", "-preset", "fast", "-crf", "12",
@@ -158,13 +159,13 @@ def anim_expr(it):
     x, y, a = str(it["x"]), str(it["y"]), []
     A = 0.4
     if it["anim"] == "left":
-        x = f"{it['x']}-90*pow(max(0,1-(t-{t0:.3f})/{A}),3)"
+        x = f"{it['x']}-{90 * S}*pow(max(0,1-(t-{t0:.3f})/{A}),3)"
         a = [f"fade=t=in:st=0:d={A}:alpha=1", f"fade=t=out:st={max(0, d - 0.35):.3f}:d=0.35:alpha=1"]
     elif it["anim"] == "right":
-        x = f"{it['x']}+160*pow(max(0,1-(t-{t0:.3f})/{A}),3)"
+        x = f"{it['x']}+{160 * S}*pow(max(0,1-(t-{t0:.3f})/{A}),3)"
         a = [f"fade=t=in:st=0:d={A}:alpha=1", f"fade=t=out:st={max(0, d - 0.35):.3f}:d=0.35:alpha=1"]
     elif it["anim"] == "pop_in":
-        y = f"{it['y']}-40*pow(max(0,1-(t-{t0:.3f})/0.3),3)"
+        y = f"{it['y']}-{40 * S}*pow(max(0,1-(t-{t0:.3f})/0.3),3)"
         a = ["fade=t=in:st=0:d=0.3:alpha=1"]
     elif it["anim"] == "fade_out":
         a = [f"fade=t=out:st={max(0, d - 0.4):.3f}:d=0.4:alpha=1"]

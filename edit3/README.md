@@ -27,6 +27,8 @@ reference uses. Music: "Wallpaper" by Kevin MacLeod (incompetech.com), CC BY 4.0
 pip install playwright pillow
 python3 render.py raw.mp4 out.mp4 --work build          # full render
 python3 render.py raw.mp4 out.mp4 --work build --reuse-cut   # graphics/subtitle changes only
+RENDER_SCALE=2 python3 render.py raw.mp4 out_4k.mp4 --work build4k   # 3840x2160 (graphics drawn at 4K)
 ```
 
-Output: `../deliverables/ai-jobs-edit-1080p.mp4`.
+Outputs: `../deliverables/ai-jobs-edit-1080p.mp4`, `../deliverables/ai-jobs-edit-4k.mp4`.
+The 4K video is scaled up from the source's 2160x992 picture band, so the footage is softer than the text.

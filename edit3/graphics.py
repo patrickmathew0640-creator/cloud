@@ -106,12 +106,12 @@ def end_html(h, p):
     return f'<div class="end"><h1 class="shadow">{esc(h)}</h1><p class="shadow">{esc(p)}</p></div>'
 
 
-def render(jobs, outdir):
+def render(jobs, outdir, scale=1):
     """jobs: list of (filename, inner_html)."""
     os.makedirs(outdir, exist_ok=True)
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path=CHROME)
-        pg = b.new_page(viewport={"width": 1920, "height": 1080})
+        pg = b.new_page(viewport={"width": 1920, "height": 1080}, device_scale_factor=scale)
         for name, inner in jobs:
             tmp = HERE / "_render.html"
             tmp.write_text(f"<!doctype html><html><head><meta charset='utf-8'><style>{BASE_CSS}</style></head>"
