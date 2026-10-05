@@ -7,3 +7,4 @@ snapshots/
 assets/speaker.mp4
 site/
 index.html.bak
+__pycache__/
