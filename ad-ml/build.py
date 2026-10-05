@@ -17,13 +17,13 @@ S = [0.0] + [s - 0.25 for s, _ in T[1:]] + [DUR]          # scene boundaries
 sc = lambda i: (S[i], S[i + 1] - S[i])
 
 CAPS = [
-    "എല്ലാ ദിവസവും *റീൽസ്* ഇടണം|പക്ഷേ *സമയമില്ലേ?*",
-    "*ക്യാമറ* വേണ്ട, *എഡിറ്റർ* വേണ്ട|മണിക്കൂറുകളോളം *എഡിറ്റിംഗും* വേണ്ട",
-    "ഇതാ *Video Studio*|ഒരു *വാചകം* ടൈപ്പ് ചെയ്താൽ മതി",
-    "*വോയ്സ്, ക്യാപ്ഷൻ, മ്യൂസിക്*|എല്ലാം റെഡി — *മലയാളത്തിൽ!*",
-    "*റീൽസ്, ഷോർട്ട്സ്, ആഡ്സ്*|എല്ലാം നിങ്ങളുടെ *ലാപ്ടോപ്പിൽ*",
-    "ഒരു വീഡിയോയ്ക്ക് *₹0*|ഒറ്റത്തവണ — വെറും *₹499*",
-    "ഇപ്പോൾ തന്നെ *വാങ്ങൂ!*",
+    "ദിവസവും *റീൽസ്* ഇടണോ?|*സമയമില്ലേ?* ഇത് കേൾക്കൂ!",
+    "*ക്യാമറ* വേണ്ട! *എഡിറ്റർ* വേണ്ട!|മണിക്കൂറുകളോളം *എഡിറ്റിംഗും* വേണ്ട!",
+    "ഇതാ *Video Studio!*|ഒരു *വാചകം* — ബാക്കി എല്ലാം *റെഡി!*",
+    "*വോയ്സ്, ക്യാപ്ഷൻ, മ്യൂസിക്!*|നമ്മുടെ സ്വന്തം *മലയാളത്തിൽ!*",
+    "*റീൽസ്, ഷോർട്ട്സ്, ആഡ്സ്!*|എല്ലാം നിങ്ങളുടെ *ലാപ്ടോപ്പിൽ!*",
+    "ഒരു വീഡിയോയ്ക്ക് *₹0!*|ഒറ്റത്തവണ — വെറും *₹499!*",
+    "ഇപ്പോൾ തന്നെ *വാങ്ങൂ!*|ലിങ്ക് *ബയോയിൽ!*",
 ]
 
 def cap_html(i, txt):
@@ -70,7 +70,7 @@ for i, ((k, _), (s, _)) in enumerate(zip(lines, T)):
     ch.append(f"[{i}:a]aresample={SR},adelay={ms}|{ms}[v{i}]")
 run(["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex",
      ";".join(ch) + ";" + "".join(f"[v{i}]" for i in range(len(lines))) +
-     f"amix=inputs={len(lines)}:normalize=0,apad,atrim=0:{DUR},loudnorm=I=-15:TP=-2,aresample={SR}[o]",
+     f"amix=inputs={len(lines)}:normalize=0,apad,atrim=0:{DUR},highpass=f=80,equalizer=f=200:t=q:w=1:g=2,equalizer=f=3200:t=q:w=1.2:g=3,acompressor=threshold=-20dB:ratio=4:attack=4:release=80:makeup=3,loudnorm=I=-14:TP=-1.5,aresample={SR}[o]",
      "-map", "[o]", "-ac", "2", "build_voice.wav"])
 sfx = [("whoosh", S[1] - 0.1, 0.5), ("whoosh", S[2] - 0.1, 0.5), ("riser", S[2] - 1.0, 0.35), ("impact", S[2] + 0.1, 0.45),
        ("whoosh", S[3] - 0.1, 0.5), ("whoosh", S[4] - 0.1, 0.5), ("whoosh", S[5] - 0.1, 0.5), ("ding", S[5] + 2.3, 0.5),
@@ -83,9 +83,9 @@ for i, (n, tt, v) in enumerate(sfx):
     ch.append(f"[{i}:a]aresample={SR},aformat=channel_layouts=stereo,volume={v},adelay={ms}|{ms}[s{i}]")
 run(["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex", ";".join(ch) + ";" + "".join(f"[s{i}]" for i in range(len(sfx))) +
      f"amix=inputs={len(sfx)}:normalize=0,apad,atrim=0:{DUR}[o]", "-map", "[o]", "-ac", "2", "build_sfx.wav"])
-run(["ffmpeg", "-v", "error", "-y", "-i", "assets/Inspired.mp3", "-i", "build_voice.wav", "-i", "build_sfx.wav", "-filter_complex",
-     f"[0:a]atrim=0:{DUR},asetpts=PTS-STARTPTS,aresample={SR},volume=0.32,afade=t=in:st=0:d=0.3,afade=t=out:st={DUR-1.5}:d=1.5[m];"
-     "[1:a]asplit[v][sc];[m][sc]sidechaincompress=threshold=0.03:ratio=6:attack=20:release=350[d];"
+run(["ffmpeg", "-v", "error", "-y", "-i", "assets/Life_of_Riley.mp3", "-i", "build_voice.wav", "-i", "build_sfx.wav", "-filter_complex",
+     f"[0:a]atrim=0:{DUR},asetpts=PTS-STARTPTS,aresample={SR},volume=0.42,afade=t=in:st=0:d=0.3,afade=t=out:st={DUR-1.5}:d=1.5[m];"
+     "[1:a]asplit[v][sc];[m][sc]sidechaincompress=threshold=0.03:ratio=4:attack=15:release=250[d];"
      f"[v][d][2:a]amix=inputs=3:normalize=0,alimiter=limit=0.89,atrim=0:{DUR}[a]",
      "-map", "[a]", "-c:a", "pcm_s16le", "build_mix.wav"])
 print("DUR", DUR, "S", [round(x, 2) for x in S])
