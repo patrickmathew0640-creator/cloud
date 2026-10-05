@@ -150,19 +150,19 @@
       #mins .sub s { color: #ff6b6b; text-decoration-thickness: 6px; }
 
       /* ---------- stages panel (selfie, lower band) ---------- */
-      #stages { position: absolute; left: 40px; right: 40px; top: 1222px; height: 308px; z-index: 7; }
+      #stages { position: absolute; left: 40px; right: 40px; top: 140px; height: 270px; z-index: 7; }
       #stages > .glass { position: absolute; inset: 0; }
-      #stA, #stB, #stC { position: absolute; inset: 0; padding: 20px 30px; }
+      #stA, #stB, #stC { position: absolute; inset: 0; padding: 16px 28px; }
       #stA .kick { color: #fca5a5; text-align: center; }
-      .sgrid { margin-top: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
-      .stg { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 16px; font-size: 28px; font-weight: 800; background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.28); }
+      .sgrid { margin-top: 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+      .stg { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 14px; font-size: 26px; font-weight: 800; background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.28); }
       .stg em { font-style: normal; font-size: 30px; }
-      #tbar { position: absolute; left: 30px; right: 30px; bottom: 16px; height: 52px; border-radius: 20px; background: rgba(255,255,255,.1); overflow: hidden; }
+      #tbar { position: absolute; left: 28px; right: 28px; bottom: 14px; height: 48px; border-radius: 20px; background: rgba(255,255,255,.1); overflow: hidden; }
       #tfill { position: absolute; inset: 0; background: linear-gradient(90deg, #f97316, var(--red)); transform-origin: 0 50%; }
       #tlab { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 36px; font-weight: 900; letter-spacing: .04em; }
-      #auto { margin: 0 auto; width: 900px; height: 100px; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 64px; font-weight: 900;
+      #auto { margin: 0 auto; width: 900px; height: 92px; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 64px; font-weight: 900;
               color: #1a1400; background: linear-gradient(90deg, #ffe066, #f2c811, #ffb703); box-shadow: 0 0 50px rgba(242,200,17,.6); }
-      #lk2 { margin-top: 10px; transform: scale(.6); transform-origin: 50% 0; }
+      #lk2 { margin-top: 8px; transform: scale(.56); transform-origin: 50% 0; }
       #stC { display: flex; flex-direction: column; gap: 22px; justify-content: center; }
       #acc { align-self: flex-start; display: flex; align-items: center; gap: 14px; padding: 12px 28px; border-radius: 999px; background: rgba(34,197,94,.2); border: 3px solid var(--green);
              font-size: 36px; font-weight: 800; }
@@ -187,9 +187,9 @@
       #stamp svg { width: 70px; height: 70px; }
 
       /* ---------- guide ---------- */
-      #guide { position: absolute; left: 50px; right: 50px; top: 1250px; height: 275px; z-index: 7; }
+      #guide { position: absolute; left: 50px; right: 50px; top: 150px; height: 258px; z-index: 7; }
       #guide > .glass { position: absolute; inset: 0; }
-      #book { position: absolute; left: 40px; top: -12px; width: 220px; height: 268px; border-radius: 10px 24px 24px 10px; padding: 22px 20px; perspective: 600px;
+      #book { position: absolute; left: 40px; top: -6px; width: 210px; height: 262px; border-radius: 10px 24px 24px 10px; padding: 22px 20px; perspective: 600px;
               background: linear-gradient(160deg, #1d2a66, #0b1028); border: 3px solid rgba(242,200,17,.8); box-shadow: -14px 20px 50px rgba(0,0,0,.6), inset 14px 0 0 rgba(255,255,255,.08);
               transform: rotate(-7deg); }
       #book .bt { font-size: 21px; font-weight: 900; line-height: 1.05; } #book .bt b { color: var(--gold); display: block; font-size: 28px; }
@@ -201,21 +201,21 @@
       #atoz { position: absolute; right: 30px; bottom: 20px; padding: 8px 26px; border-radius: 18px; background: var(--gold); color: #1a1400; font-size: 48px; font-weight: 900; }
 
       /* ---------- price ---------- */
-      #price { position: absolute; left: 50px; right: 50px; top: 1240px; height: 285px; z-index: 7; }
+      #price { position: absolute; left: 50px; right: 50px; top: 140px; height: 270px; z-index: 7; }
       #price > .glass { position: absolute; inset: 0; border-color: rgba(242,200,17,.6); }
       #pk { position: absolute; left: 0; right: 0; top: 18px; text-align: center; color: var(--gold); }
-      #pnum { position: absolute; left: 0; right: 0; top: 52px; text-align: center; font-size: 160px; font-weight: 900; line-height: 1; letter-spacing: -.02em;
+      #pnum { position: absolute; left: 0; right: 0; top: 50px; text-align: center; font-size: 150px; font-weight: 900; line-height: 1; letter-spacing: -.02em;
               background: linear-gradient(180deg, #fff6c2 0%, #f2c811 55%, #c99a00 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
               filter: drop-shadow(0 10px 0 rgba(0,0,0,.35)) drop-shadow(0 0 40px rgba(242,200,17,.45)); }
       #psub { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font-size: 36px; font-weight: 800; }
       #psub span { display: inline-block; margin: 0 8px; padding: 6px 20px; border-radius: 14px; background: rgba(255,255,255,.12); }
       #shine { position: absolute; top: 0; bottom: 0; width: 160px; left: -200px; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.35), rgba(255,255,255,0)); transform: skewX(-18deg); }
       #pclip { position: absolute; inset: 0; overflow: hidden; border-radius: 36px; }
-      .coin { position: absolute; left: 468px; top: 120px; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff6c2, #f2c811 55%, #b88a00);
+      .coin { position: absolute; left: 468px; top: 150px; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff6c2, #f2c811 55%, #b88a00);
               box-shadow: 0 0 14px rgba(242,200,17,.8); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #7a5a00; }
 
       /* ---------- comment CTA ---------- */
-      #cta { position: absolute; left: 50px; right: 50px; top: 1290px; height: 600px; z-index: 7; }
+      #cta { position: absolute; left: 50px; right: 50px; top: 140px; height: 270px; z-index: 7; }
       #cbox { position: absolute; left: 0; right: 0; top: 0; padding: 26px 30px; border-radius: 34px; background: #fff; color: var(--ink); box-shadow: 0 24px 60px rgba(0,0,0,.45); }
       #cbox .hd { font-size: 30px; font-weight: 800; color: #6b7280; }
       .crow { margin-top: 16px; display: flex; align-items: center; gap: 18px; }
@@ -223,9 +223,9 @@
       #cin { flex: 1; height: 86px; border-radius: 43px; border: 3px solid #e5e7eb; display: flex; align-items: center; padding: 0 28px; font-size: 46px; font-weight: 900; color: var(--ink); }
       #cin .ph { color: #9ca3af; font-weight: 600; font-size: 32px; }
       #cpost { padding: 16px 30px; border-radius: 22px; background: var(--blue); color: #fff; font-size: 34px; font-weight: 900; }
-      #finger { position: absolute; left: -10px; top: -120px; font-size: 96px; line-height: 1; }
-      #url { position: absolute; left: 0; right: 0; top: 470px; text-align: center; }
-      #url span { display: inline-flex; align-items: center; gap: 14px; padding: 16px 38px; border-radius: 999px; background: var(--gold); color: #1a1400; font-size: 44px; font-weight: 900;
+      #finger { display: none; position: absolute; left: -10px; top: -120px; font-size: 96px; line-height: 1; }
+      #url { position: absolute; left: 0; right: 0; top: 196px; text-align: center; }
+      #url span { display: inline-flex; align-items: center; gap: 14px; padding: 10px 32px; border-radius: 999px; background: var(--gold); color: #1a1400; font-size: 38px; font-weight: 900;
                   box-shadow: 0 14px 40px rgba(242,200,17,.5); }
 
       /* ---------- end card ---------- */
@@ -249,7 +249,7 @@
       #ecom { margin-top: 18px; font-size: 32px; font-weight: 700; opacity: .85; }
 
       /* ---------- captions + fx ---------- */
-      #capwrap { position: absolute; left: 0; top: 1545px; width: 1080px; z-index: 16; }
+      #capwrap { position: absolute; left: 0; top: 1575px; width: 1080px; z-index: 16; }
       .cap { position: absolute; left: 40px; right: 40px; top: 0; display: flex; justify-content: center; }
       .capbox { text-align: center; font-weight: 900; font-size: 62px; line-height: 1.16; text-transform: uppercase;
                 -webkit-text-stroke: 3px #000; paint-order: stroke fill; text-shadow: 0 6px 0 rgba(0,0,0,.6), 0 0 26px rgba(0,0,0,.6); }
@@ -432,12 +432,7 @@
         [T.hours, T.days, 1.18, 1.2, "none"], [T.days, T.days + 0.2, 1.2, 1.3, "power3.out"], [T.days + 0.2, T.but, 1.3, 1.28, "none"],
         [T.but, T.but + 0.3, 1.28, 1.12, "power3.out"], [T.but + 0.3, T.min, 1.12, 1.17, "none"],
         [T.min, T.min + 0.2, 1.17, 1.3, "power3.out"], [T.min + 0.2, C5, 1.3, 1.26, "none"],
-        [C5, C5 + 0.35, 1.2, 1.0, "power3.out", "50% 25%"], [C5 + 0.35, T.many, 1.0, 1.03, "none"],
-        [T.many, T.many + 0.2, 1.03, 1.06, "power3.out"], [T.many + 0.2, T.but2, 1.06, 1.04, "none"],
-        [T.but2, T.but2 + 0.25, 1.08, 1.0, "power3.out"], [T.but2 + 0.25, T.just, 1.0, 1.04, "none"],
-        [T.just, T.install, 1.0, 1.0, "none"], [T.install, T.price, 1.0, 1.04, "none"],
-        [T.price, T.price + 0.2, 1.04, 1.1, "power3.out"], [T.price + 0.2, T.learn, 1.1, 1.06, "none"],
-        [T.learn, T.link, 1.06, 1.02, "none"], [T.link, T.link + 0.2, 1.02, 1.09, "power3.out"], [T.link + 0.2, SPK, 1.09, 1.06, "none"],
+        [C5, C5 + 0.35, 1.06, 1.0, "power3.out", "50% 50%"], [C5 + 0.35, SPK, 1.0, 1.03, "none"],
       ];
       Z.forEach(([s, e, a, b, ease, org]) => {
         if (org) tl.set("#spkv", { transformOrigin: org }, s);
@@ -549,7 +544,7 @@
 
       // ---------- stages -> automated -> prompt
       tl.set(["#stB", "#stC"], { autoAlpha: 0 }, 0);
-      tl.from("#stGlass", { autoAlpha: 0, y: 80, duration: 0.4, ease: "back.out(1.6)" }, C5 + 0.3);
+      tl.from("#stGlass", { autoAlpha: 0, y: -80, duration: 0.4, ease: "back.out(1.6)" }, C5 + 0.3);
       tl.from("#stA .kick", { autoAlpha: 0, y: 20, duration: 0.3 }, C5 + 0.45);
       T.stages.forEach((t, i) => tl.from("#stg" + i, { autoAlpha: 0, scale: 0.3, y: 30, duration: 0.3, ease: "back.out(2.6)" }, t));
       tl.from("#tbar", { autoAlpha: 0, duration: 0.25 }, T.many - 0.2);
@@ -581,7 +576,7 @@
       tl.to("#show", { opacity: 0, duration: 0.2 }, T.install - 0.2);
 
       // ---------- guide
-      tl.from("#guide .glass", { autoAlpha: 0, y: 80, duration: 0.4, ease: "back.out(1.6)" }, T.install);
+      tl.from("#guide .glass", { autoAlpha: 0, y: -80, duration: 0.4, ease: "back.out(1.6)" }, T.install);
       tl.from("#book", { autoAlpha: 0, x: -200, rotation: -30, duration: 0.5, ease: "back.out(1.6)" }, T.install + 0.15);
       tl.to("#book", { rotation: -3, y: -10, duration: 4, ease: "sine.inOut" }, T.install + 0.65);
       tl.from("#g1", { autoAlpha: 0, x: 60, duration: 0.3, ease: "back.out(2)" }, T.install + 0.3);
@@ -589,7 +584,7 @@
       tl.from("#g3", { autoAlpha: 0, x: 60, duration: 0.3, ease: "back.out(2)" }, T.creation);
       tl.from("#atoz", { autoAlpha: 0, scale: 2.5, rotation: 20, duration: 0.3, ease: "power4.in" }, T.atoz);
       tl.to("#book", { scale: 1.08, duration: 0.15, yoyo: true, repeat: 1 }, T.pdf);
-      tl.to("#guide", { opacity: 0, y: 40, duration: 0.2 }, T.guide_end - 0.2);
+      tl.to("#guide", { opacity: 0, y: -40, duration: 0.2 }, T.guide_end - 0.2);
 
       // ---------- price
       tl.from("#price .glass", { autoAlpha: 0, scale: 0.85, duration: 0.35, ease: "back.out(1.6)" }, T.guide_end);
@@ -603,13 +598,13 @@
         const c = document.createElement("div"); c.className = "coin"; c.textContent = "₹"; coins.appendChild(c);
         const a = (i / 16) * Math.PI * 2 + (i % 3) * 0.2, r = 330 + (i % 4) * 60;
         tl.fromTo(c, { x: 0, y: 0, scale: 0.3, autoAlpha: 0 },
-          { keyframes: [{ x: Math.cos(a) * r * 0.75, y: Math.abs(Math.sin(a)) * 60 + 20, scale: 1.1, autoAlpha: 1, duration: 0.35, ease: "power2.out" },
-                        { x: Math.cos(a) * r * 0.95, y: Math.abs(Math.sin(a)) * 90 + 120, scale: 0.8, autoAlpha: 0, duration: 0.6, ease: "power1.in" }], immediateRender: false }, T.price + 0.02);
+          { keyframes: [{ x: Math.cos(a) * r * 0.75, y: -Math.abs(Math.sin(a)) * 50 - 10, scale: 1.1, autoAlpha: 1, duration: 0.35, ease: "power2.out" },
+                        { x: Math.cos(a) * r * 0.95, y: -Math.abs(Math.sin(a)) * 70 - 60, scale: 0.8, autoAlpha: 0, duration: 0.6, ease: "power1.in" }], immediateRender: false }, T.price + 0.02);
       }
-      tl.to("#price", { opacity: 0, y: 40, duration: 0.2 }, T.learn - 0.2);
+      tl.to("#price", { opacity: 0, y: -40, duration: 0.2 }, T.learn - 0.2);
 
       // ---------- comment CTA
-      tl.from("#cbox", { autoAlpha: 0, y: 80, duration: 0.4, ease: "back.out(1.8)" }, T.learn);
+      tl.from("#cbox", { autoAlpha: 0, y: -80, duration: 0.4, ease: "back.out(1.8)" }, T.learn);
       tl.from("#finger", { autoAlpha: 0, y: -40, duration: 0.3 }, T.learn + 0.4);
       tl.to("#finger", { y: 26, duration: 0.3, yoyo: true, repeat: 9, ease: "sine.inOut" }, T.learn + 0.7);
       tl.set("#cph", { display: "none" }, T.link - 0.35);

@@ -87,6 +87,10 @@ SFX = [
     ("whoosh_soft", T["learn"] - 0.1, 0.16),                               # CTA
     ("riser", SPK_DUR - 1.4, 0.14), ("whoosh", SPK_DUR - 0.1, 0.26), ("impact", SPK_DUR + 0.05, 0.34),  # end card
 ]
+# keyboard typing under the typed prompts (deterministic jitter)
+for start, n in [(C2 + 0.35, 22), (T["what"] + 0.05, 16), (T["link"] - 0.35, 4)]:
+    for i in range(n):
+        SFX.append(("click", round(start + i * 0.062 + (i * 7 % 5) * 0.004, 3), round(0.16 + (i * 3 % 4) * 0.03, 3)))
 SFX = [(n, round(t, 3), v) for n, t, v in SFX]
 
 
