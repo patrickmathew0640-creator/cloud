@@ -1,0 +1,9 @@
+source/
+build/
+frames/
+renders/
+build_*.wav
+snapshots/
+assets/speaker.mp4
+site/
+index.html.bak
