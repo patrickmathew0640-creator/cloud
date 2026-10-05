@@ -9,7 +9,7 @@ import sys
 from cuts import SEGS
 from build import DURATION as DUR
 
-MUSIC = "audio/Wallpaper.mp3"   # "Wallpaper" by Kevin MacLeod (incompetech.com), CC BY 4.0
+MUSIC = "audio/Inspired.mp3"   # "Inspired" by Kevin MacLeod (incompetech.com), CC BY 4.0
 SR = 48000
 
 
@@ -43,7 +43,7 @@ run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", fc, "-map", "[ou
 
 # 3) Music: full energy on the hook / b-roll / end card, ducked under the voice by a sidechain
 run(["ffmpeg", "-v", "error", "-y", "-i", MUSIC, "-i", "build_voice.wav", "-filter_complex",
-     f"[0:a]atrim=0:{DUR},asetpts=PTS-STARTPTS,aresample={SR},volume=0.36,"
+     f"[0:a]atrim=0:{DUR},asetpts=PTS-STARTPTS,aresample={SR},volume=0.42,"
      f"afade=t=in:st=0:d=0.15,afade=t=out:st={DUR - 1.6}:d=1.6[m];"
      "[1:a]anull[sc];"
      "[m][sc]sidechaincompress=threshold=0.025:ratio=7:attack=15:release=400:makeup=1[duck]",

@@ -66,59 +66,28 @@ PROMPT1 = "Build a sales dashboard: revenue, orders, margin %, sales by month, b
 PROMPT2 = "Here’s my sales report. Build me a dashboard like this one."
 
 # ---------------- sound design ----------------
+# Standard, restrained ad sound design: whooshes on scene changes / big reveals, a few soft risers + impacts
+# on the key beats. No pops, dings, clicks or typing.
 SFX = [
-    # hook
-    ("impact", 0.02, 0.55), ("whoosh", 0.00, 0.30), ("pop", 0.42, 0.30), ("pop", 0.82, 0.30), ("ding", 1.30, 0.22),
-    ("whoosh_soft", 1.85, 0.25), ("whoosh_soft", 3.35, 0.22),
-    # ipad focus + chips
-    ("click", T["like_this"] - 0.05, 0.45), ("ding", T["like_this"] + 0.25, 0.18),
-    ("pop", T["dev"], 0.30), ("pop", T["analyst"] - 0.4, 0.30),
-    # cut 1 + neither
-    ("whoosh", C1 - 0.18, 0.35), ("impact", T["neither"], 0.45), ("impact", T["neither"] + 0.16, 0.30),
-    ("whoosh_soft", T["neither"] + 0.45, 0.22),
-    ("pop", T["data"] + 0.02, 0.28), ("pop", T["access"] + 0.02, 0.28), ("whoosh_soft", T["ai"] - 0.1, 0.25),
-    ("ding", T["ai"] + 0.12, 0.22), ("pop", T["ask"], 0.25), ("click", T["send"] + 0.1, 0.5),
-    # laptop B-roll
-    ("riser", C2 - 1.0, 0.18), ("whoosh", C2 - 0.15, 0.40), ("impact", C2 + 0.02, 0.30),
-    *[("whoosh_soft", C2 + 2.05 + i * 0.32, 0.15) for i in range(4)],
-    *[("ding", C2 + 2.30 + i * 0.32, 0.08) for i in range(4)],
-    ("whoosh", C2 + 3.45, 0.32), ("impact", C2 + 3.6, 0.30), ("ding", C2 + 4.2, 0.25),
-    # mug + progress
-    ("whoosh", C3 - 0.15, 0.35), ("pop", C3 + 0.35, 0.25), ("ding", C4 - 0.45, 0.22),
-    # sofa: hours / days
-    ("whoosh", C4 - 0.12, 0.30), ("pop", o(30.4), 0.25), ("click", T["hours"], 0.5), ("impact", T["days"], 0.35),
-    ("whoosh", T["but"] - 0.1, 0.35), ("pop", T["claude"], 0.30), ("pop", T["mcp"], 0.30), ("pop", T["pbi"], 0.30),
-    ("riser", T["min"] - 1.45, 0.25), ("impact", T["min"], 0.55), ("ding", T["min"] + 0.25, 0.25),
-    # selfie: stages
-    ("whoosh", C5 - 0.15, 0.35), ("whoosh_soft", C5 + 0.5, 0.22),
-    *[("pop", t, 0.26) for t in [o(44.70), o(45.30), o(45.78), o(46.40), o(47.00), o(47.38), o(47.84)]],
-    ("click", T["many"], 0.4), ("click", T["many"] + 0.12, 0.4),
-    ("riser", T["h2"] - 0.2, 0.15), ("impact", T["d2"], 0.30),
-    ("whoosh", T["but2"] - 0.12, 0.40), ("impact", T["but2"] + 0.35, 0.45), ("ding", T["but2"] + 0.6, 0.22),
-    ("pop", T["claude2"], 0.28), ("pop", T["claude2"] + 0.45, 0.28), ("ding", T["automate"], 0.20),
-    ("pop", T["access2"], 0.28), ("click", T["what"], 0.4),
-    # ready showcase
-    ("riser", T["just"] - 1.3, 0.22), ("whoosh", T["just"] - 0.12, 0.40), ("impact", T["just"] + 0.02, 0.50),
-    *[("whoosh_soft", T["just"] + 0.45 + i * 0.5, 0.14) for i in range(5)],
-    ("ding", T["ready"], 0.30),
-    # guide
-    ("whoosh", T["install"] - 0.1, 0.32), ("pop", T["install"] + 0.3, 0.28), ("pop", T["creation"], 0.28),
-    ("impact", T["atoz"], 0.35), ("ding", T["pdf"], 0.22),
-    # price
-    ("riser", T["price"] - 1.45, 0.28), ("impact", T["price"], 0.65), ("ding", T["price"] + 0.08, 0.35),
-    ("pop", T["download"], 0.28),
-    # CTA
-    ("whoosh", T["learn"] - 0.1, 0.30), ("pop", T["link"] - 0.6, 0.25), ("click", T["comment"] + 0.05, 0.5),
-    ("ding", T["comment"] + 0.25, 0.25), ("pop", T["share"], 0.25),
-    # end card
-    ("riser", SPK_DUR - 1.4, 0.25), ("whoosh", SPK_DUR - 0.1, 0.40), ("impact", SPK_DUR + 0.05, 0.60),
-    ("pop", SPK_DUR + 0.75, 0.28), ("pop", SPK_DUR + 1.0, 0.28), ("pop", SPK_DUR + 1.25, 0.28),
-    ("ding", SPK_DUR + 1.7, 0.28), ("click", SPK_DUR + 2.4, 0.5), ("ding", SPK_DUR + 2.5, 0.22),
+    ("impact", 0.02, 0.32), ("whoosh", 0.00, 0.22),                       # open
+    ("whoosh_soft", 3.35, 0.16),                                           # hook out
+    ("whoosh", C1 - 0.18, 0.22),                                           # cut to iPad back
+    ("impact", T["neither"], 0.22),                                        # "neither"
+    ("whoosh_soft", T["ai"] - 0.15, 0.14),
+    ("riser", C2 - 1.0, 0.10), ("whoosh", C2 - 0.15, 0.24),                # into laptop b-roll
+    ("whoosh_soft", C2 + 3.4, 0.16),                                       # dashboard window flies in
+    ("whoosh", C3 - 0.15, 0.20),                                           # cut to mug shot
+    ("whoosh", C4 - 0.12, 0.20),                                           # cut to sofa shot
+    ("whoosh_soft", T["but"] - 0.1, 0.16),                                 # old way -> new way
+    ("riser", T["min"] - 1.45, 0.14), ("impact", T["min"], 0.30),          # 10-15 MIN
+    ("whoosh", C5 - 0.15, 0.22),                                           # cut to selfie
+    ("whoosh_soft", T["but2"] - 0.12, 0.18), ("impact", T["but2"] + 0.35, 0.22),   # AUTOMATED
+    ("riser", T["just"] - 1.3, 0.12), ("whoosh", T["just"] - 0.12, 0.24), ("impact", T["just"] + 0.02, 0.26),  # ready showcase
+    ("whoosh", T["install"] - 0.1, 0.20),                                  # guide
+    ("riser", T["price"] - 1.45, 0.14), ("impact", T["price"], 0.32),      # price
+    ("whoosh_soft", T["learn"] - 0.1, 0.16),                               # CTA
+    ("riser", SPK_DUR - 1.4, 0.14), ("whoosh", SPK_DUR - 0.1, 0.26), ("impact", SPK_DUR + 0.05, 0.34),  # end card
 ]
-# keyboard typing under the two prompts (deterministic jitter)
-for start, n in [(C2 + 0.35, 22), (T["what"] + 0.05, 16), (T["link"] - 0.35, 4)]:
-    for i in range(n):
-        SFX.append(("click", round(start + i * 0.062 + (i * 7 % 5) * 0.004, 3), round(0.16 + (i * 3 % 4) * 0.03, 3)))
 SFX = [(n, round(t, 3), v) for n, t, v in SFX]
 
 
