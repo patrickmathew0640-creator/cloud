@@ -10,17 +10,19 @@ Pipeline
 All times in edit.py are on the SOURCE timeline; they are remapped onto the cut timeline here.
 """
 import argparse
+import importlib
 import os
 import subprocess
 
 from PIL import Image
 
-import edit
 import graphics as g
+
+edit = importlib.import_module(os.environ.get("EDIT", "edit"))   # edit decisions module, e.g. EDIT=edit_v2
 
 S = int(os.environ.get("RENDER_SCALE", "1"))   # 1 = 1080p, 2 = 4K (3840x2160)
 W, H, FPS = 1920 * S, 1080 * S, 30
-CROP = "crop=1764:992:198:1424"          # 16:9 window inside the letterboxed picture
+CROP = getattr(edit, "CROP", "crop=1764:992:198:1424")   # 16:9 window inside the letterboxed picture
 MUSIC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "edit2", "audio", edit.MUSIC)
 
 

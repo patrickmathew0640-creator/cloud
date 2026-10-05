@@ -32,3 +32,13 @@ RENDER_SCALE=2 python3 render.py raw.mp4 out_4k.mp4 --work build4k   # 3840x2160
 
 Outputs: `../deliverables/ai-jobs-edit-1080p.mp4`, `../deliverables/ai-jobs-edit-4k.mp4`.
 The 4K video is scaled up from the source's 2160x992 picture band, so the footage is softer than the text.
+
+## Video 2 (Tamil)
+
+`edit_v2.py` holds the decisions for the second clip (Tamil voice-over, 2160x1200 letterboxed picture):
+
+```sh
+EDIT=edit_v2 python3 render.py raw2.mp4 out2.mp4 --work build2
+```
+
+Output: `../deliverables/ai-skills-tamil-edit-1080p.mp4`.
