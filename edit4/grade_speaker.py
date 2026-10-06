@@ -1,9 +1,9 @@
-"""Cut + tone-map (HLG -> SDR BT.709, no extra grading) the 4K source into assets/speaker.mp4 (2160x3840, 30fps)."""
+"""Cut the 4K source into assets/speaker.mp4 (2160x3840, 30fps), converted to SDR with drive_match.cube so it looks
+exactly like Google Drive's playback of the original (the client's reference). No other grading."""
 import subprocess
 from cuts import SEGS
 
-TM = ("zscale=t=linear:npl=400,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,"
-      "zscale=t=bt709:m=bt709:r=tv,format=yuv420p")
+TM = "format=rgb24,lut3d=drive_match.cube,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p"
 L = []
 for i, (s, e) in enumerate(SEGS):
     out = f"build/seg{i}.mp4"

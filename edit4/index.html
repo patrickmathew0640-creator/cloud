@@ -22,8 +22,7 @@
       #spk { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
       #spkv { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
       #vig { position: absolute; inset: 0; z-index: 2; pointer-events: none;
-             background: radial-gradient(ellipse at 50% 42%, rgba(0,0,0,0) 58%, rgba(0,0,0,.38) 100%),
-                         linear-gradient(180deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,0) 14%, rgba(0,0,0,0) 66%, rgba(0,0,0,.5) 100%); }
+             background: linear-gradient(180deg, rgba(0,0,0,0) 76%, rgba(0,0,0,.32) 100%); }  /* light shade behind captions only */
 
       /* ---------- shared bits ---------- */
       .glass { background: rgba(10,14,32,.78); border: 2px solid rgba(255,255,255,.14); border-radius: 36px;
