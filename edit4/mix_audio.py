@@ -6,7 +6,7 @@ import json
 import subprocess
 import sys
 
-from cuts import SEGS
+from cuts import SEGS, CUT_TIMES
 from build import DURATION as DUR
 
 MUSIC = "audio/Inspired.mp3"   # "Inspired" by Kevin MacLeod (incompetech.com), CC BY 4.0
@@ -24,10 +24,12 @@ for i, (s, e) in enumerate(SEGS):
     d = round(e - s, 4)
     chains.append(f"[0:a]atrim={s}:{e},asetpts=PTS-STARTPTS,afade=t=in:d=0.01,afade=t=out:st={d - 0.01}:d=0.01[a{i}]")
     labels.append(f"[a{i}]")
+# (the laptop b-roll has no speech, only room noise, so the camera audio is muted there)
 fc = ";".join(chains) + f";{''.join(labels)}concat=n={len(SEGS)}:v=0:a=1," \
     "highpass=f=85,afftdn=nf=-28,equalizer=f=3200:t=q:w=1.4:g=2,equalizer=f=250:t=q:w=1:g=-2," \
     "acompressor=threshold=-21dB:ratio=3:attack=5:release=90:makeup=2," \
-    f"loudnorm=I=-15:TP=-2:LRA=8,aresample={SR},apad,atrim=0:{DUR}[v]"
+    f"loudnorm=I=-15:TP=-2:LRA=8,aresample={SR}," \
+    f"volume=0:enable='between(t,{CUT_TIMES[1] - 0.02},{CUT_TIMES[2] + 0.02})',apad,atrim=0:{DUR}[v]"
 run(["ffmpeg", "-v", "error", "-y", "-i", "source/input.mp4", "-filter_complex", fc, "-map", "[v]", "-ac", "2", "build_voice.wav"])
 
 # 2) SFX bed
