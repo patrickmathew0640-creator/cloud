@@ -70,25 +70,25 @@ MODES = [(0.0, "full"), (18.97, "split"), (25.43, "full"), (29.83, "split"), (39
 
 # Zoom moves on the speaker: (start, end, from, to, transform-origin)
 ZOOMS = [
-    (0.00, 2.25, 1.00, 1.10, "56% 46%"),   # push in on the tablet during the hook
-    (2.25, 6.00, 1.06, 1.10, "30% 25%"),
-    (6.00, 9.40, 1.10, 1.14, "28% 22%"),   # punch-in on "But who builds…"
-    (9.40, 11.40, 1.12, 1.05, "42% 27%"),
-    (11.40, 17.75, 1.00, 1.00, "42% 27%"),
-    (17.75, 18.97, 1.14, 1.20, "42% 27%"),  # "and it delivers!"
-    (18.97, 25.43, 1.00, 1.05, "50% 52%"),
-    (25.43, 27.91, 1.00, 1.08, "50% 50%"),
-    (27.91, 28.75, 1.14, 1.16, "50% 50%"),  # "HOURS"
-    (28.75, 29.83, 1.24, 1.28, "50% 50%"),  # "DAYS"
-    (29.83, 35.95, 1.00, 1.05, "50% 52%"),
-    (35.95, 39.99, 1.06, 1.00, "50% 52%"),
-    (39.99, 43.01, 1.08, 1.08, "50% 50%"),
-    (43.01, 45.41, 1.08, 1.13, "50% 50%"),
-    (45.41, 46.37, 1.22, 1.24, "50% 50%"),  # "automation"
-    (46.37, 55.47, 1.00, 1.05, "50% 52%"),
-    (55.47, 56.99, 1.04, 1.09, "50% 50%"),
-    (56.99, 59.03, 1.20, 1.16, "50% 50%"),  # "₹299"
-    (59.03, 65.33, 1.00, 1.06, "50% 52%"),
+    (0.00, 2.25, 1.000, 1.040, "56% 46%"),   # push in on the tablet during the hook
+    (2.25, 6.00, 1.024, 1.040, "30% 25%"),
+    (6.00, 9.40, 1.040, 1.056, "28% 22%"),   # punch-in on "But who builds…"
+    (9.40, 11.40, 1.048, 1.020, "42% 27%"),
+    (11.40, 17.75, 1.000, 1.000, "42% 27%"),
+    (17.75, 18.97, 1.056, 1.080, "42% 27%"),  # "and it delivers!"
+    (18.97, 25.43, 1.000, 1.020, "50% 52%"),
+    (25.43, 27.91, 1.000, 1.032, "50% 50%"),
+    (27.91, 28.75, 1.056, 1.064, "50% 50%"),  # "HOURS"
+    (28.75, 29.83, 1.096, 1.112, "50% 50%"),  # "DAYS"
+    (29.83, 35.95, 1.000, 1.020, "50% 52%"),
+    (35.95, 39.99, 1.024, 1.000, "50% 52%"),
+    (39.99, 43.01, 1.032, 1.032, "50% 50%"),
+    (43.01, 45.41, 1.032, 1.052, "50% 50%"),
+    (45.41, 46.37, 1.088, 1.096, "50% 50%"),  # "automation"
+    (46.37, 55.47, 1.000, 1.020, "50% 52%"),
+    (55.47, 56.99, 1.016, 1.036, "50% 50%"),
+    (56.99, 59.03, 1.080, 1.064, "50% 50%"),  # "₹299"
+    (59.03, 65.33, 1.000, 1.024, "50% 52%"),
 ]
 
 SFX = [
@@ -233,14 +233,12 @@ TEMPLATE = r"""<!doctype html>
       #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Outfit", sans-serif; color: var(--ink); }
       svg { display: block; }
       .lay { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-      #chat, #mont, #end, #scrimT { opacity: 0; }
+      #chat, #mont, #end { opacity: 0; }
 
       /* ---------- speaker ---------- */
       #spk { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; z-index: 1; background: var(--bg); }
       #spkm, #spkz { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
       #spkv { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
-      #scrimT { position: absolute; left: 0; top: 0; width: 1080px; height: 700px; z-index: 2; background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,0)); }
-      #scrimB { position: absolute; left: 0; top: 1100px; width: 1080px; height: 820px; z-index: 2; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.42)); }
 
       /* ---------- top panel (split mode) ---------- */
       #panel { position: absolute; left: 0; top: 0; width: 1080px; height: {{PH}}px; z-index: 3; overflow: hidden;
@@ -315,8 +313,8 @@ TEMPLATE = r"""<!doctype html>
       /* ---------- full-frame overlays ---------- */
       #hook { position: absolute; left: 0; top: 1060px; width: 1080px; z-index: 6; display: flex; flex-direction: column; align-items: center; text-align: center; }
       #hk0 { margin-bottom: 16px; } #hk0 .kick { background: var(--y); color: #0a0a0b; border-color: var(--y); font-size: 34px; }
-      #hk1 { font-weight: 900; font-size: 104px; line-height: .98; text-transform: uppercase; text-shadow: 0 8px 30px rgba(0,0,0,.6); }
-      #hk2 { font-weight: 900; font-size: 168px; line-height: .95; text-transform: uppercase; color: var(--y); text-shadow: 0 10px 0 rgba(0,0,0,.35), 0 0 60px rgba(242,200,17,.55); }
+      #hk1 { font-weight: 900; font-size: 104px; line-height: .98; text-transform: uppercase; -webkit-text-stroke: 12px #0a0a0b; paint-order: stroke fill; text-shadow: 0 8px 30px rgba(0,0,0,.6); }
+      #hk2 { font-weight: 900; font-size: 168px; line-height: .95; text-transform: uppercase; color: var(--y); -webkit-text-stroke: 16px #0a0a0b; paint-order: stroke fill; text-shadow: 0 10px 0 rgba(0,0,0,.35), 0 0 60px rgba(242,200,17,.55); }
       #hk3 { margin-top: 14px; font-weight: 900; font-size: 64px; text-transform: uppercase; background: #0a0a0b; padding: 6px 30px; border-radius: 18px; }
       #hk3 b { color: var(--y); }
       #hkarrow { position: absolute; left: 820px; top: -170px; width: 120px; height: 150px; color: var(--y); }
@@ -334,7 +332,7 @@ TEMPLATE = r"""<!doctype html>
       #hd { position: absolute; left: 0; top: 150px; width: 1080px; z-index: 6; display: flex; flex-direction: column; align-items: center; }
       #hdrow { display: flex; align-items: center; gap: 18px; } #hdrow .big { font-size: 112px; }
       #hdclock { width: 108px; height: 108px; }
-      .big { font-weight: 900; font-size: 132px; line-height: 1; text-transform: uppercase; text-shadow: 0 10px 40px rgba(0,0,0,.6); }
+      .big { font-weight: 900; font-size: 132px; line-height: 1; text-transform: uppercase; -webkit-text-stroke: 14px #0a0a0b; paint-order: stroke fill; text-shadow: 0 8px 0 rgba(0,0,0,.45), 0 10px 40px rgba(0,0,0,.5); }
       #hdH { color: #fff; } #hdD { color: var(--red); }
       #hdarr { width: 70px; height: 70px; color: #fff; }
       #hdsub { margin-top: 18px; font-weight: 800; font-size: 44px; background: var(--red); padding: 6px 28px; border-radius: 16px; text-transform: uppercase; }
@@ -346,7 +344,7 @@ TEMPLATE = r"""<!doctype html>
 
       #price { position: absolute; left: 0; top: 110px; width: 1080px; z-index: 6; display: flex; flex-direction: column; align-items: center; }
       #prk .kick { background: rgba(10,10,11,.8); }
-      #prv { font-weight: 900; font-size: 250px; line-height: 1; color: var(--y); text-shadow: 0 14px 0 rgba(0,0,0,.35), 0 0 90px rgba(242,200,17,.6); letter-spacing: -6px; }
+      #prv { font-weight: 900; font-size: 250px; line-height: 1; color: var(--y); text-shadow: 0 14px 0 rgba(0,0,0,.35), 0 0 90px rgba(242,200,17,.6); letter-spacing: -6px; -webkit-text-stroke: 18px #0a0a0b; paint-order: stroke fill; }
       #prs { font-weight: 900; font-size: 42px; background: #fff; color: #0a0a0b; padding: 8px 28px; border-radius: 16px; text-transform: uppercase; }
       .coin { position: absolute; left: 518px; top: 150px; opacity: 0; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff3a8, var(--y) 55%, #b8940a); box-shadow: 0 0 20px rgba(242,200,17,.7); }
 
@@ -415,9 +413,6 @@ TEMPLATE = r"""<!doctype html>
 
       /* ---------- transitions / vfx ---------- */
       #wipe { position: absolute; left: -700px; top: -200px; width: 600px; height: 2400px; z-index: 12; background: linear-gradient(90deg, rgba(242,200,17,0), var(--y) 30%, #fff3a8 50%, var(--y) 70%, rgba(242,200,17,0)); transform: rotate(14deg); }
-      #flash { position: absolute; inset: 0; z-index: 13; background: #fff; opacity: 0; }
-      #leak { position: absolute; left: -400px; top: -300px; width: 1100px; height: 1100px; z-index: 11; border-radius: 50%; opacity: 0;
-              background: radial-gradient(circle, rgba(255,214,90,.55), rgba(255,140,40,.25) 40%, rgba(0,0,0,0) 70%); mix-blend-mode: screen; }
       #iris { position: absolute; left: 540px; top: 960px; width: 10px; height: 10px; margin: -5px 0 0 -5px; z-index: 10; border-radius: 50%; box-shadow: 0 0 0 3000px var(--bg); opacity: 0; }
     </style>
   </head>
@@ -427,7 +422,7 @@ TEMPLATE = r"""<!doctype html>
         <div id="spkm"><div id="spkz">
           <video id="spkv" src="{{VIDEO}}" muted playsinline data-start="0" data-duration="{{SPK_END}}" data-track-index="0"></video>
         </div></div>
-        <div id="scrimT"></div><div id="scrimB"></div>
+        
       </div>
 
       <div id="panel" class="clip" data-start="18.5" data-duration="46.9" data-track-index="2">
@@ -546,9 +541,7 @@ TEMPLATE = r"""<!doctype html>
         {{CAPTIONS}}
       </div>
       <div id="iris" class="clip" data-start="0" data-duration="{{DURATION}}" data-track-index="8"></div>
-      <div id="leak" class="clip" data-start="0" data-duration="{{DURATION}}" data-track-index="8"></div>
       <div id="wipe" class="clip" data-start="0" data-duration="{{DURATION}}" data-track-index="8"></div>
-      <div id="flash" class="clip" data-start="0" data-duration="{{DURATION}}" data-track-index="8"></div>
     </div>
 
     <script>
@@ -558,11 +551,10 @@ TEMPLATE = r"""<!doctype html>
       const TR = 0.45;
       const CAP_FULL = 1395, CAP_SPLIT = PH;
 
-      // ---------- speaker layout (full <-> split) + captions position + scrims
+      // ---------- speaker layout (full <-> split) + captions position
       tl.set("#spk", { y: 0, height: 1920 }, 0);
       tl.set("#spkm", { y: 0 }, 0);
       tl.set("#capwrap", { y: CAP_FULL }, 0);
-      tl.set(["#scrimB"], { opacity: 1 }, 0);
       tl.set("#panel", { y: -PH - 20 }, 0);
       tl.set("#pline", { scaleX: 0 }, 0);
       MODES.forEach(([t, m], i) => {
@@ -574,7 +566,6 @@ TEMPLATE = r"""<!doctype html>
         tl.to("#panel", { y: split ? 0 : -PH - 20, duration: TR, ease: "power3.inOut" }, s);
         tl.to("#pline", { scaleX: split ? 1 : 0, duration: TR, ease: "power2.inOut" }, s + (split ? 0.1 : 0));
         tl.to("#capwrap", { y: split ? CAP_SPLIT : CAP_FULL, duration: TR, ease: "power3.inOut" }, s);
-        tl.to("#scrimB", { opacity: split ? 0 : 1, duration: TR }, s);
       });
       tl.to("#pgrid", { x: 60, y: 60, duration: 46.9, ease: "none" }, 18.5);
 
@@ -592,16 +583,10 @@ TEMPLATE = r"""<!doctype html>
         tl.to(sel, { opacity: 0, duration: 0.08 }, e - 0.08);
       });
 
-      // ---------- vfx helpers
-      const flash = (t, o = 0.75) => tl.fromTo("#flash", { opacity: 0 }, { opacity: o, duration: 0.05, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, t);
+      // ---------- transition helper
       const wipe = (t) => tl.fromTo("#wipe", { x: 0 }, { x: 2100, duration: 0.42, ease: "power2.inOut", immediateRender: false }, t - 0.21);
-      const leak = (t, d = 1.2) => { tl.fromTo("#leak", { opacity: 0, x: 0, y: 0 }, { opacity: 0.9, x: 500, y: 300, duration: d / 2, ease: "sine.in", immediateRender: false }, t);
-                                     tl.to("#leak", { opacity: 0, x: 900, y: 600, duration: d / 2, ease: "sine.out" }, t + d / 2); };
-      const shake = (t, amt = 14) => tl.fromTo("#spk", { x: 0 }, { x: amt, duration: 0.04, yoyo: true, repeat: 5, ease: "none", immediateRender: false }, t)
-                                         .set("#spk", { x: 0 }, t + 0.25);
 
       // ---------- HOOK 0 - 2.4
-      tl.set("#scrimB", { opacity: 1 }, 0);
       tl.fromTo("#hk0", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, 0.05);
       tl.fromTo("#hk1", { autoAlpha: 0, scale: 1.6, filter: "blur(16px)" }, { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.32, ease: "expo.out" }, 0.0);
       tl.fromTo("#hkarrow", { autoAlpha: 0, scale: 0.4, x: -30, y: 30 }, { autoAlpha: 1, scale: 1, x: 0, y: 0, duration: 0.35, ease: "back.out(2.4)" }, 0.3);
@@ -609,8 +594,6 @@ TEMPLATE = r"""<!doctype html>
       tl.fromTo("#hk2", { autoAlpha: 0, scale: 2.6, filter: "blur(24px)" }, { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.38, ease: "expo.out" }, 0.42);
       tl.fromTo("#hk3", { autoAlpha: 0, y: 40, scale: 0.6 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.32, ease: "back.out(2.4)" }, 1.22);
       tl.to("#hk2", { scale: 1.05, duration: 1.4, ease: "none" }, 0.8);
-      shake(0.42, 10);
-      flash(0.42, 0.35);
       tl.to("#hook", { autoAlpha: 0, y: 60, scale: 0.9, duration: 0.28, ease: "power2.in" }, 2.2);
 
       // ---------- roles + "Whoever it is" sweep
@@ -646,7 +629,6 @@ TEMPLATE = r"""<!doctype html>
 
       // ---------- P1 stages 18.97 - 25.43
       ["#P2", "#P3", "#P4", "#P5"].forEach(s => tl.set(s, { autoAlpha: 0 }, 0));
-      flash(18.95, 0.5);
       tl.fromTo("#P1 .phead", { autoAlpha: 0, y: -40 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }, 19.15);
       ST.forEach((t, i) => tl.fromTo("#stg" + i, { autoAlpha: 0, scale: 0.4, y: 40 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.3, ease: "back.out(2.4)" }, t - 0.05));
       ST.forEach((t, i) => tl.fromTo("#stg" + i, { borderColor: "#f2c811" }, { borderColor: "#2a2a30", duration: 0.6, immediateRender: false }, t + 0.25));
@@ -657,7 +639,6 @@ TEMPLATE = r"""<!doctype html>
       tl.to("#P1", { autoAlpha: 0, duration: 0.2 }, 25.3);
 
       // ---------- HOURS -> DAYS 27.6 - 29.83
-      tl.set("#scrimT", { opacity: 1 }, 27.6);
       tl.fromTo("#hdclock", { autoAlpha: 0, scale: 0.3 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 27.62);
       tl.fromTo("#hand1", { rotation: 0, svgOrigin: "50 50" }, { rotation: 1440, svgOrigin: "50 50", duration: 2.2, ease: "power1.in" }, 27.62);
       tl.fromTo("#hand2", { rotation: 0, svgOrigin: "50 50" }, { rotation: 240, svgOrigin: "50 50", duration: 2.2, ease: "power1.in" }, 27.62);
@@ -665,13 +646,9 @@ TEMPLATE = r"""<!doctype html>
       tl.fromTo("#hdarr", { autoAlpha: 0, x: -30 }, { autoAlpha: 1, x: 0, duration: 0.25 }, T.days - 0.25);
       tl.fromTo("#hdD", { autoAlpha: 0, scale: 2.4, filter: "blur(18px)" }, { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, T.days);
       tl.fromTo("#hdsub", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.25, ease: "back.out(2)" }, T.days + 0.25);
-      shake(T.days, 12);
       tl.to("#hd", { autoAlpha: 0, scale: 1.3, duration: 0.15 }, 29.7);
-      tl.set("#scrimT", { opacity: 0 }, 29.85);
 
       // ---------- BUT: drop into P2 connect 29.83 - 35.95
-      flash(29.80, 0.9);
-      leak(29.75, 1.4);
       tl.fromTo("#P2", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 29.83);
       tl.fromTo("#P2 .phead", { autoAlpha: 0, scale: 1.5, filter: "blur(14px)" }, { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.4, ease: "expo.out" }, 29.95);
       tl.set(["#lk1", "#lk2", "#dot1", "#dot2", "#auto"], { autoAlpha: 0 }, 0);
@@ -712,19 +689,14 @@ TEMPLATE = r"""<!doctype html>
       tl.to("#m" + ({{NDASH}} - 1), { scale: 1.05, duration: 0.8, ease: "none" }, 42.2);
       tl.fromTo("#ready", { autoAlpha: 0, scale: 2.4 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(1.8)" }, T.ready);
       tl.fromTo("#tval", { color: "#ffffff" }, { color: "#2dd4bf", duration: 0.2, immediateRender: false }, T.ready);
-      flash(T.ready, 0.4);
       tl.to("#mont", { autoAlpha: 0, scale: 1.2, filter: "blur(14px)", duration: 0.25, ease: "power2.in" }, 42.82);
 
       // ---------- AI + MCP = Power BI automation 43.6 - 46.4
-      tl.set("#scrimT", { opacity: 1 }, 43.6);
       tl.fromTo("#pwAI", { autoAlpha: 0, scale: 2.2, filter: "blur(14px)" }, { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, T.ai);
       tl.fromTo("#pwP", { autoAlpha: 0, rotation: -180, scale: 0.3 }, { autoAlpha: 1, rotation: 0, scale: 1, duration: 0.3, ease: "back.out(2)" }, T.plusmcp - 0.15);
       tl.fromTo("#pwM", { autoAlpha: 0, scale: 2.2, filter: "blur(14px)" }, { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, T.plusmcp);
       tl.fromTo("#pwsub", { autoAlpha: 0, scale: 0.4, rotation: -4 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.35, ease: "back.out(2.6)" }, T.automation);
-      shake(T.automation, 10);
-      leak(T.automation - 0.1, 1.0);
       tl.to("#pw", { autoAlpha: 0, y: -60, duration: 0.2 }, 46.2);
-      tl.set("#scrimT", { opacity: 0 }, 46.4);
 
       // ---------- P4 package 46.37 - 55.47
       tl.to("#P3", { autoAlpha: 0, duration: 0.2 }, 46.1);
@@ -738,13 +710,10 @@ TEMPLATE = r"""<!doctype html>
       tl.to("#P4", { autoAlpha: 0, duration: 0.2 }, 55.35);
 
       // ---------- PRICE 55.5 - 59.05
-      tl.set("#scrimT", { opacity: 1 }, 55.5);
       tl.fromTo("#prk", { autoAlpha: 0, y: -30 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, T.package);
       tl.fromTo("#prv", { autoAlpha: 0, scale: 3.2, filter: "blur(26px)" }, { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.32, ease: "expo.out" }, T.price);
       tl.fromTo("#prs", { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(2.6)" }, T.price + 0.55);
       tl.to("#prv", { scale: 1.06, duration: 1.6, ease: "none" }, T.price + 0.35);
-      shake(T.price, 16);
-      flash(T.price, 0.5);
       const coins = [[-430, 120], [420, 80], [-360, 330], [380, 340], [-170, 420], [200, 440]];
       coins.forEach(([dx, dy], i) => {
         tl.fromTo("#co" + i, { autoAlpha: 0, x: 0, y: 0, scale: 0.3 },
@@ -752,7 +721,6 @@ TEMPLATE = r"""<!doctype html>
         tl.to("#co" + i, { y: dy + 260, autoAlpha: 0, rotation: 200, duration: 0.8, ease: "power2.in" }, T.price + 0.47 + i * 0.02);
       });
       tl.to("#price", { autoAlpha: 0, scale: 0.9, duration: 0.2 }, 58.85);
-      tl.set("#scrimT", { opacity: 0 }, 59.05);
 
       // ---------- P5 CTA 59.03 - 65.33
       tl.fromTo("#P5", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 59.0);
@@ -775,7 +743,6 @@ TEMPLATE = r"""<!doctype html>
       tl.fromTo("#iris", { scale: 240 }, { scale: 0.01, duration: 0.38, ease: "power3.in", immediateRender: false }, 64.95);
       tl.to("#iris", { opacity: 0, duration: 0.01 }, 65.4);
       tl.fromTo("#end", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 65.33);
-      flash(65.33, 0.6);
       tl.fromTo(".eimg", { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 0.32, scale: 1, duration: 0.6, stagger: 0.08, ease: "power3.out" }, 65.4);
       tl.to("#e0", { y: 60, duration: 4, ease: "none" }, 65.4); tl.to("#e1", { y: -60, duration: 4, ease: "none" }, 65.4);
       tl.to("#e2", { y: -50, duration: 4, ease: "none" }, 65.4); tl.to("#e3", { y: 50, duration: 4, ease: "none" }, 65.4);
