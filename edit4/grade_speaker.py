@@ -2,7 +2,7 @@
 import subprocess
 from cuts import SEGS
 
-TM = ("zscale=t=linear:npl=203,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,"
+TM = ("zscale=t=linear:npl=400,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,"
       "zscale=t=bt709:m=bt709:r=tv,format=yuv420p")
 L = []
 for i, (s, e) in enumerate(SEGS):

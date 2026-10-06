@@ -466,9 +466,7 @@
       });
 
       // ---------- transitions on cuts
-      flash(0, 0.9); flash(C1 - 0.02, 0.55); flash(C3 - 0.02, 0.5); flash(C4 - 0.02, 0.6);
-      leak(C2 - 0.25); leak(C5 - 0.3); leak(T.but2 - 0.2); leak(SPK - 0.25);
-      flash(T.neither, 0.35); flash(T.min, 0.45); flash(T.price, 0.5);
+      // no white flashes or light leaks over the speaker: cuts stay clean (zoom moves only)
 
       // ---------- captions
       CAPS.forEach(([sel, s, e]) => {
