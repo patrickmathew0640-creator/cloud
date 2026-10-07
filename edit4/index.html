@@ -104,7 +104,7 @@
       #hook { position: absolute; left: 0; top: 1060px; width: 1080px; z-index: 6; display: flex; flex-direction: column; align-items: center; text-align: center; }
       #hk0 { margin-bottom: 16px; } #hk0 .kick { background: var(--y); color: #0a0a0b; border-color: var(--y); font-size: 34px; }
       #hk1 { font-weight: 900; font-size: 104px; line-height: .98; text-transform: uppercase; -webkit-text-stroke: 12px #0a0a0b; paint-order: stroke fill; text-shadow: 0 8px 30px rgba(0,0,0,.6); }
-      #hk2 { font-weight: 900; font-size: 168px; line-height: .95; text-transform: uppercase; color: var(--y); -webkit-text-stroke: 16px #0a0a0b; paint-order: stroke fill; text-shadow: 0 10px 0 rgba(0,0,0,.35), 0 0 60px rgba(242,200,17,.55); }
+      #hk2 { font-weight: 900; font-size: 168px; line-height: .95; text-transform: uppercase; color: var(--y); -webkit-text-stroke: 16px #0a0a0b; paint-order: stroke fill; text-shadow: 0 10px 0 rgba(0,0,0,.35), 0 8px 30px rgba(0,0,0,.45); }
       #hk3 { margin-top: 14px; font-weight: 900; font-size: 64px; text-transform: uppercase; background: #0a0a0b; padding: 6px 30px; border-radius: 18px; }
       #hk3 b { color: var(--y); }
       #hkarrow { position: absolute; left: 820px; top: -170px; width: 120px; height: 150px; color: var(--y); }
@@ -116,7 +116,7 @@
       .role .rx { position: absolute; right: -16px; top: -16px; width: 60px; height: 60px; }
 
       #deliv { position: absolute; left: 0; right: 0; top: 1030px; z-index: 6; display: flex; justify-content: center; }
-      #deliv .pill { background: var(--teal); color: #06221f; font-size: 48px; padding: 16px 40px; box-shadow: 0 14px 40px rgba(45,212,191,.5); }
+      #deliv .pill { background: var(--teal); color: #06221f; font-size: 48px; padding: 16px 40px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
       #deliv .pill svg { width: 54px; height: 54px; }
 
       #hd { position: absolute; left: 0; top: 150px; width: 1080px; z-index: 6; display: flex; flex-direction: column; align-items: center; }
@@ -130,13 +130,13 @@
       #pw { position: absolute; left: 0; top: 140px; width: 1080px; z-index: 6; display: flex; flex-direction: column; align-items: center; }
       #pwrow { display: flex; align-items: center; gap: 22px; }
       #pwAI { color: var(--orange); } #pwP { color: #fff; } #pwM { color: var(--y); }
-      #pwsub { margin-top: 18px; font-weight: 900; font-size: 54px; text-transform: uppercase; background: var(--y); color: #0a0a0b; padding: 8px 32px; border-radius: 18px; box-shadow: 0 10px 40px rgba(242,200,17,.45); }
+      #pwsub { margin-top: 18px; font-weight: 900; font-size: 54px; text-transform: uppercase; background: var(--y); color: #0a0a0b; padding: 8px 32px; border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
 
       #price { position: absolute; left: 0; top: 110px; width: 1080px; z-index: 6; display: flex; flex-direction: column; align-items: center; }
       #prk .kick { background: rgba(10,10,11,.8); }
-      #prv { font-weight: 900; font-size: 250px; line-height: 1; color: var(--y); text-shadow: 0 14px 0 rgba(0,0,0,.35), 0 0 90px rgba(242,200,17,.6); letter-spacing: -6px; -webkit-text-stroke: 18px #0a0a0b; paint-order: stroke fill; }
+      #prv { font-weight: 900; font-size: 250px; line-height: 1; color: var(--y); text-shadow: 0 14px 0 rgba(0,0,0,.35), 0 10px 40px rgba(0,0,0,.45); letter-spacing: -6px; -webkit-text-stroke: 18px #0a0a0b; paint-order: stroke fill; }
       #prs { font-weight: 900; font-size: 42px; background: #fff; color: #0a0a0b; padding: 8px 28px; border-radius: 16px; text-transform: uppercase; }
-      .coin { position: absolute; left: 518px; top: 150px; opacity: 0; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff3a8, var(--y) 55%, #b8940a); box-shadow: 0 0 20px rgba(242,200,17,.7); }
+      .coin { position: absolute; left: 518px; top: 150px; opacity: 0; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff3a8, var(--y) 55%, #b8940a); box-shadow: 0 4px 10px rgba(0,0,0,.35); }
 
       /* ---------- full-screen b-roll ---------- */
       #chat { position: absolute; inset: 0; z-index: 5; background: radial-gradient(ellipse at 50% 0%, rgba(242,200,17,.13), rgba(0,0,0,0) 60%), var(--bg); }
@@ -202,7 +202,7 @@
       .w { display: inline-block; margin: 0 .13em; } .hl { color: var(--y); }
 
       /* ---------- transitions / vfx ---------- */
-      #wipe { position: absolute; left: -700px; top: -200px; width: 600px; height: 2400px; z-index: 12; background: linear-gradient(90deg, rgba(242,200,17,0), var(--y) 30%, #fff3a8 50%, var(--y) 70%, rgba(242,200,17,0)); transform: rotate(14deg); }
+      #wipe { position: absolute; left: -1500px; top: -200px; width: 600px; height: 2400px; z-index: 12; background: linear-gradient(90deg, rgba(242,200,17,0), var(--y) 30%, #fff3a8 50%, var(--y) 70%, rgba(242,200,17,0)); transform: rotate(14deg); }
       #iris { position: absolute; left: 540px; top: 960px; width: 10px; height: 10px; margin: -5px 0 0 -5px; z-index: 10; border-radius: 50%; box-shadow: 0 0 0 3000px var(--bg); opacity: 0; }
     </style>
   </head>
@@ -410,7 +410,7 @@
       });
 
       // ---------- transition helper
-      const wipe = (t) => tl.fromTo("#wipe", { x: 0 }, { x: 2100, duration: 0.42, ease: "power2.inOut", immediateRender: false }, t - 0.21);
+      const wipe = (t) => tl.fromTo("#wipe", { x: 0 }, { x: 3000, duration: 0.42, ease: "power2.inOut", immediateRender: false }, t - 0.21);
 
       // ---------- HOOK 0 - 2.4
       tl.fromTo("#hk0", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, 0.05);
