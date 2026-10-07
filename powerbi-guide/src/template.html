@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!-- Template: build.py fills in scene times, TIMING and CAPTIONS and writes index.html. -->
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Outfit"; font-weight: 400; src: url("assets/fonts/outfit-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Outfit"; font-weight: 600; src: url("assets/fonts/outfit-latin-600-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Outfit"; font-weight: 700; src: url("assets/fonts/outfit-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Outfit"; font-weight: 800; src: url("assets/fonts/outfit-latin-800-normal.woff2") format("woff2"); }
+      :root {
+        --bg: #0a0a0b; --surface: #141416; --surface-2: #1b1b1f; --line: #2a2a30;
+        --ink: #f5f6f8; --text: #c8ccd4; --muted: #8a909c;
+        --accent: #f2c811; --teal: #2dd4bf; --teal-dark: #0f766e; --green: #5fd39a; --red: #fca5a5; --amber: #ffc46b;
+        --mono: "DejaVu Sans Mono", "Cascadia Mono", Consolas, monospace;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Outfit", sans-serif; color: var(--text); font-size: 24px; line-height: 1.4;
+              background: radial-gradient(1200px 700px at 85% 10%, rgba(242,200,17,.07), transparent 60%), radial-gradient(1000px 700px at 0% 100%, rgba(45,212,191,.06), transparent 60%), var(--bg); }
+      .scene { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+      b, strong { color: var(--ink); font-weight: 700; }
+      code, .mono { font-family: var(--mono); }
+      .y { color: var(--accent); } .t { color: var(--teal); } .g { color: var(--green); }
+      .h { box-shadow: 0 0 0 0 rgba(242,200,17,0), 0 0 0 0 rgba(242,200,17,0); }
+
+      /* ---------- top bar ---------- */
+      #top { position: absolute; left: 0; top: 0; width: 1920px; height: 96px; z-index: 50; display: flex; align-items: center; padding: 0 140px; border-bottom: 1px solid var(--line); background: rgba(10,10,11,.7); }
+      .logo { display: flex; align-items: center; gap: 14px; color: var(--ink); font-weight: 800; font-size: 26px; }
+      .logo i { width: 40px; height: 40px; border-radius: 11px; background: var(--accent); display: grid; place-items: center; }
+      .logo i::after { content: ""; border-left: 13px solid #fff; border-top: 8px solid transparent; border-bottom: 8px solid transparent; margin-left: 4px; }
+      .steps { margin-left: auto; display: flex; gap: 10px; }
+      .st { display: flex; align-items: center; gap: 8px; padding: 7px 14px 7px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-size: 18px; font-weight: 600; }
+      .st span { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.08); font-size: 15px; font-weight: 800; }
+
+      /* ---------- step layout: instructions left, mockup right ---------- */
+      .side { position: absolute; left: 140px; top: 158px; width: 580px; }
+      .kick { color: var(--accent); font-weight: 800; font-size: 22px; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 10px; }
+      .side h2 { color: var(--ink); font-size: 56px; line-height: 1.05; font-weight: 800; letter-spacing: -.02em; margin-bottom: 38px; }
+      .todo { list-style: none; display: grid; gap: 16px; counter-reset: td; }
+      .todo li { display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: start; font-size: 26px; line-height: 1.3; color: var(--text); padding: 14px 18px 14px 14px; border-radius: 16px; border: 1px solid transparent; counter-increment: td; }
+      .todo li > div { padding-top: 6px; }
+      .todo li::before { content: counter(td); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink); font-weight: 800; font-size: 21px; }
+      .todo li.on { background: rgba(242,200,17,.08); border-color: rgba(242,200,17,.45); color: var(--ink); }
+      .todo li.on::before { background: var(--accent); color: #1a1400; border-color: var(--accent); }
+      .todo li.done { color: var(--muted); }
+      .todo li.done::before { content: "\2713"; background: rgba(45,212,191,.15); color: var(--teal); border-color: rgba(45,212,191,.4); }
+      .mock { position: absolute; left: 780px; top: 140px; width: 1000px; height: 760px; }
+
+      /* ---------- windows ---------- */
+      .win { position: absolute; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 30px 90px rgba(0,0,0,.6); }
+      .tb { height: 48px; display: flex; align-items: center; gap: 12px; padding: 0 18px; background: var(--surface-2); border-bottom: 1px solid var(--line); font-size: 18px; color: var(--text); white-space: nowrap; }
+      .tb .ctl { margin-left: auto; display: flex; gap: 24px; color: var(--muted); font-size: 17px; }
+      .tb .dots { display: flex; gap: 8px; } .tb .dots i { width: 12px; height: 12px; border-radius: 50%; background: #3a3a42; }
+      .url { flex: 1; height: 32px; border-radius: 999px; background: #08080a; border: 1px solid var(--line); display: flex; align-items: center; padding: 0 16px; font: 17px var(--mono); color: var(--ink); gap: 10px; overflow: hidden; }
+      .url .lock { width: 12px; height: 14px; border: 2px solid var(--green); border-radius: 3px; flex: none; position: relative; top: 2px; }
+      .typed { display: inline-block; white-space: nowrap; vertical-align: bottom; }
+      .light { background: #f6f7f9; color: #1f2430; border-color: #d6d9e0; }
+      .light .tb { background: #e9ebef; color: #1f2430; border-color: #d6d9e0; }
+      .light .tb .ctl { color: #555b66; }
+      .light .url { background: #fff; border-color: #cfd3da; color: #1f2430; }
+
+      .cur { position: absolute; left: 0; top: 0; width: 34px; height: 40px; z-index: 40; opacity: 0; transform-origin: 0 0; pointer-events: none;
+             background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 40'><path d='M2 2 L2 31 L9.5 24 L15 37 L20.5 34.5 L15 22.5 L25 22.5 Z' fill='white' stroke='black' stroke-width='2.2' stroke-linejoin='round'/></svg>") no-repeat; filter: drop-shadow(0 4px 6px rgba(0,0,0,.5)); }
+      .btn { display: inline-flex; align-items: center; justify-content: center; background: var(--accent); color: #1a1400; font-weight: 700; border-radius: 10px; padding: 14px 22px; font-size: 19px; }
+      .note { padding: 14px 18px; border-radius: 12px; background: rgba(15,118,110,.16); border: 1px solid rgba(45,212,191,.35); color: #a7e3da; font-size: 20px; }
+      .warn { padding: 14px 18px; border-radius: 12px; background: rgba(255,196,107,.1); border: 1px solid rgba(255,196,107,.4); color: #ffd99c; font-size: 20px; }
+      .tag { position: absolute; padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 20px; background: var(--accent); color: #1a1400; box-shadow: 0 10px 30px rgba(0,0,0,.45); white-space: nowrap; }
+      .tag.teal { background: var(--teal); color: #032420; }
+      .tag.red { background: #f87171; color: #2a0505; }
+
+      /* ---------- intro ---------- */
+      #s-intro .eb { position: absolute; left: 140px; top: 250px; color: var(--accent); font-weight: 800; letter-spacing: .18em; font-size: 24px; }
+      #s-intro h1 { position: absolute; left: 136px; top: 300px; font-size: 128px; line-height: .98; font-weight: 800; letter-spacing: -.035em; color: var(--ink); }
+      #s-intro h1 .y { display: block; }
+      #s-intro .sub { position: absolute; left: 140px; top: 580px; width: 760px; font-size: 32px; color: var(--text); }
+      #s-intro .chat { left: 1010px; top: 300px; width: 770px; padding: 30px 34px; border-radius: 22px; }
+      .chat .you { color: var(--ink); font-weight: 700; font-size: 25px; margin-bottom: 18px; }
+      .chat .tool { font: 19px/1.6 var(--mono); color: #9cc3ff; }
+      .chat .ans { margin-top: 16px; font-size: 23px; color: var(--text); }
+      #s-intro .chips { position: absolute; left: 140px; top: 760px; display: flex; gap: 16px; }
+      .chip { display: flex; align-items: center; gap: 12px; padding: 14px 22px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--ink); font-weight: 600; font-size: 23px; }
+      .chip i { width: 12px; height: 12px; border-radius: 50%; background: var(--teal); }
+
+      /* ---------- need ---------- */
+      .bigh { position: absolute; left: 140px; top: 160px; }
+      .bigh h2 { color: var(--ink); font-size: 64px; font-weight: 800; letter-spacing: -.02em; line-height: 1.05; }
+      #s-need .cards { position: absolute; left: 140px; right: 140px; top: 340px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+      .card { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 34px 30px; }
+      .card h3 { color: var(--ink); font-size: 32px; font-weight: 800; margin: 26px 0 10px; }
+      .card p { font-size: 22px; color: var(--text); }
+      .ico { width: 96px; height: 96px; border-radius: 24px; background: var(--surface-2); border: 1px solid var(--line); display: grid; place-items: center; }
+
+      /* ---------- purchase page replica ---------- */
+      .site { position: absolute; left: 0; right: 0; top: 48px; bottom: 0; background: var(--bg); }
+      .site .nav { display: flex; align-items: center; justify-content: space-between; margin: 0 auto; width: 880px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+      .site .nav .logo { font-size: 23px; gap: 10px; } .site .nav .logo i { width: 28px; height: 28px; border-radius: 8px; }
+      .site .nav .logo i::after { border-left-width: 9px; border-top-width: 6px; border-bottom-width: 6px; margin-left: 3px; }
+      .site .hint { font-size: 18px; color: var(--muted); }
+      .site .pc { width: 880px; margin: 22px auto 0; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px 26px; }
+      .site .eye { color: var(--teal); font-weight: 700; font-size: 16px; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
+      .site h4 { color: var(--ink); font-size: 38px; font-weight: 800; line-height: 1.1; letter-spacing: -.02em; }
+      .site .lead { font-size: 20px; margin: 8px 0 10px; line-height: 1.35; }
+      .site label { display: block; font-size: 17px; color: var(--muted); font-weight: 600; margin: 10px 0 6px; }
+      .site .in { height: 54px; border-radius: 10px; background: #08080a; border: 1px solid var(--line); padding: 0 14px; display: flex; align-items: center; font: 500 21px "Outfit"; color: var(--ink); }
+      .site .in .ph { color: #555a64; position: absolute; }
+      .site .in .typed { position: relative; }
+      .site .gobtn { margin-top: 18px; width: 100%; height: 60px; font-size: 21px; position: relative; }
+      .site .gobtn span { position: absolute; }
+      .ok { display: flex; gap: 14px; align-items: center; margin-bottom: 16px; }
+      .ok b { width: 46px; height: 46px; flex: none; border-radius: 50%; background: rgba(95,211,154,.15); color: var(--green); display: grid; place-items: center; font-size: 24px; }
+      .dls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .dls div { background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; color: var(--ink); font-weight: 700; font-size: 23px; }
+      .dls div span { display: block; color: var(--muted); font-weight: 400; font-size: 17px; }
+      .dlpop { position: absolute; right: 18px; top: 58px; width: 380px; background: #202026; border: 1px solid #34343c; border-radius: 14px; padding: 14px 16px; box-shadow: 0 20px 50px rgba(0,0,0,.6); z-index: 5; }
+      .dlpop .ttl { color: var(--ink); font-weight: 700; font-size: 17px; margin-bottom: 8px; }
+      .dlrow { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: center; padding: 8px 0; font-size: 16px; color: var(--ink); }
+      .dlrow .bar { height: 5px; border-radius: 3px; background: #34343c; margin-top: 6px; overflow: hidden; }
+      .dlrow .bar i { display: block; height: 100%; width: 100%; background: var(--teal); transform-origin: 0 50%; }
+      .dlrow small { color: var(--muted); font-size: 13px; }
+
+      /* ---------- mail ---------- */
+      .mailwin .search { margin: 16px 20px; height: 48px; border-radius: 999px; background: #08080a; border: 1px solid var(--line); display: flex; align-items: center; gap: 12px; padding: 0 20px; font-size: 19px; color: var(--ink); }
+      .mailwin .search .mg { width: 18px; height: 18px; border: 2.5px solid var(--muted); border-radius: 50%; position: relative; flex: none; }
+      .mailwin .search .mg::after { content: ""; position: absolute; width: 8px; height: 2.5px; background: var(--muted); right: -7px; bottom: -3px; transform: rotate(45deg); }
+      .folders { display: flex; gap: 10px; margin: 0 20px 10px; }
+      .folders span { padding: 8px 16px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); font-size: 17px; color: var(--text); }
+      .mrow { display: grid; grid-template-columns: 260px 1fr 80px; gap: 16px; padding: 16px 22px; border-top: 1px solid var(--line); font-size: 19px; color: var(--text); }
+      .mrow b { font-weight: 700; }
+      .mrow .when { color: var(--muted); text-align: right; font-size: 16px; }
+      .mail { left: 60px; top: 250px; width: 880px; padding: 0; border-radius: 18px; }
+      .mail .mh { padding: 20px 26px; border-bottom: 1px solid var(--line); }
+      .mail .mh .from { font-size: 16px; color: var(--muted); }
+      .mail .mh .subj { font-size: 26px; color: var(--ink); font-weight: 700; margin-top: 2px; }
+      .mail .mb { padding: 22px 26px 26px; font-size: 20px; }
+      .kv { display: grid; grid-template-columns: 180px 1fr; gap: 10px 20px; font-size: 20px; margin-top: 8px; }
+      .kv span { color: var(--muted); }
+      .kv code { color: var(--ink); font-size: 20px; }
+      .pidv { padding: 4px 10px; border-radius: 8px; justify-self: start; }
+
+      /* ---------- python.org + installer ---------- */
+      .py-head { height: 64px; background: #2b5b84; display: flex; align-items: center; padding: 0 28px; gap: 12px; color: #fff; font-weight: 700; font-size: 24px; }
+      .py-head i { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #3776ab 50%, #ffd43b 50%); }
+      .py-body { padding: 26px 36px; }
+      .py-body h4 { font-size: 36px; color: #1f2430; font-weight: 800; margin-bottom: 4px; }
+      .py-body .muted { color: #5b6270; font-size: 18px; margin-bottom: 18px; }
+      .ftable { border: 1px solid #d6d9e0; border-radius: 10px; overflow: hidden; background: #fff; }
+      .frow { display: grid; grid-template-columns: 1fr 200px; padding: 13px 18px; border-top: 1px solid #e5e7eb; font-size: 19px; color: #2b5b84; }
+      .frow:first-child { border-top: 0; color: #5b6270; font-weight: 700; font-size: 16px; background: #f1f3f6; }
+      .frow span { color: #5b6270; }
+      .inst { left: 120px; top: 120px; width: 820px; height: 540px; }
+      .inst .ib { position: absolute; left: 0; right: 0; top: 48px; bottom: 0; background: #fff; padding: 30px 36px; }
+      .inst .ib::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 170px; background: linear-gradient(180deg, #3776ab, #24527a); }
+      .inst .ic { position: relative; margin-left: 170px; }
+      .inst h5 { font-size: 28px; color: #1f2430; font-weight: 700; margin-bottom: 6px; }
+      .inst .opt { margin-top: 22px; padding: 16px 18px; border-radius: 8px; border: 1px solid #d6d9e0; }
+      .inst .opt b { color: #1f5fa3; font-size: 22px; display: block; }
+      .inst .opt small { color: #5b6270; font-size: 16px; }
+      .chk { display: flex; align-items: center; gap: 12px; font-size: 19px; color: #1f2430; margin-top: 14px; padding: 6px 10px; border-radius: 8px; }
+      .box { width: 22px; height: 22px; border: 2px solid #5b6270; border-radius: 4px; position: relative; flex: none; background: #fff; }
+      .box.on, .box .tick { background: #1f5fa3; border-color: #1f5fa3; }
+      .box .tick { position: absolute; inset: -2px; border-radius: 4px; display: grid; place-items: center; color: #fff; font-size: 16px; font-weight: 800; }
+
+      /* ---------- explorer ---------- */
+      .addr { display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 18px; border-bottom: 1px solid var(--line); font-size: 18px; color: var(--text); background: #18181c; }
+      .addr .crumb { padding: 4px 12px; border-radius: 8px; background: #0f0f12; border: 1px solid var(--line); color: var(--ink); }
+      .frow2 { display: grid; grid-template-columns: 44px 1fr 260px; gap: 14px; align-items: center; padding: 12px 22px; font-size: 20px; color: var(--ink); border-radius: 10px; margin: 2px 10px; }
+      .frow2 span { color: var(--muted); font-size: 17px; }
+      .fhead { color: var(--muted) !important; font-size: 15px !important; border-bottom: 1px solid var(--line); border-radius: 0; margin: 0 10px; }
+      .folder { width: 38px; height: 30px; border-radius: 4px 6px 6px 6px; background: #f6c445; position: relative; }
+      .folder::before { content: ""; position: absolute; left: 0; top: -5px; width: 16px; height: 8px; border-radius: 3px 3px 0 0; background: #e8b232; }
+      .folder.zip::after { content: ""; position: absolute; left: 16px; top: 0; width: 6px; height: 30px; background: repeating-linear-gradient(180deg, #6b5313 0 4px, #f6e3a8 4px 8px); }
+      .doc { width: 30px; height: 38px; border-radius: 4px; background: #e6e8ee; position: relative; margin-left: 4px; }
+      .doc::after { content: attr(data-x); position: absolute; left: -6px; bottom: 4px; padding: 1px 4px; border-radius: 3px; font: 800 10px "Outfit"; color: #fff; background: #4b5563; }
+      .doc.bat::after { background: #0f766e; } .doc.py::after { background: #3776ab; } .doc.txt::after { background: #6b7280; }
+      .menu { position: absolute; width: 300px; background: #26262c; border: 1px solid #3a3a42; border-radius: 12px; padding: 6px; box-shadow: 0 20px 50px rgba(0,0,0,.6); z-index: 6; }
+      .menu div { padding: 11px 16px; font-size: 19px; color: var(--ink); border-radius: 8px; }
+      .menu hr { border: 0; border-top: 1px solid #3a3a42; margin: 4px 6px; }
+      .dlg { position: absolute; background: #202024; border: 1px solid #3a3a42; border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.7); overflow: hidden; z-index: 7; }
+      .dlg .db { padding: 22px 26px; font-size: 19px; }
+      .dlg .dbtns { display: flex; justify-content: flex-end; gap: 12px; padding: 16px 22px; background: #1a1a1e; border-top: 1px solid #333; }
+      .wbtn { padding: 10px 22px; border-radius: 8px; background: #2f2f36; border: 1px solid #44444c; color: var(--ink); font-size: 18px; }
+      .wbtn.pri { background: #4cc2ff; border-color: #4cc2ff; color: #002a40; font-weight: 700; }
+
+      /* ---------- smartscreen + terminal ---------- */
+      .ss { left: 90px; top: 70px; width: 820px; height: 600px; background: #0b5cad; border: 0; border-radius: 6px; color: #fff; padding: 46px 50px; z-index: 8; }
+      .ss h5 { font-size: 46px; font-weight: 400; line-height: 1.1; margin-bottom: 26px; color: #fff; }
+      .ss p { font-size: 21px; color: #e6f0fb; margin-bottom: 16px; }
+      .ss .more { text-decoration: underline; color: #fff; display: inline-block; padding: 2px 6px; border-radius: 6px; }
+      .ss .info { font-size: 20px; color: #e6f0fb; }
+      .ss .sbtns { position: absolute; right: 40px; bottom: 36px; display: flex; gap: 14px; }
+      .ss .sbtns div { padding: 12px 30px; border: 2px solid #fff; color: #fff; font-size: 20px; }
+      .term { background: #0c0c0e; border-color: #2a2a30; }
+      .term .tx { padding: 20px 24px; font: 19px/1.6 var(--mono); color: #e5e7eb; white-space: pre; }
+      .term .okl { color: var(--green); }
+
+      /* ---------- desktop / tray ---------- */
+      .desk { position: absolute; inset: 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: radial-gradient(800px 500px at 30% 20%, #20304a, #0e1420 70%); }
+      .taskbar { position: absolute; left: 0; right: 0; bottom: 0; height: 60px; background: rgba(20,22,28,.92); border-top: 1px solid #2c2f38; display: flex; align-items: center; padding: 0 18px; }
+      .taskbar .startb { width: 30px; height: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin: 0 auto 0 400px; }
+      .taskbar .startb i { background: #4cc2ff; border-radius: 2px; }
+      .tray { display: flex; align-items: center; gap: 16px; color: var(--ink); font-size: 17px; }
+      .tray .chev { width: 30px; height: 30px; border-radius: 6px; display: grid; place-items: center; color: var(--ink); font-size: 16px; }
+      .clock { text-align: right; line-height: 1.15; font-size: 15px; }
+      .claudei { width: 34px; height: 34px; border-radius: 9px; background: #d97757; display: grid; place-items: center; }
+      .claudei svg { width: 22px; height: 22px; }
+      .trayup { position: absolute; right: 150px; bottom: 74px; padding: 12px; display: grid; grid-template-columns: repeat(3, 34px); gap: 12px; background: #26262c; border: 1px solid #3a3a42; border-radius: 12px; z-index: 5; }
+      .trayup i { width: 34px; height: 34px; border-radius: 8px; background: #3a3a44; }
+      .cw { background: #262624; border-color: #3a3a36; }
+      .cw .tb { background: #1f1f1d; border-color: #3a3a36; }
+      .cw .cb { padding: 22px 26px; }
+      .bubble { margin-left: auto; max-width: 82%; width: fit-content; padding: 14px 18px; border-radius: 16px; background: #393937; color: var(--ink); font-size: 20px; }
+      .cmsg { font-size: 20px; color: #e8e6df; margin-top: 16px; }
+      .cmsg .tool { font: 16px/1.7 var(--mono); color: #9cc3ff; }
+      .cinput { position: absolute; left: 22px; right: 22px; bottom: 20px; min-height: 60px; border-radius: 16px; background: #30302e; border: 1px solid #4a4a46; padding: 16px 18px; font-size: 19px; color: var(--ink); }
+      .cinput .ph { color: #8f8d86; position: absolute; }
+      .perm { margin-top: 16px; padding: 18px 20px; border-radius: 14px; background: #30302e; border: 1px solid #4a4a46; }
+      .perm .pt { font-size: 20px; color: var(--ink); margin-bottom: 14px; }
+      .perm .pb { display: flex; gap: 10px; }
+      .perm .pb div { padding: 10px 16px; border-radius: 10px; background: #3d3d3a; color: var(--ink); font-size: 17px; }
+      .perm .pb .pa { background: #e8e6df; color: #1f1e1c; font-weight: 700; }
+      .tlist { display: grid; gap: 8px; margin-top: 12px; }
+      .tlist div { display: grid; grid-template-columns: 150px 1fr; padding: 10px 14px; border-radius: 10px; background: #30302e; font-size: 18px; }
+      .tlist div b { color: var(--ink); }
+      .sidebar { position: absolute; left: 0; top: 48px; bottom: 0; width: 240px; border-right: 1px solid #3a3a36; padding: 18px 12px; background: #1f1f1d; }
+      .sidebar div { padding: 11px 16px; border-radius: 10px; font-size: 19px; color: #c9c7bf; margin-bottom: 4px; }
+      .mcprow { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border-radius: 14px; background: #30302e; border: 1px solid #4a4a46; font-size: 22px; color: var(--ink); margin-top: 14px; }
+      .pill { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: rgba(95,211,154,.15); color: var(--green); font-size: 18px; font-weight: 700; }
+      .pill i { width: 10px; height: 10px; border-radius: 50%; background: var(--green); }
+
+      /* ---------- power bi ---------- */
+      .pbi img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+      .loadov { position: absolute; inset: 0; background: rgba(246,247,249,.97); display: grid; place-items: center; z-index: 3; }
+      .loadov .lb { width: 360px; text-align: center; color: #1f2430; font-size: 22px; font-weight: 600; }
+      .loadov .bar { height: 8px; border-radius: 4px; background: #d6d9e0; margin-top: 16px; overflow: hidden; }
+      .loadov .bar i { display: block; height: 100%; background: #f2c811; transform-origin: 0 50%; }
+      .kbd { display: inline-grid; place-items: center; min-width: 110px; height: 110px; padding: 0 26px; border-radius: 18px; background: var(--surface-2); border: 1px solid #44444c; border-bottom-width: 7px; color: var(--ink); font: 700 40px var(--mono); }
+
+      /* ---------- grids ---------- */
+      .pgrid { position: absolute; left: 140px; right: 140px; top: 330px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+      .pcard { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 26px 28px; min-height: 230px; }
+      .pcard .lab { color: var(--accent); font-weight: 800; font-size: 19px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
+      .pcard p { color: var(--ink); font-size: 25px; line-height: 1.35; }
+      .rows { position: absolute; left: 140px; right: 140px; top: 330px; display: grid; gap: 20px; }
+      .row { display: grid; grid-template-columns: 70px 1fr; gap: 26px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px 30px; font-size: 28px; color: var(--ink); }
+      .row .ri { width: 70px; height: 70px; border-radius: 18px; display: grid; place-items: center; background: rgba(45,212,191,.12); border: 1px solid rgba(45,212,191,.35); color: var(--teal); font-size: 34px; font-weight: 800; }
+      .row small { display: block; color: var(--text); font-size: 22px; margin-top: 4px; }
+      .themes { position: absolute; left: 140px; right: 140px; top: 400px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+      .th { border-radius: 20px; padding: 24px; border: 1px solid var(--line); }
+      .th b { display: block; font-size: 28px; margin-bottom: 18px; }
+      .th .sw { display: flex; gap: 8px; } .th .sw i { width: 36px; height: 36px; border-radius: 9px; }
+      .sgrid { position: absolute; left: 140px; right: 140px; top: 300px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 22px; }
+      .sg { border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+      .sg img { display: block; width: 100%; height: 183px; object-fit: cover; }
+      .sg div { padding: 10px 14px; font-size: 19px; color: var(--ink); font-weight: 600; }
+      .trow { display: grid; grid-template-columns: 520px 1fr; gap: 30px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px 26px; }
+      .trow .q { font: 21px var(--mono); color: var(--red); }
+      .trow .a { font-size: 23px; color: var(--ink); }
+
+      /* ---------- captions ---------- */
+      .cap { position: absolute; left: 0; right: 0; bottom: 34px; display: flex; justify-content: center; z-index: 60; }
+      .cap span { max-width: 1560px; padding: 12px 28px; border-radius: 14px; background: rgba(10,10,11,.86); border: 1px solid rgba(255,255,255,.08); color: #fff; font-size: 36px; font-weight: 600; line-height: 1.3; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="{{TOTAL}}" data-width="1920" data-height="1080">
+
+      <div id="top" class="clip" data-start="0" data-duration="{{TOTAL}}" data-track-index="1">
+        <div class="logo"><i></i>Power BI MCP for Claude</div>
+        <div class="steps">
+          <div class="st" id="st1"><span>1</span>Download</div>
+          <div class="st" id="st2"><span>2</span>Python</div>
+          <div class="st" id="st3"><span>3</span>Unzip</div>
+          <div class="st" id="st4"><span>4</span>Setup</div>
+          <div class="st" id="st5"><span>5</span>Restart</div>
+          <div class="st" id="st6"><span>6</span>Test</div>
+          <div class="st" id="st7"><span>7</span>Dashboard</div>
+        </div>
+      </div>
+
+      <!-- ================= INTRO ================= -->
+      <div id="s-intro" class="scene clip" data-start="{{intro.start}}" data-duration="{{intro.dur}}" data-track-index="2">
+        <div class="eb">SETUP GUIDE · WINDOWS</div>
+        <h1>Power BI<span class="y">MCP for Claude</span></h1>
+        <div class="sub">Let Claude read your Power BI model, run DAX, write measures and build whole dashboard pages for you.</div>
+        <div class="win chat">
+          <div class="you">You: Which product category grew fastest this year? Then add a YoY % measure.</div>
+          <div class="tool t1">▸ list_tables · list_measures · run_dax</div>
+          <div class="tool t2">▸ create_or_update_measure Sales[Sales YoY %]</div>
+          <div class="ans">Claude: Accessories grew fastest (+38% vs last year). I added [Sales YoY %] to the Sales table, formatted as a percentage.</div>
+        </div>
+        <div class="chips">
+          <div class="chip"><i></i>About 10 minutes</div>
+          <div class="chip"><i></i>Windows · Power BI Desktop</div>
+          <div class="chip"><i></i>One-time setup</div>
+        </div>
+      </div>
+
+      <!-- ================= WHAT YOU NEED ================= -->
+      <div id="s-need" class="scene clip" data-start="{{need.start}}" data-duration="{{need.dur}}" data-track-index="2">
+        <div class="bigh"><div class="kick">Before you start</div><h2>What you need</h2></div>
+        <div class="cards">
+          <div class="card h"><div class="ico"><svg width="54" height="54" viewBox="0 0 54 54"><rect x="2" y="2" width="23" height="23" rx="3" fill="#4cc2ff"/><rect x="29" y="2" width="23" height="23" rx="3" fill="#4cc2ff"/><rect x="2" y="29" width="23" height="23" rx="3" fill="#4cc2ff"/><rect x="29" y="29" width="23" height="23" rx="3" fill="#4cc2ff"/></svg></div>
+            <h3>Windows 10 or 11</h3><p>Power BI Desktop's engine only exists on Windows.</p></div>
+          <div class="card h"><div class="ico"><svg width="54" height="54" viewBox="0 0 54 54"><rect x="4" y="28" width="12" height="24" rx="3" fill="#f2c811"/><rect x="21" y="14" width="12" height="38" rx="3" fill="#f2c811"/><rect x="38" y="2" width="12" height="50" rx="3" fill="#f2c811"/></svg></div>
+            <h3>Power BI Desktop</h3><p>The normal download from Microsoft works best.</p></div>
+          <div class="card h"><div class="ico"><svg width="60" height="60" viewBox="0 0 60 60"><rect x="4" y="4" width="34" height="30" rx="9" fill="#3776ab"/><rect x="22" y="26" width="34" height="30" rx="9" fill="#ffd43b"/><circle cx="14" cy="13" r="3" fill="#fff"/><circle cx="46" cy="47" r="3" fill="#1f2430"/></svg></div>
+            <h3>Python 3.12</h3><p>3.10 to 3.12 work. 3.13+ isn't supported yet.</p></div>
+          <div class="card h"><div class="ico"><div class="claudei" style="width:60px;height:60px;border-radius:16px"><svg viewBox="0 0 24 24" style="width:38px;height:38px"><g stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></g></svg></div></div>
+            <h3>Claude Desktop</h3><p>Installed and signed in, from <b>claude.ai/download</b></p></div>
+        </div>
+      </div>
+
+      <!-- ================= STEP 1: PAGE ================= -->
+      <div id="s-page" class="scene clip" data-start="{{page.start}}" data-duration="{{page.dur}}" data-track-index="2">
+        <div class="side"><div class="kick">Step 1 of 7</div><h2>Open your download page</h2>
+          <ol class="todo"><li data-beat="p1"><div>Go to <b>powerbi.growora.live<wbr>/purchase.html</b></div></li><li data-beat="p2"><div>Have your <b>email</b> and <b>payment ID</b> ready</div></li></ol></div>
+        <div class="mock">
+          <div class="win" style="left:0;top:0;width:1000px;height:760px">
+            <div class="tb"><div class="dots"><i></i><i></i><i></i></div><div class="url"><span class="lock"></span><span class="typed" id="pg-url">powerbi.growora.live/purchase.html</span></div></div>
+            <div class="site" id="pg-site">
+              <div class="nav"><div class="logo"><i></i>Power BI MCP</div><span class="hint">Buyers only</span></div>
+              <div class="pc">
+                <div class="eye">Your purchase</div>
+                <h4>Get your Power BI MCP download</h4>
+                <div class="lead">Enter the email you paid with and your payment ID. We check it with Razorpay, then show your downloads and the setup steps.</div>
+                <label>Email you paid with</label><div class="in h" id="pg-em"><span class="ph">you@gmail.com</span></div>
+                <label>Payment ID</label><div class="in h" id="pg-pid"><span class="ph">pay_XXXXXXXXXXXXXX</span></div>
+                <div class="btn gobtn">Verify and open downloads</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= STEP 1: PAYMENT ID ================= -->
+      <div id="s-pid" class="scene clip" data-start="{{pid.start}}" data-duration="{{pid.dur}}" data-track-index="2">
+        <div class="side"><div class="kick">Step 1 of 7</div><h2>Find your payment ID</h2>
+          <ol class="todo"><li data-beat="q1"><div>Open the inbox of the <b>email you paid with</b></div></li><li data-beat="q2"><div>Our email → <b>Open my download page</b></div></li><li data-beat="q3"><div>Or Razorpay's receipt → copy <b>pay_…</b></div></li><li data-beat="q4"><div>Not there? Check <b>Spam</b> and <b>Promotions</b></div></li></ol></div>
+        <div class="mock">
+          <div class="win mailwin" style="left:0;top:0;width:1000px;height:760px">
+            <div class="tb"><div class="dots"><i></i><i></i><i></i></div><span style="margin-left:10px">Inbox</span></div>
+            <div class="search h" id="pd-search"><span class="mg"></span><span class="ph" style="color:#555a64;position:absolute;margin-left:30px" id="pd-ph">Search mail</span><span class="typed" id="pd-q">Razorpay</span></div>
+            <div class="folders"><span>Inbox</span><span class="h" id="pd-spam">Spam</span><span class="h" id="pd-promo">Promotions</span></div>
+            <div class="mrow h" id="pd-r1"><b>Power BI MCP for Claude</b><span><b>Your Power BI MCP for Claude download</b> · Thanks for your purchase…</span><span class="when">10:02</span></div>
+            <div class="mrow h" id="pd-r2"><b>Razorpay</b><span><b>Payment successful</b> · Payment receipt…</span><span class="when">10:01</span></div>
+            <div class="mrow"><span style="color:var(--muted)">Newsletter</span><span style="color:var(--muted)">This week's updates…</span><span class="when">Mon</span></div>
+          </div>
+          <div class="win mail" id="pd-m1" data-layout-allow-overlap data-layout-allow-occlusion>
+            <div class="mh"><div class="from">From: Power BI MCP for Claude</div><div class="subj">Your Power BI MCP for Claude download</div></div>
+            <div class="mb">Thanks for your purchase! Your download page is ready. Click below and it opens with your email and payment ID already filled in.
+              <div style="margin-top:22px"><div class="btn h" id="pd-open" style="font-size:21px">Open my download page</div></div></div>
+          </div>
+          <div class="win mail" id="pd-m2" data-layout-allow-overlap data-layout-allow-occlusion>
+            <div class="mh"><div class="from">From: Razorpay</div><div class="subj">Payment successful</div></div>
+            <div class="mb">Your payment was successful.
+              <div class="kv" style="margin-top:16px"><span>Payment ID</span><code class="pidv h" id="pd-pidv">pay_Nx7Kq2LmP9aB4c</code><span>Email</span><code>you@gmail.com</code><span>Status</span><code class="g">Captured</code></div></div>
+          </div>
+          <div class="tag teal" id="pd-tag" data-layout-allow-overlap data-layout-allow-occlusion style="left:700px;top:560px">Starts with pay_</div>
+        </div>
+      </div>
+
+      <!-- ================= STEP 1: VERIFY ================= -->
+      <div id="s-verify" class="scene clip" data-start="{{verify.start}}" data-duration="{{verify.dur}}" data-track-index="2">
+        <div class="side"><div class="kick">Step 1 of 7</div><h2>Verify and download</h2>
+          <ol class="todo"><li data-beat="v1"><div>Enter email + payment ID, click <b>Verify</b></div></li><li data-beat="v2"><div>Wait for <b>"You're in. Thank you!"</b></div></li><li data-beat="v3"><div>Download the <b>.zip kit</b> and the <b>PDF guide</b></div></li><li data-beat="v4"><div>Links last <b>24 hours</b>. Come back for fresh ones</div></li></ol></div>
+        <div class="mock">
+          <div class="win" style="left:0;top:0;width:1000px;height:760px">
+            <div class="tb"><div class="dots"><i></i><i></i><i></i></div><div class="url"><span class="lock"></span>powerbi.growora.live/purchase.html</div></div>
+            <div class="site">
+              <div class="nav"><div class="logo"><i></i>Power BI MCP</div><span class="hint">Buyers only</span></div>
+              <div class="pc" id="vf-gate">
+                <div class="eye">Your purchase</div>
+                <h4>Get your Power BI MCP download</h4>
+                <div class="lead">Enter the email you paid with and your payment ID. We check it with Razorpay, then show your downloads and the setup steps.</div>
+                <label>Email you paid with</label><div class="in"><span class="ph" id="vf-ph1">you@gmail.com</span><span class="typed" id="vf-em">you@gmail.com</span></div>
+                <label>Payment ID</label><div class="in"><span class="ph" id="vf-ph2">pay_XXXXXXXXXXXXXX</span><span class="typed" id="vf-pid">pay_Nx7Kq2LmP9aB4c</span></div>
+                <div class="btn gobtn h" id="vf-go"><span id="vf-go1">Verify and open downloads</span><span id="vf-go2">Checking with Razorpay…</span></div>
+              </div>
+              <div class="pc" id="vf-ok" data-layout-allow-overlap data-layout-allow-occlusion style="position:absolute;left:60px;top:62px;margin:0">
+                <div class="ok"><b>✓</b><div><h4>You're in. Thank you!</h4><div class="hint h" id="vf-hint" style="font-size:18px;margin-top:4px;padding:2px 6px;border-radius:6px">Purchase verified. Download links on this page work for 24 hours; come back any time for fresh ones.</div></div></div>
+                <div class="dls"><div class="h" id="vf-zip">⬇ Power BI MCP kit<span>powerbi-mcp.zip · Windows</span></div><div class="h" id="vf-pdf">⬇ PDF guide<span>Power-BI-MCP-Guide.pdf · setup and troubleshooting</span></div></div>
+                <div class="note" style="margin-top:16px;font-size:19px">Follow the steps below or the PDF guide. Setup takes about 10 minutes, once.</div>
+              </div>
+            </div>
+            <div class="dlpop" id="vf-pop" data-layout-allow-overlap data-layout-allow-occlusion><div class="ttl">Recent downloads</div>
+              <div class="dlrow" id="vf-d1"><div class="folder zip" style="width:30px;height:24px"></div><div>powerbi-mcp.zip<div class="bar"><i id="vf-b1"></i></div></div></div>
+              <div class="dlrow" id="vf-d2"><div class="doc" data-x="PDF" style="width:24px;height:30px"></div><div>Power-BI-MCP-Guide.pdf<div class="bar"><i id="vf-b2"></i></div></div></div>
+            </div>
+          </div>
+          <div class="cur" id="vf-cur"></div>
+        </div>
+      </div>
+
+      <!-- ================= STEP 2: PYTHON ================= -->
+      <div id="s-python" class="scene clip" data-start="{{python.start}}" data-duration="{{python.dur}}" data-track-index="2">
+        <div class="side"><div class="kick">Step 2 of 7</div><h2>Install Python 3.12</h2>
+          <ol class="todo"><li data-beat="y2"><div>python.org → <b>Windows installer (64-bit)</b></div></li><li data-beat="y3"><div>Tick <b>Add python.exe to PATH</b>, then <b>Install Now</b></div></li><li data-beat="y4"><div>Newer Python too? <b>That's fine</b></div></li></ol></div>
+        <div class="mock">
+          <div class="win light" id="py-br" style="left:0;top:0;width:1000px;height:760px">
+            <div class="tb"><div class="dots"><i></i><i></i><i></i></div><div class="url">python.org/downloads/release/python-31210/</div></div>
+            <div class="py-head"><i></i>python™</div>
+            <div class="py-body">
+              <h4>Python 3.12.10</h4><div class="muted">Release date: April 8, 2025</div>
+              <div class="ftable">
+                <div class="frow">Version<span>Operating system</span></div>
+                <div class="frow">Gzipped source tarball<span>Source release</span></div>
+                <div class="frow">macOS 64-bit universal2 installer<span>macOS</span></div>
+                <div class="frow h" id="py-row" style="font-weight:700">Windows installer (64-bit)<span>Windows</span></div>
+                <div class="frow">Windows installer (ARM64)<span>Windows</span></div>
+                <div class="frow">Windows installer (32-bit)<span>Windows</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="win light inst" id="py-inst" data-layout-allow-overlap data-layout-allow-occlusion>
+            <div class="tb">Python 3.12.10 (64-bit) Setup<div class="ctl"><span>—</span><span>✕</span></div></div>
+            <div class="ib"><div class="ic">
+              <h5>Install Python 3.12.10 (64-bit)</h5>
+              <div style="font-size:17px;color:#5b6270">Select Install Now to install Python with default settings.</div>
+              <div class="opt h" id="py-now"><b>→ Install Now</b><small>C:\Users\you\AppData\Local\Programs\Python\Python312</small></div>
+              <div class="opt" style="border-color:transparent;padding-top:6px"><b style="font-size:19px">→ Customize installation</b></div>
+              <div class="chk"><span class="box on" style="display:grid;place-items:center;color:#fff;font-size:15px;font-weight:800">✓</span>Use admin privileges when installing py.exe</div>
+              <div class="chk h" id="py-path"><span class="box"><span class="tick" id="py-tick">✓</span></span><b style="color:#1f2430">Add python.exe to PATH</b></div>
+            </div></div>
+          </div>
+          <div class="win" id="py-note" data-layout-allow-overlap data-layout-allow-occlusion style="left:120px;top:250px;width:760px;padding:30px 34px;border-radius:20px">
+            <div style="font-size:28px;color:var(--ink);font-weight:800;margin-bottom:18px">Already have a newer Python?</div>
+            <div style="display:flex;gap:16px;margin-bottom:18px"><div class="chip"><i style="background:var(--muted)"></i>Python 3.13 — keep it</div><div class="chip"><i></i>Python 3.12 — install too</div></div>
+            <div class="note">Setup picks 3.12 automatically.</div>
+          </div>
+          <div class="cur" id="py-cur"></div>
+        </div>
+      </div>
+
+      <!-- ================= STEP 3: UNZIP ================= -->
+      <div id="s-unzip" class="scene clip" data-start="{{unzip.start}}" data-duration="{{unzip.dur}}" data-track-index="2">
+        <div class="side"><div class="kick">Step 3 of 7</div><h2>Unzip the kit</h2>
+          <ol class="todo"><li data-beat="z2"><div>Right-click <b>powerbi-mcp.zip</b> → <b>Extract All…</b> → <b>Extract</b></div></li><li data-beat="z3"><div>Move the folder somewhere permanent, like <b>Documents</b></div></li></ol></div>
+        <div class="mock">
+          <div class="win" style="left:0;top:0;width:1000px;height:760px">
+            <div class="tb">File Explorer<div class="ctl"><span>—</span><span>☐</span><span>✕</span></div></div>
+            <div class="addr">This PC › <span class="crumb" id="uz-c1">Downloads</span><span class="crumb" id="uz-c2" style="position:absolute;left:105px">Documents</span></div>
+            <div class="frow2 fhead"><span></span><span>Name</span><span>Type</span></div>
+            <div id="uz-dl">
+              <div class="frow2 h" id="uz-zip"><div class="folder zip"></div><div>powerbi-mcp.zip</div><span>Compressed (zipped) Folder</span></div>
+              <div class="frow2" id="uz-new"><div class="folder"></div><div>powerbi-mcp</div><span>File folder</span></div>
+            </div>
+            <div id="uz-docs" data-layout-allow-overlap data-layout-allow-occlusion style="position:absolute;left:0;right:0;top:146px">
+              <div class="frow2"><div class="folder"></div><div>Power BI Reports</div><span>File folder</span></div>
+              <div class="frow2 h" id="uz-moved"><div class="folder"></div><div>powerbi-mcp</div><span>File folder</span></div>
+            </div>
+          </div>
+          <div class="menu" id="uz-menu" data-layout-allow-overlap data-layout-allow-occlusion style="left:420px;top:190px"><div>Open</div><div class="h" id="uz-ext"><b>Extract All…</b></div><div>Open with</div><hr><div>Share</div><div>Copy as path</div><div>Properties</div></div>
+          <div class="dlg" id="uz-dlg" data-layout-allow-overlap data-layout-allow-occlusion style="left:110px;top:240px;width:780px">
+            <div class="db"><div style="font-size:24px;color:var(--ink);font-weight:700;margin-bottom:14px">Extract Compressed (Zipped) Folders</div>
+              Files will be extracted to this folder:
+              <div class="in" style="margin-top:10px;height:46px;border-radius:8px;background:#121215;border:1px solid #3a3a42;display:flex;align-items:center;padding:0 14px;font:17px var(--mono);color:var(--ink)">C:\Users\you\Downloads\powerbi-mcp</div>
+              <div style="margin-top:14px;font-size:18px">☑ Show extracted files when complete</div></div>
+            <div class="dbtns"><div class="wbtn pri h" id="uz-go">Extract</div><div class="wbtn">Cancel</div></div>
+          </div>
+          <div class="tag teal" id="uz-tag" data-layout-allow-overlap data-layout-allow-occlusion style="left:600px;top:260px">Keep it here, permanently</div>
+          <div class="cur" id="uz-cur"></div>
+        </div>
+      </div>
+
+      <!-- ================= STEP 4: SETUP ================= -->
+      <div id="s-setup" class="scene clip" data-start="{{setup.start}}" data-duration="{{setup.dur}}" data-track-index="2">
+        <div class="side"><div class="kick">Step 4 of 7</div><h2>Run Setup</h2>
+          <ol class="todo"><li data-beat="u2"><div>Double-click <b>Setup (Windows).bat</b></div></li><li data-beat="u3"><div>Blue box? <b>More info</b> → <b>Run anyway</b></div></li><li data-beat="u4"><div>Wait <b>1–2 minutes</b> for the 4 steps</div></li><li data-beat="u5"><div>All lines say <b class="g">[OK]</b> = done</div></li><li data-beat="u6"><div>Optional: <b>Demo test (Windows).bat</b></div></li></ol></div>
+        <div class="mock">
+          <div class="win" id="su-exp" style="left:0;top:0;width:1000px;height:760px">
+            <div class="tb">powerbi-mcp<div class="ctl"><span>—</span><span>☐</span><span>✕</span></div></div>
+            <div class="addr">This PC › Documents › <span class="crumb">powerbi-mcp</span></div>
+            <div class="frow2 fhead"><span></span><span>Name</span><span>Type</span></div>
+            <div class="frow2"><div class="doc bat" data-x="BAT"></div><div>Check (Windows).bat</div><span>Windows Batch File</span></div>
+            <div class="frow2"><div class="doc py" data-x="PY"></div><div>connect_claude.py</div><span>Python File</span></div>
+            <div class="frow2 h" id="su-demo"><div class="doc bat" data-x="BAT"></div><div>Demo test (Windows).bat</div><span>Windows Batch File</span></div>
+            <div class="frow2"><div class="doc txt" data-x="TXT"></div><div>requirements.txt</div><span>Text Document</span></div>
+            <div class="frow2 h" id="su-setup"><div class="doc bat" data-x="BAT"></div><div><b>Setup (Windows).bat</b></div><span>Windows Batch File</span></div>
+          </div>
+          <div class="win ss" id="su-ss" data-layout-allow-overlap data-layout-allow-occlusion>
+            <h5>Windows protected your PC</h5>
+            <p>Microsoft Defender SmartScreen prevented an unrecognized app from starting. Running this app might put your PC at risk.</p>
+            <p><span class="more h" id="su-more">More info</span></p>
+            <div class="info" id="su-info">App: Setup (Windows).bat<br>Publisher: Unknown publisher</div>
+            <div class="sbtns"><div class="h" id="su-run">Run anyway</div><div>Don't run</div></div>
+          </div>
+          <div class="win term" id="su-term" data-layout-allow-overlap data-layout-allow-occlusion style="left:0;top:0;width:1000px;height:760px">
+            <div class="tb" style="background:#16161a">C:\Windows\System32\cmd.exe<div class="ctl"><span>—</span><span>☐</span><span>✕</span></div></div>
+            <div class="tx"><div id="tl1">[1/4] Using py -3.12</div><div id="tl2">[2/4] Installing libraries...</div><div id="tl3">[3/4] Connecting to Claude Desktop...</div><div id="tl4" style="color:#9ca3af;font-size:16px">      Added 'powerbi' in C:\Users\you\AppData\Roaming\Claude\
+      claude_desktop_config.json</div><div id="tl5">[4/4] Checking everything...</div><div class="okl" id="ok1">  [OK]  Python 3.12</div><div class="okl" id="ok2">  [OK]  mcp library installed</div><div class="okl" id="ok3">  [OK]  pythonnet loaded</div><div class="okl" id="ok4">  [OK]  Power BI client library found</div><div class="okl" id="ok5">  [OK]  Measure editing available</div><div class="okl" id="ok6">  [OK]  Claude Desktop is set up</div></div>
+          </div>
+          <div class="win" id="su-tip" data-layout-allow-overlap data-layout-allow-occlusion style="left:120px;top:470px;width:760px;padding:24px 28px;border-radius:18px;border-color:rgba(45,212,191,.5)">
+            <div style="display:flex;gap:16px;align-items:center"><div class="doc bat" data-x="BAT"></div><div><b style="font-size:24px">Demo test (Windows).bat</b><div style="font-size:19px">Runs the tools on a small built-in sample model, no Power BI needed.</div></div></div>
+          </div>
+          <div class="cur" id="su-cur"></div>
+        </div>
+      </div>
+
+      <!-- ================= STEP 5: RESTART ================= -->
+      <div id="s-restart" class="scene clip" data-start="{{restart.start}}" data-duration="{{restart.dur}}" data-track-index="2">
+        <div class="side"><div class="kick">Step 5 of 7</div><h2>Restart Claude Desktop</h2>
+          <ol class="todo"><li data-beat="r2"><div>Tray icon near the clock → right-click → <b>Quit</b></div></li><li data-beat="r3"><div>Open <b>Claude Desktop</b> again</div></li><li data-beat="r4"><div>Settings → Developer: <b>powerbi</b> is <b class="g">running</b></div></li></ol></div>
+        <div class="mock">
+          <div class="desk">
+            <div class="win cw" id="rs-cw" style="left:120px;top:70px;width:700px;height:500px">
+              <div class="tb">Claude<div class="ctl"><span>—</span><span>☐</span><span class="h" id="rs-x" style="padding:0 6px;border-radius:4px">✕</span></div></div>
+              <div class="cb"><div style="font-size:34px;color:#e8e6df;font-weight:600;margin-top:90px;text-align:center">How can I help you today?</div></div>
+              <div class="cinput"><span class="ph">Reply to Claude…</span></div>
+            </div>
+            <div class="tag red" id="rs-tag" data-layout-allow-overlap data-layout-allow-occlusion style="left:500px;top:40px">Closing the window isn't enough</div>
+            <div class="win cw" id="rs-set" data-layout-allow-overlap data-layout-allow-occlusion style="left:60px;top:40px;width:880px;height:600px">
+              <div class="tb">Settings<div class="ctl"><span>—</span><span>☐</span><span>✕</span></div></div>
+              <div class="sidebar"><div>General</div><div>Account</div><div>Privacy</div><div>Connectors</div><div class="h" id="rs-dev" style="background:#3a3a37;color:#fff;font-weight:600">Developer</div></div>
+              <div style="position:absolute;left:270px;top:80px;right:30px">
+                <div style="font-size:30px;color:#fff;font-weight:700">Developer</div>
+                <div style="font-size:19px;color:#a8a69e;margin-top:6px">Local MCP servers</div>
+                <div class="mcprow h" id="rs-row"><div class="claudei" style="background:#f2c811"><svg viewBox="0 0 24 24"><g fill="#1a1400"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></g></svg></div><b>powerbi</b><div class="pill"><i></i>running</div></div>
+              </div>
+            </div>
+            <div class="trayup" id="rs-up" data-layout-allow-overlap data-layout-allow-occlusion><i></i><i></i><div class="claudei h" id="rs-ci"><svg viewBox="0 0 24 24"><g stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></g></svg></div></div>
+            <div class="menu" id="rs-menu" data-layout-allow-overlap data-layout-allow-occlusion style="right:40px;bottom:150px;width:240px"><div>Show Claude</div><hr><div class="h" id="rs-quit"><b>Quit</b></div></div>
+            <div class="taskbar"><div class="startb"><i></i><i></i><i></i><i></i></div>
+              <div class="tray"><div class="chev h" id="rs-chev">⌃</div><span>ENG</span><div class="clock">10:24 AM<br>07-10-2026</div></div></div>
+          </div>
+          <div class="cur" id="rs-cur"></div>
+        </div>
+      </div>
+
+      <!-- ================= STEP 6: TEST ================= -->
+      <div id="s-test" class="scene clip" data-start="{{test.start}}" data-duration="{{test.dur}}" data-track-index="2">
+        <div class="side"><div class="kick">Step 6 of 7</div><h2>Open your report and test</h2>
+          <ol class="todo"><li data-beat="t2"><div>Open your <b>.pbix</b>, wait for the data to load</div></li><li data-beat="t3"><div>New chat: <b>List the tables in my Power BI model</b></div></li><li data-beat="t4"><div>Click <b>Always allow</b></div></li><li data-beat="t5"><div>See your tables = <b class="g">connected!</b></div></li><li data-beat="t6"><div>Several reports open? Ask <b>which are open</b></div></li></ol></div>
+        <div class="mock">
+          <div class="win light pbi" id="ts-pbi" style="left:0;top:40px;width:1000px;height:625px">
+            <img src="assets/img/sales-overview.png" alt="">
+            <div class="loadov" id="ts-load"><div class="lb">Sales.pbix · Loading data…<div class="bar"><i id="ts-bar"></i></div></div></div>
+          </div>
+          <div class="win cw" id="ts-cw" data-layout-allow-overlap data-layout-allow-occlusion style="left:390px;top:0;width:610px;height:760px">
+            <div class="tb">Claude · New chat</div>
+            <div class="cb">
+              <div class="bubble" id="ts-q">List the tables in my Power BI model</div>
+              <div class="perm" id="ts-perm"><div class="pt">Claude wants to use <b>list_tables</b> from <b>powerbi</b></div><div class="pb"><div class="pa h" id="ts-allow">Always allow</div><div>Allow once</div><div>Deny</div></div></div>
+              <div class="cmsg" id="ts-ans"><div class="tool">▸ list_tables</div>Your model has 4 tables:
+                <div class="tlist"><div><b>Sales</b>3 columns · 4 measures</div><div><b>Product</b>2 columns</div><div><b>Region</b>1 column</div><div><b>Date</b>3 columns</div></div></div>
+            </div>
+            <div class="cinput" id="ts-in"><span class="ph" id="ts-ph">Reply to Claude…</span><span class="typed" id="ts-typed">List the tables in my Power BI model</span></div>
+          </div>
+          <div class="win" id="ts-tip" data-layout-allow-overlap data-layout-allow-occlusion style="left:30px;top:520px;width:700px;padding:22px 26px;border-radius:18px;border-color:rgba(255,196,107,.5)">
+            <div style="font-size:20px;color:var(--amber);font-weight:700;margin-bottom:8px">Several reports open?</div>
+            <div style="font-size:22px;color:var(--ink)">"Which Power BI reports are open?"<br>"Connect to the one on port 51234."</div>
+          </div>
+          <div class="cur" id="ts-cur"></div>
+        </div>
+      </div>
+
+      <!-- ================= WHAT YOU CAN ASK ================= -->
+      <div id="s-ask" class="scene clip" data-start="{{ask.start}}" data-duration="{{ask.dur}}" data-track-index="2">
+        <div class="bigh"><div class="kick">You're connected</div><h2>What you can ask</h2></div>
+        <div class="pgrid">
+          <div class="pcard"><div class="lab">Understand a model</div><p>"Explain this data model: tables, relationships and what each measure does."</p></div>
+          <div class="pcard"><div class="lab">Answers from your data</div><p>"What were the top 5 products by sales last quarter?"</p></div>
+          <div class="pcard"><div class="lab">Write a measure</div><p>"Create a Sales YoY % measure in the Sales table, formatted as a percentage."</p></div>
+          <div class="pcard"><div class="lab">Fix a measure</div><p>"My [Margin %] shows wrong totals. Find out why and fix it."</p></div>
+          <div class="pcard"><div class="lab">Clean up</div><p>"Which measures are not used on any report page?"</p></div>
+          <div class="pcard"><div class="lab">Learn DAX</div><p>"Explain step by step how [Running Total] works, using numbers from my data."</p></div>
+        </div>
+      </div>
+
+      <!-- ================= SAFE ================= -->
+      <div id="s-safe" class="scene clip" data-start="{{safe.start}}" data-duration="{{safe.dur}}" data-track-index="2">
+        <div class="bigh"><div class="kick">Peace of mind</div><h2>Editing measures safely</h2></div>
+        <div class="rows">
+          <div class="row"><div class="ri">✓</div><div>Claude tests every new measure with DAX first<small>If it has an error, nothing is changed.</small></div></div>
+          <div class="row"><div class="ri">↺</div><div>Changes appear in Power BI Desktop straight away<small><b>Save</b> the report to keep them, or close without saving to undo.</small></div></div>
+          <div class="row"><div class="ri">?</div><div>Claude asks before deleting a measure<small>Keep a copy of important .pbix files before big changes.</small></div></div>
+          <div class="row"><div class="ri">R</div><div>"Don't change anything, only read."<small>Say this at the start of a chat for read-only mode.</small></div></div>
+        </div>
+      </div>
+
+      <!-- ================= STEP 7: DASHBOARD ================= -->
+      <div id="s-dash" class="scene clip" data-start="{{dash.start}}" data-duration="{{dash.dur}}" data-track-index="2">
+        <div class="side"><div class="kick">Step 7 of 7</div><h2>Let Claude build a dashboard</h2>
+          <ol class="todo"><li data-beat="d2"><div>File → Save as → <b>Power BI project (*.pbip)</b>, once</div></li><li data-beat="d3"><div>Ask Claude, with the full <b>.pbip</b> path</div></li><li data-beat="d4"><div>Press <b>Ctrl+S</b> when Claude asks</div></li><li data-beat="d5"><div>Close Power BI → <b>Don't save</b></div></li><li data-beat="d6"><div>Open the <b>.pbip</b> again</div></li></ol></div>
+        <div class="mock">
+          <div class="dlg" id="ds-save" style="left:60px;top:90px;width:880px">
+            <div class="tb" style="background:#1a1a1e">Save As<div class="ctl"><span>✕</span></div></div>
+            <div class="db">
+              <div class="addr" style="margin:-22px -26px 18px;border-radius:0">This PC › D: › <span class="crumb">Reports</span></div>
+              <div style="display:grid;grid-template-columns:150px 1fr;gap:14px 16px;align-items:center">
+                <span>File name:</span><div class="in" style="height:44px;border-radius:8px;background:#121215;border:1px solid #3a3a42;display:flex;align-items:center;padding:0 14px;color:var(--ink)">Sales</div>
+                <span>Save as type:</span><div class="h" id="ds-type" style="height:44px;border-radius:8px;background:#121215;border:1px solid #4cc2ff;display:flex;align-items:center;padding:0 14px;color:var(--ink)">Power BI project files (*.pbip) <span style="margin-left:auto;color:var(--muted)">▾</span></div>
+              </div>
+            </div>
+            <div class="dbtns"><div class="wbtn pri">Save</div><div class="wbtn">Cancel</div></div>
+          </div>
+          <div class="win" id="ds-files" data-layout-allow-overlap data-layout-allow-occlusion style="left:60px;top:470px;width:880px;padding:16px 10px;border-radius:16px">
+            <div class="frow2"><div class="doc" data-x="PBIP"></div><div><b>Sales.pbip</b></div><span>work from this file</span></div>
+            <div class="frow2"><div class="folder"></div><div>Sales.Report</div><span>File folder</span></div>
+            <div class="frow2"><div class="folder"></div><div>Sales.SemanticModel</div><span>File folder</span></div>
+          </div>
+          <div class="win cw" id="ds-cw" data-layout-allow-overlap data-layout-allow-occlusion style="left:0;top:0;width:1000px;height:760px">
+            <div class="tb">Claude · New chat</div>
+            <div class="cb">
+              <div class="bubble" id="ds-q" style="font-family:var(--mono);font-size:18px;max-width:90%">Build a sales overview dashboard on a new page in <span class="y">D:\Reports\Sales.pbip</span>: totals at the top, sales by month against last year, by category, top regions and a detail table.</div>
+              <div class="cmsg" id="ds-a1"><div class="tool">▸ list_tables · list_measures · dashboard_data</div><div class="tool">▸ create_or_update_measure Sales[Sales LY], Sales[Sales YoY %]</div>I added 2 measures. Press <b>Ctrl+S</b> in Power BI Desktop so they're saved, then tell me.</div>
+              <div class="cmsg" id="ds-a2"><div class="tool">▸ build_dashboard_page "Sales overview"</div>Done! The <b>Sales overview</b> page is written. Close Power BI Desktop, choose <b>Don't save</b>, and open Sales.pbip again.</div>
+            </div>
+          </div>
+          <div id="ds-keys" data-layout-allow-overlap data-layout-allow-occlusion style="position:absolute;left:330px;top:440px;display:flex;align-items:center;gap:24px;z-index:9"><div class="kbd" id="ds-k1">Ctrl</div><div style="font-size:60px;color:var(--ink);font-weight:800">+</div><div class="kbd" id="ds-k2">S</div></div>
+          <div class="dlg" id="ds-dont" data-layout-allow-overlap data-layout-allow-occlusion style="left:150px;top:200px;width:700px;background:#f6f7f9;border-color:#d6d9e0">
+            <div class="db" style="color:#1f2430"><div style="font-size:26px;font-weight:700;margin-bottom:8px">Power BI Desktop</div>Do you want to save your changes?</div>
+            <div class="dbtns" style="background:#eceef2;border-color:#d6d9e0"><div class="wbtn" style="background:#fff;color:#1f2430;border-color:#c5c9d1">Save</div><div class="wbtn h" id="ds-ds" style="background:#f2c811;color:#1a1400;border-color:#f2c811;font-weight:700">Don't save</div><div class="wbtn" style="background:#fff;color:#1f2430;border-color:#c5c9d1">Cancel</div></div>
+          </div>
+          <div class="tag red" id="ds-tag" data-layout-allow-overlap data-layout-allow-occlusion style="left:280px;top:440px">Saving now would overwrite the new page</div>
+          <div class="win light pbi" id="ds-pbi" data-layout-allow-overlap data-layout-allow-occlusion style="left:0;top:70px;width:1000px;height:625px"><img src="assets/img/sales-overview.png" alt=""></div>
+          <div class="tag teal" id="ds-tab" data-layout-allow-overlap data-layout-allow-occlusion style="left:120px;top:700px">New "Sales overview" page tab</div>
+          <div class="cur" id="ds-cur"></div>
+        </div>
+      </div>
+
+      <!-- ================= THEMES ================= -->
+      <div id="s-themes" class="scene clip" data-start="{{themes.start}}" data-duration="{{themes.dur}}" data-track-index="2">
+        <div class="bigh"><div class="kick">Make it look designed</div><h2>Designer themes</h2></div>
+        <div class="win" id="th-prompt" style="left:140px;top:300px;padding:16px 24px;border-radius:14px;font:22px var(--mono);color:var(--ink)">…build a sales overview dashboard in D:\Reports\Sales.pbip. <span class="y">Use the midnight theme.</span></div>
+        <div class="themes">
+          <div class="th" style="background:#f3f6fa"><b style="color:#1f2430">Corporate</b><div class="sw"><i style="background:#2563eb"></i><i style="background:#0ea5e9"></i><i style="background:#f59e0b"></i><i style="background:#10b981"></i></div></div>
+          <div class="th h" id="th-mid" style="background:#0f172a"><b style="color:#fff">Midnight</b><div class="sw"><i style="background:#1e293b"></i><i style="background:#38bdf8"></i><i style="background:#a78bfa"></i><i style="background:#f472b6"></i><i style="background:#34d399"></i></div></div>
+          <div class="th" style="background:#eef6f9"><b style="color:#1f2430">Ocean</b><div class="sw"><i style="background:#0e7490"></i><i style="background:#06b6d4"></i><i style="background:#0284c7"></i><i style="background:#67e8f9"></i></div></div>
+          <div class="th" style="background:#2a1033"><b style="color:#fff">Sunset</b><div class="sw"><i style="background:#3b1645"></i><i style="background:#fb7185"></i><i style="background:#f97316"></i><i style="background:#f472b6"></i><i style="background:#a855f7"></i></div></div>
+          <div class="th" style="background:#ecf8f2"><b style="color:#1f2430">Emerald</b><div class="sw"><i style="background:#059669"></i><i style="background:#10b981"></i><i style="background:#0ea5e9"></i><i style="background:#22c55e"></i></div></div>
+          <div class="th" style="background:#1e1b4b"><b style="color:#fff">Royal</b><div class="sw"><i style="background:#312e81"></i><i style="background:#8b5cf6"></i><i style="background:#22d3ee"></i><i style="background:#3b82f6"></i><i style="background:#f472b6"></i></div></div>
+          <div class="th" style="background:#fdf2f4"><b style="color:#1f2430">Rose</b><div class="sw"><i style="background:#e11d48"></i><i style="background:#f43f5e"></i><i style="background:#f59e0b"></i><i style="background:#fb7185"></i></div></div>
+          <div class="th" style="background:#18181b"><b style="color:#fff">Graphite</b><div class="sw"><i style="background:#27272a"></i><i style="background:#facc15"></i><i style="background:#f97316"></i><i style="background:#f43f5e"></i><i style="background:#4ade80"></i></div></div>
+        </div>
+        <div class="chip" id="th-undo" style="position:absolute;left:140px;top:790px">Undo: View → Themes → Default</div>
+      </div>
+
+      <!-- ================= SAMPLES ================= -->
+      <div id="s-samples" class="scene clip" data-start="{{samples.start}}" data-duration="{{samples.dur}}" data-track-index="2">
+        <div class="bigh"><div class="kick">In the PDF guide</div><h2>10 sample dashboards to copy</h2></div>
+        <div class="sgrid">
+          <div class="sg h"><img src="assets/img/sales-performance.jpg" alt=""><div>Sales performance</div></div>
+          <div class="sg h"><img src="assets/img/profit-loss.jpg" alt=""><div>Profit &amp; loss</div></div>
+          <div class="sg h"><img src="assets/img/people-hr.jpg" alt=""><div>People &amp; HR</div></div>
+          <div class="sg h"><img src="assets/img/marketing.jpg" alt=""><div>Marketing campaigns</div></div>
+          <div class="sg h"><img src="assets/img/online-store.jpg" alt=""><div>Online store</div></div>
+          <div class="sg h"><img src="assets/img/supply-chain.jpg" alt=""><div>Supply chain</div></div>
+          <div class="sg h"><img src="assets/img/hospital.jpg" alt=""><div>Hospital operations</div></div>
+          <div class="sg h"><img src="assets/img/customer-support.jpg" alt=""><div>Customer support</div></div>
+          <div class="sg h"><img src="assets/img/student-performance.jpg" alt=""><div>Student performance</div></div>
+          <div class="sg h"><img src="assets/img/project-portfolio.jpg" alt=""><div>Project portfolio</div></div>
+        </div>
+        <div class="win" id="sm-p" data-layout-allow-overlap data-layout-allow-occlusion style="left:260px;top:330px;width:1400px;padding:30px 36px;border-radius:20px;z-index:5">
+          <div class="kick" style="font-size:18px">Copy · edit · send</div>
+          <div style="font:24px/1.55 var(--mono);color:var(--ink)">Build a sales performance page: revenue, orders, AOV, a margin % gauge against 40%, revenue with margin % by month, revenue by channel, top products and a region table in <span class="y">D:\Reports\Sales.pbip</span></div>
+          <div style="display:flex;gap:14px;margin-top:20px"><div class="chip"><i></i>Change field names to yours</div><div class="chip"><i style="background:var(--accent)"></i>Add your .pbip path</div><div class="chip"><i style="background:#d97757"></i>Send to Claude</div></div>
+        </div>
+      </div>
+
+      <!-- ================= TROUBLE ================= -->
+      <div id="s-trouble" class="scene clip" data-start="{{trouble.start}}" data-duration="{{trouble.dur}}" data-track-index="2">
+        <div class="bigh"><div class="kick">If something goes wrong</div><h2>Troubleshooting</h2></div>
+        <div class="chip h" id="tr-check" style="position:absolute;left:140px;top:300px;font-size:25px"><span class="doc bat" data-x="BAT" style="width:24px;height:30px;margin:0"></span>First, double-click <b>Check (Windows).bat</b> — it tells you what to fix</div>
+        <div style="position:absolute;left:140px;right:140px;top:400px;display:grid;gap:14px">
+          <div class="trow h" id="tr1"><div class="q">"Python 3.12 is not installed"</div><div class="a">Install Python 3.12 (step 2), then run Setup again.</div></div>
+          <div class="trow h" id="tr2"><div class="q">"pythonnet failed to load"</div><div class="a">You're on 3.13+. Install 3.12, delete the <code>venv</code> folder, run Setup again.</div></div>
+          <div class="trow h" id="tr3"><div class="q">Claude has no Power BI tools</div><div class="a">Not fully restarted. Quit from the tray icon and reopen.</div></div>
+          <div class="trow h" id="tr4"><div class="q">"No open Power BI report found"</div><div class="a">Open a .pbix and wait for the data to load.</div></div>
+          <div class="trow h" id="tr5"><div class="q">New dashboard page isn't there</div><div class="a">Close Power BI, choose <b>Don't save</b>, open the .pbip again.</div></div>
+        </div>
+      </div>
+
+      <!-- ================= EXTRAS ================= -->
+      <div id="s-extras" class="scene clip" data-start="{{extras.start}}" data-duration="{{extras.dur}}" data-track-index="2">
+        <div class="bigh"><div class="kick">Good to know</div><h2>Claude Code, moving and updating</h2></div>
+        <div style="position:absolute;left:140px;right:140px;top:340px;display:grid;grid-template-columns:1fr 1fr;gap:30px">
+          <div class="card" id="ex1"><div class="ico" style="font:800 30px var(--mono);color:var(--teal)">&gt;_</div><h3>Claude Code</h3><p>Setup adds the server there too. Run <code class="y">claude</code> and ask the same questions.</p></div>
+          <div class="card" id="ex2"><div class="ico"><div class="folder"></div></div><h3>Moved the folder or got a new version?</h3><p>Run <b>Setup (Windows).bat</b> again from the new place.</p></div>
+        </div>
+      </div>
+
+      <!-- ================= OUTRO ================= -->
+      <div id="s-outro" class="scene clip" data-start="{{outro.start}}" data-duration="{{outro.dur}}" data-track-index="2">
+        <div class="bigh"><div class="kick">Need help?</div><h2>You're all set</h2></div>
+        <div class="win" id="ou-help" style="left:140px;top:320px;width:1640px;padding:30px 36px;border-radius:22px;display:flex;align-items:center;gap:30px">
+          <div class="ico" style="flex:none"><svg width="56" height="42" viewBox="0 0 56 42"><rect x="2" y="2" width="52" height="38" rx="6" fill="none" stroke="#2dd4bf" stroke-width="4"/><path d="M4 6 28 24 52 6" fill="none" stroke="#2dd4bf" stroke-width="4"/></svg></div>
+          <div><div style="font-size:24px">Still stuck? Email a screenshot of the Check window + your payment ID to</div><div style="font-size:44px;color:var(--ink);font-weight:800">groworafoundation@gmail.com</div></div>
+        </div>
+        <div style="position:absolute;left:140px;right:140px;top:560px;display:flex;gap:14px;align-items:center;flex-wrap:wrap" id="ou-recap">
+          <div class="chip">1 · Install Python 3.12</div><div class="chip">2 · Unzip</div><div class="chip">3 · Run Setup</div><div class="chip">4 · Restart Claude</div><div class="chip">5 · Open your report</div><div class="chip" style="background:var(--accent);color:#1a1400;border-color:var(--accent)">6 · Ask Claude</div>
+        </div>
+        <div class="logo" id="ou-logo" style="position:absolute;left:140px;top:720px;font-size:34px"><i style="width:52px;height:52px;border-radius:14px"></i>Happy building!</div>
+      </div>
+
+      <!-- ================= CAPTIONS ================= -->
+<!--__CAPTIONS__-->
+    </div>
+
+    <script>
+      /*__TIMING__*/
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      const q = (s) => document.querySelector(s);
+      const qa = (s) => Array.from(document.querySelectorAll(s));
+      const E = { ease: "power3.out" };
+
+      // Center of an element relative to its .scene, ignoring transforms (evaluated lazily, after fonts load).
+      function pos(sel, ax = 0.5, ay = 0.5) {
+        const el = q(sel), root = el.closest(".mock") || el.closest(".scene");
+        let x = 0, y = 0, e = el;
+        while (e && e !== root) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; }
+        return { x: x + el.offsetWidth * ax, y: y + el.offsetHeight * ay };
+      }
+      function show(sel, t, v = {}) { tl.fromTo(sel, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ...E, ...v }, t); }
+      function hide(sel, t, d = 0.3) { tl.to(sel, { opacity: 0, duration: d, immediateRender: false }, t); }
+      function pop(sel, t) { tl.fromTo(sel, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.6)" }, t); }
+      const ON = "0 0 0 4px rgba(242,200,17,1), 0 0 34px 6px rgba(242,200,17,.45)";
+      const OFF = "0 0 0 0px rgba(242,200,17,0), 0 0 0px 0px rgba(242,200,17,0)";
+      function hl(sel, t, d) { tl.to(sel, { boxShadow: ON, duration: 0.3 }, t); if (d) tl.to(sel, { boxShadow: OFF, duration: 0.4 }, t + d); }
+      function typeIn(sel, t, d) {
+        const n = Math.max(4, q(sel).textContent.length);
+        tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d, ease: `steps(${n})` }, t);
+      }
+      function cursorIn(cur, t, x, y) { tl.set(cur, { x, y }, t); tl.to(cur, { opacity: 1, duration: 0.3 }, t); }
+      function moveTo(cur, t, sel, d = 0.7, ax = 0.5, ay = 0.55) {
+        tl.to(cur, { x: () => pos(sel, ax, ay).x, y: () => pos(sel, ax, ay).y, duration: d, ease: "power2.inOut" }, t);
+      }
+      function click(cur, t, sel) {
+        tl.to(cur, { scale: 0.8, duration: 0.08, yoyo: true, repeat: 1 }, t);
+        if (sel) tl.to(sel, { scale: 0.96, duration: 0.08, yoyo: true, repeat: 1 }, t);
+      }
+
+      // Scene fades
+      Object.entries(S).forEach(([id, [s, d]]) => {
+        tl.fromTo(`#s-${id}`, { opacity: 0 }, { opacity: 1, duration: 0.4 }, s);
+        if (id !== "outro") tl.to(`#s-${id}`, { opacity: 0, duration: 0.3 }, s + d - 0.3);
+        const head = qa(`#s-${id} .side, #s-${id} .bigh`);
+        if (head.length) tl.from(head, { x: -30, duration: 0.6, ...E }, s + 0.05);
+      });
+
+      // Instruction lists: each item lights up on its beat and turns into a check on the next one.
+      qa(".todo").forEach((ol) => {
+        const items = Array.from(ol.children);
+        const sceneId = ol.closest(".scene").id.slice(2);
+        const end = S[sceneId][0] + S[sceneId][1];
+        items.forEach((li, i) => {
+          const t = T[li.dataset.beat];
+          tl.fromTo(li, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ...E }, t);
+          tl.set(li, { className: "on" }, t);
+          const next = items[i + 1] ? T[items[i + 1].dataset.beat] : end - 0.9;
+          tl.set(li, { className: "done" }, next);
+        });
+      });
+
+      // Step tracker in the top bar
+      const ST = { 1: ["page", "verify"], 2: ["python", "python"], 3: ["unzip", "unzip"], 4: ["setup", "setup"], 5: ["restart", "restart"], 6: ["test", "test"], 7: ["dash", "dash"] };
+      Object.entries(ST).forEach(([k, [a, b]]) => {
+        tl.to(`#st${k}`, { backgroundColor: "#f2c811", color: "#1a1400", borderColor: "#f2c811", duration: 0.3 }, S[a][0] + 0.2);
+        tl.to(`#st${k}`, { backgroundColor: "rgba(45,212,191,0.14)", color: "#2dd4bf", borderColor: "rgba(45,212,191,0.4)", duration: 0.3 }, S[b][0] + S[b][1] - 0.2);
+      });
+
+      // ---------- intro ----------
+      show("#s-intro .eb", 0.3); show("#s-intro h1", 0.5); show("#s-intro .sub", 1.2);
+      pop("#s-intro .chat", T.i2);
+      show("#s-intro .t1", T.i2 + 1.0); show("#s-intro .t2", T.i2 + 2.4); show("#s-intro .ans", T.i2 + 3.8);
+      tl.from("#s-intro .chip", { opacity: 0, y: 20, duration: 0.45, stagger: 0.35, ...E }, T.i3);
+
+      // ---------- need ----------
+      qa("#s-need .card").forEach((c, i) => pop(c, T["n" + (i + 2)]));
+      qa("#s-need .card").forEach((c, i) => hl(c, T["n" + (i + 2)], T["n" + (i + 2) + "_end"] - T["n" + (i + 2)]));
+
+      // ---------- page ----------
+      pop("#s-page .win", S.page[0] + 0.3);
+      typeIn("#pg-url", T.p1 + 1.2, 2.4);
+      show("#pg-site", T.p1 + 3.8);
+      hl("#pg-em", T.p2 + 2.6, 1.6); hl("#pg-pid", T.p2 + 4.2, 1.8);
+
+      // ---------- payment id ----------
+      pop("#s-pid .mailwin", S.pid[0] + 0.3);
+      hl("#pd-r1", T.q2, 1.2);
+      pop("#pd-m1", T.q2 + 1.3); hl("#pd-open", T.q2 + 4.6, 3.2);
+      hide("#pd-m1", T.q3 - 0.2);
+      hl("#pd-r2", T.q3, 1.2);
+      pop("#pd-m2", T.q3 + 1.2); hl("#pd-pidv", T.q3 + 3.0, 3.4); pop("#pd-tag", T.q3 + 4.0);
+      hide("#pd-m2", T.q4 - 0.2); hide("#pd-tag", T.q4 - 0.2);
+      hide("#pd-ph", T.q4 + 2.4, 0.01); typeIn("#pd-q", T.q4 + 2.4, 1.2); tl.set("#pd-q", { opacity: 1 }, T.q4 + 2.4);
+      hl("#pd-spam", T.q4 + 1.0, 1.4); hl("#pd-promo", T.q4 + 1.4, 1.4); hl("#pd-r2", T.q4 + 3.8, 1.2);
+      tl.set("#pd-q", { opacity: 0 }, 0);
+
+      // ---------- verify ----------
+      pop("#s-verify .win", S.verify[0] + 0.3);
+      cursorIn("#vf-cur", T.v1, 800, 700);
+      moveTo("#vf-cur", T.v1 + 0.2, "#vf-ph1", 0.6, 0.2);
+      hide("#vf-ph1", T.v1 + 0.9, 0.01); typeIn("#vf-em", T.v1 + 0.9, 1.0);
+      moveTo("#vf-cur", T.v1 + 2.0, "#vf-ph2", 0.5, 0.2);
+      hide("#vf-ph2", T.v1 + 2.6, 0.01); typeIn("#vf-pid", T.v1 + 2.6, 0.5);
+      moveTo("#vf-cur", T.v1 + 3.4, "#vf-go", 0.6);
+      click("#vf-cur", T.v1 + 4.1, "#vf-go");
+      tl.set("#vf-go1", { opacity: 0 }, T.v1 + 4.2); tl.set("#vf-go2", { opacity: 1 }, T.v1 + 4.2); tl.set("#vf-go2", { opacity: 0 }, 0);
+      hide("#vf-cur", T.v2 + 0.2);
+      hide("#vf-gate", T.v2 + 3.0); show("#vf-ok", T.v2 + 3.2);
+      tl.set("#vf-ok", { opacity: 0 }, 0);
+      cursorIn("#vf-cur", T.v3 + 1.0, 900, 700);
+      moveTo("#vf-cur", T.v3 + 1.2, "#vf-zip", 0.6);
+      click("#vf-cur", T.v3 + 2.0, "#vf-zip"); hl("#vf-zip", T.v3 + 1.8, 1.2);
+      pop("#vf-pop", T.v3 + 2.2);
+      tl.fromTo("#vf-b1", { scaleX: 0 }, { scaleX: 1, duration: 2.2, ease: "power1.inOut" }, T.v3 + 2.2);
+      moveTo("#vf-cur", T.v3 + 3.0, "#vf-pdf", 0.6);
+      click("#vf-cur", T.v3 + 3.8, "#vf-pdf"); hl("#vf-pdf", T.v3 + 3.6, 1.2);
+      show("#vf-d2", T.v3 + 3.9);
+      tl.fromTo("#vf-b2", { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: "power1.inOut" }, T.v3 + 3.9);
+      hide("#vf-cur", T.v4);
+      hide("#vf-pop", T.v4 + 0.2);
+      hl("#vf-hint", T.v4 + 0.4, 4.0);
+
+      // ---------- python ----------
+      pop("#py-br", S.python[0] + 0.3);
+      cursorIn("#py-cur", T.y2 + 1.0, 700, 650);
+      moveTo("#py-cur", T.y2 + 3.0, "#py-row", 0.8, 0.3);
+      hl("#py-row", T.y2 + 3.4, 2.4); click("#py-cur", T.y2 + 4.4, "#py-row");
+      hide("#py-cur", T.y3 - 0.2);
+      pop("#py-inst", T.y3);
+      cursorIn("#py-cur", T.y3 + 0.9, 750, 680);
+      moveTo("#py-cur", T.y3 + 1.0, "#py-path", 0.7, 0.06);
+      hl("#py-path", T.y3 + 1.5, 4.3);
+      click("#py-cur", T.y3 + 2.0); tl.fromTo("#py-tick", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" }, T.y3 + 2.05);
+      moveTo("#py-cur", T.y3 + 5.0, "#py-now", 0.7, 0.3);
+      hl("#py-now", T.y3 + 5.4, 1.6); click("#py-cur", T.y3 + 5.9, "#py-now");
+      hide("#py-cur", T.y4 - 0.3); hide("#py-inst", T.y4 - 0.3);
+      pop("#py-note", T.y4);
+
+      // ---------- unzip ----------
+      pop("#s-unzip .win", S.unzip[0] + 0.3);
+      tl.set("#uz-new, #uz-docs, #uz-c2", { opacity: 0 }, 0);
+      cursorIn("#uz-cur", T.z2 + 0.5, 700, 600);
+      moveTo("#uz-cur", T.z2 + 0.8, "#uz-zip", 0.7, 0.3);
+      hl("#uz-zip", T.z2 + 1.4, 1.6); click("#uz-cur", T.z2 + 1.8);
+      pop("#uz-menu", T.z2 + 2.0);
+      moveTo("#uz-cur", T.z2 + 2.8, "#uz-ext", 0.5, 0.4);
+      hl("#uz-ext", T.z2 + 3.1, 0.9); click("#uz-cur", T.z2 + 3.6, "#uz-ext");
+      hide("#uz-menu", T.z2 + 3.9, 0.15);
+      pop("#uz-dlg", T.z2 + 4.1);
+      moveTo("#uz-cur", T.z2 + 4.6, "#uz-go", 0.6);
+      hl("#uz-go", T.z2 + 5.0, 1.0); click("#uz-cur", T.z2 + 5.6, "#uz-go");
+      hide("#uz-dlg", T.z2 + 5.9, 0.2);
+      show("#uz-new", T.z2 + 6.2);
+      hide("#uz-cur", T.z3 + 0.6);
+      hide("#uz-dl", T.z3 + 1.5); hide("#uz-c1", T.z3 + 1.5); show("#uz-c2", T.z3 + 1.6, { y: 0 }); show("#uz-docs", T.z3 + 1.8);
+      hl("#uz-moved", T.z3 + 2.6, 4.5); pop("#uz-tag", T.z3 + 3.0);
+
+      // ---------- setup ----------
+      pop("#su-exp", S.setup[0] + 0.3);
+      cursorIn("#su-cur", T.u2 + 0.4, 700, 650);
+      moveTo("#su-cur", T.u2 + 0.6, "#su-setup", 0.8, 0.3);
+      hl("#su-setup", T.u2 + 1.4, 1.6); click("#su-cur", T.u2 + 2.2, "#su-setup"); click("#su-cur", T.u2 + 2.45);
+      hide("#su-cur", T.u3 - 0.2);
+      pop("#su-ss", T.u3);
+      tl.set("#su-info, #su-run", { opacity: 0 }, 0);
+      cursorIn("#su-cur", T.u3 + 2.0, 700, 600);
+      moveTo("#su-cur", T.u3 + 2.2, "#su-more", 0.6);
+      hl("#su-more", T.u3 + 2.6, 1.0); click("#su-cur", T.u3 + 3.2);
+      show("#su-info", T.u3 + 3.4); show("#su-run", T.u3 + 3.4);
+      moveTo("#su-cur", T.u3 + 3.9, "#su-run", 0.6);
+      hl("#su-run", T.u3 + 4.3, 0.9); click("#su-cur", T.u3 + 4.8, "#su-run");
+      hide("#su-cur", T.u4 - 0.3); hide("#su-ss", T.u4 - 0.3);
+      pop("#su-term", T.u4);
+      ["#tl1", "#tl2", "#tl3", "#tl4", "#tl5"].forEach((s, i) => tl.fromTo(s, { opacity: 0 }, { opacity: 1, duration: 0.05 }, T.u4 + 1.6 + i * ((T.u4_end - T.u4 - 1.6) / 5)));
+      [1, 2, 3, 4, 5, 6].forEach((i) => tl.fromTo(`#ok${i}`, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.2 }, T.u5 + 0.2 + (i - 1) * 0.55));
+      hide("#su-term", T.u6 - 0.2);
+      hl("#su-demo", T.u6 + 1.0, 4.0); pop("#su-tip", T.u6 + 1.5);
+
+      // ---------- restart ----------
+      pop("#rs-cw", S.restart[0] + 0.3);
+      tl.set("#rs-set", { opacity: 0 }, 0);
+      pop("#rs-tag", T.r2 + 0.2); hl("#rs-x", T.r2 + 0.2, 1.8);
+      cursorIn("#rs-cur", T.r2 + 2.0, 600, 400);
+      moveTo("#rs-cur", T.r2 + 2.2, "#rs-chev", 0.8);
+      hide("#rs-tag", T.r2 + 2.4); hide("#rs-cw", T.r2 + 2.6);
+      click("#rs-cur", T.r2 + 3.1, "#rs-chev");
+      pop("#rs-up", T.r2 + 3.3);
+      moveTo("#rs-cur", T.r2 + 3.9, "#rs-ci", 0.5);
+      hl("#rs-ci", T.r2 + 4.2, 1.5); click("#rs-cur", T.r2 + 4.6, "#rs-ci");
+      pop("#rs-menu", T.r2 + 4.8);
+      moveTo("#rs-cur", T.r2 + 5.6, "#rs-quit", 0.5);
+      hl("#rs-quit", T.r2 + 6.0, 0.8); click("#rs-cur", T.r2 + 6.5, "#rs-quit");
+      hide("#rs-menu", T.r2_end, 0.15); hide("#rs-up", T.r2_end, 0.15);
+      hide("#rs-cur", T.r3);
+      tl.fromTo("#rs-cw", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.6)", immediateRender: false }, T.r3 + 0.4);
+      hide("#rs-cw", T.r4 + 0.2);
+      pop("#rs-set", T.r4 + 0.3);
+      hl("#rs-dev", T.r4 + 1.2, 1.5); hl("#rs-row", T.r4 + 2.8, 3.2);
+
+      // ---------- test ----------
+      pop("#ts-pbi", S.test[0] + 0.3);
+      tl.fromTo("#ts-bar", { scaleX: 0 }, { scaleX: 1, duration: 3.2, ease: "power1.inOut" }, T.t2 + 0.8);
+      hide("#ts-load", T.t2 + 4.2);
+      tl.fromTo("#ts-cw", { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.55, ...E }, T.t3);
+      tl.set("#ts-q, #ts-perm, #ts-ans, #ts-typed", { opacity: 0 }, 0);
+      tl.set("#ts-typed", { opacity: 1 }, T.t3 + 2.2); hide("#ts-ph", T.t3 + 2.2, 0.01); typeIn("#ts-typed", T.t3 + 2.2, 1.8);
+      hide("#ts-typed", T.t3 + 4.4, 0.01); tl.to("#ts-ph", { opacity: 1, duration: 0.01 }, T.t3 + 4.4);
+      show("#ts-q", T.t3 + 4.4);
+      show("#ts-perm", T.t4 + 0.5);
+      cursorIn("#ts-cur", T.t4 + 1.6, 600, 700);
+      moveTo("#ts-cur", T.t4 + 1.8, "#ts-allow", 0.7);
+      hl("#ts-allow", T.t4 + 2.4, 1.2); click("#ts-cur", T.t4 + 3.0, "#ts-allow");
+      hide("#ts-perm", T.t5 - 0.2); hide("#ts-cur", T.t5 - 0.2);
+      show("#ts-ans", T.t5);
+      tl.from("#ts-ans .tlist div", { opacity: 0, x: 20, duration: 0.35, stagger: 0.3 }, T.t5 + 1.2);
+      pop("#ts-tip", T.t6 + 0.3);
+
+      // ---------- ask ----------
+      qa("#s-ask .pcard").forEach((c, i) => pop(c, (i < 3 ? T.a2 : T.a3) + (i % 3) * (i < 3 ? (T.a2_end - T.a2) / 3 : (T.a3_end - T.a3) / 3)));
+
+      // ---------- safe ----------
+      const rows = qa("#s-safe .row");
+      show(rows[0], T.e2); show(rows[1], T.e3); show(rows[2], T.e4); show(rows[3], T.e4 + 2.6);
+
+      // ---------- dashboard ----------
+      pop("#ds-save", T.d2);
+      hl("#ds-type", T.d2 + 4.6, 3.5);
+      show("#ds-files", T.d2 + 6.8);
+      tl.set("#ds-cw, #ds-q, #ds-a1, #ds-a2, #ds-keys, #ds-dont, #ds-tag, #ds-pbi, #ds-tab", { opacity: 0 }, 0);
+      hide("#ds-save", T.d3 - 0.2); hide("#ds-files", T.d3 - 0.2);
+      pop("#ds-cw", T.d3); show("#ds-q", T.d3 + 1.4);
+      show("#ds-a1", T.d4);
+      pop("#ds-keys", T.d4 + 2.2);
+      tl.to("#ds-k1, #ds-k2", { y: 6, borderBottomWidth: 2, duration: 0.1, yoyo: true, repeat: 1 }, T.d4 + 3.2);
+      hide("#ds-keys", T.d4_end + 0.2);
+      show("#ds-a2", T.d4_end + 0.3);
+      hide("#ds-cw", T.d5 + 1.6);
+      pop("#ds-dont", T.d5 + 1.8);
+      cursorIn("#ds-cur", T.d5 + 2.2, 800, 650);
+      moveTo("#ds-cur", T.d5 + 2.4, "#ds-ds", 0.7);
+      hl("#ds-ds", T.d5 + 3.0, 2.0); click("#ds-cur", T.d5 + 4.0, "#ds-ds");
+      pop("#ds-tag", T.d5 + 4.6);
+      hide("#ds-dont", T.d6 - 0.2); hide("#ds-tag", T.d6 - 0.2); hide("#ds-cur", T.d6 - 0.2);
+      tl.fromTo("#ds-pbi", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.6, ...E, immediateRender: false }, T.d6 + 0.3);
+      pop("#ds-tab", T.d6 + 2.0);
+
+      // ---------- themes ----------
+      show("#th-prompt", T.h1 + 0.6);
+      hl("#th-mid", T.h1 + 3.0, 2.5);
+      qa("#s-themes .th").forEach((c, i) => pop(c, T.h2 + 1.2 + i * 0.75));
+      pop("#th-undo", T.h2 + 8.4);
+
+      // ---------- samples ----------
+      tl.from("#s-samples .sg", { opacity: 0, y: 30, scale: 0.95, duration: 0.5, stagger: 0.18, ...E }, T.m1 + 0.4);
+      qa("#s-samples .sg").forEach((c, i) => hl(c, T.m2 + 0.2 + i * ((T.m2_end - T.m2 - 0.2) / 10), 0.9));
+      pop("#sm-p", T.m3);
+
+      // ---------- troubleshooting ----------
+      show("#tr-check", T.k1 + 0.6); hl("#tr-check", T.k1 + 2.0, 4.0);
+      [1, 2, 3, 4, 5].forEach((i) => show(`#tr${i}`, T["k" + (i + 1)]));
+      [1, 2, 3, 4, 5].forEach((i) => hl(`#tr${i}`, T["k" + (i + 1)] + 0.3, T["k" + (i + 1) + "_end"] - T["k" + (i + 1)]));
+
+      // ---------- extras ----------
+      pop("#ex1", T.x1 + 1.0); pop("#ex2", T.x2);
+
+      // ---------- outro ----------
+      pop("#ou-help", T.o1 + 0.3);
+      tl.from("#ou-recap .chip", { opacity: 0, y: 20, duration: 0.4, stagger: 0.75, ...E }, T.o2 + 1.6);
+      pop("#ou-logo", T.o2_end - 0.6);
+    </script>
+  </body>
+</html>

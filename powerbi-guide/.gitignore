@@ -1,0 +1,6 @@
+renders/
+snapshots/
+build_*.wav
+vo/
+vo.wav
+__pycache__/
