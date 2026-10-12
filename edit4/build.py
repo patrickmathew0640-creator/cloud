@@ -2,6 +2,16 @@
 
 Times are seconds on the source timeline (39.83s, Tamil voice-over). B-roll cards live in the empty
 wall area above the speaker's head (y 64-536); her face sits at roughly y 675-1230 and is never covered.
+
+The source is iPhone HLG HDR. assets/speaker.mp4 must be tone-mapped to SDR bt709 before rendering
+(an HLG-tagged speaker clip puts the renderer in HDR mode, which washes out colour and drops the DOM
+overlays). Prep, then render with --sdr:
+  ffmpeg -i source/input.mp4 -an -vf "zscale=t=linear:npl=203,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,\
+    zscale=t=bt709:m=bt709:r=tv,format=yuv420p,scale=1080:1920:flags=lanczos,fps=30,\
+    eq=contrast=1.06:saturation=1.12:gamma=1.12,colorbalance=rs=0.015:bs=-0.02:rm=0.01:bm=-0.01,unsharp=5:5:0.3,format=yuv420p" \
+    -color_primaries bt709 -color_trc bt709 -colorspace bt709 -c:v libx264 -preset slow -crf 15 -g 30 assets/speaker.mp4
+  npx hyperframes@0.8.121 render --sdr -q delivery -f 30 -o renders/silent.mp4
+  python3 mix_audio.py renders/silent.mp4 out.mp4   (then re-encode to H.264 for delivery)
 """
 import json
 import re
