@@ -1,0 +1,13 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: #080808;
+}
+
+/* The landing page scrolls inside its own frame, so the host fills the viewport. */
+.shader-frame {
+  position: fixed;
+  inset: 0;
+}
