@@ -1,0 +1,6 @@
+source/
+frames/
+renders/
+build_*.wav
+snapshots/
+assets/speaker.mp4

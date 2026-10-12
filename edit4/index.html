@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Poppins"; font-weight: 500; src: url("assets/fonts/poppins-latin-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Poppins"; font-weight: 700; src: url("assets/fonts/poppins-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Poppins"; font-weight: 800; src: url("assets/fonts/poppins-latin-800-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Poppins"; font-weight: 900; src: url("assets/fonts/poppins-latin-900-normal.woff2") format("woff2"); }
+      :root { --accent: #ffd54a; --ink: #101218; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: "Poppins", sans-serif; color: #fff; }
+
+      #spk { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
+      #spkv { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; transform-origin: 50% 49%; }
+      #vig { position: absolute; inset: 0; z-index: 2;
+             background: radial-gradient(ellipse 80% 62% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,.28) 100%),
+                         linear-gradient(180deg, rgba(0,0,0,0) 70%, rgba(0,0,0,.22) 100%); }
+
+      /* ---------- b-roll cards (top band, clear of the face) ---------- */
+      .card { position: absolute; left: 120px; top: 64px; width: 840px; height: 472px; z-index: 3; border-radius: 30px;
+              box-shadow: 0 22px 60px rgba(0,0,0,.35), 0 0 0 3px rgba(255,255,255,.85); overflow: hidden; }
+      .frame { position: absolute; inset: 0; overflow: hidden; border-radius: 30px; }
+      .bv { position: absolute; left: 0; top: 0; width: 840px; height: 472px; object-fit: cover; }
+      .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 38%, rgba(0,0,0,.72) 100%); }
+      #c0 .shade { background: linear-gradient(180deg, rgba(10,10,16,.30), rgba(10,10,16,.70)); }
+      #c7 .shade { background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,.55) 100%); }
+      .sheen { position: absolute; top: -40px; left: -300px; width: 180px; height: 560px; transform: rotate(18deg);
+               background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.28), rgba(255,255,255,0)); }
+      .txt { position: absolute; left: 44px; right: 44px; bottom: 34px; }
+      .kick { font-size: 26px; font-weight: 800; letter-spacing: .2em; color: var(--accent); text-shadow: 0 2px 10px rgba(0,0,0,.4); }
+      .kick em { font-style: normal; color: rgba(255,255,255,.7); }
+      .title { margin-top: 4px; font-size: 56px; line-height: 1.08; font-weight: 800; text-shadow: 0 3px 16px rgba(0,0,0,.45); }
+      .tw { display: inline-block; }
+      #c5 .title { font-size: 48px; line-height: 1.18; }
+      .hook { bottom: auto; top: 0; height: 472px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+      .hook .big { font-size: 128px; font-weight: 900; line-height: 1; letter-spacing: .02em; text-shadow: 0 6px 30px rgba(0,0,0,.45); }
+      .hook .six { color: var(--accent); display: inline-block; }
+      .hook .sub { margin-top: 14px; font-size: 38px; font-weight: 600; opacity: .95; }
+      .save { display: flex; justify-content: center; }
+      .savepill { display: flex; align-items: center; gap: 14px; padding: 16px 34px; border-radius: 60px; background: rgba(16,18,24,.78);
+                  font-size: 36px; font-weight: 800; letter-spacing: .08em; }
+      .savepill svg { width: 40px; height: 40px; }
+
+      /* ---------- recap list ---------- */
+      #recap { position: absolute; left: 120px; top: 64px; width: 840px; height: 472px; z-index: 3; border-radius: 30px; padding: 34px 48px;
+               background: linear-gradient(160deg, rgba(22,24,34,.94), rgba(14,15,22,.94)); box-shadow: 0 22px 60px rgba(0,0,0,.35), 0 0 0 3px rgba(255,255,255,.85); }
+      #recap .rk { font-size: 24px; font-weight: 800; letter-spacing: .2em; color: var(--accent); margin-bottom: 10px; }
+      .ri { display: flex; align-items: center; gap: 20px; height: 62px; font-size: 32px; font-weight: 700; white-space: nowrap; }
+      .ri b { width: 46px; height: 46px; flex: none; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+              background: var(--accent); color: var(--ink); font-size: 24px; font-weight: 900; }
+
+      /* ---------- subtitles (chest area, below the chin) ---------- */
+      .cap { position: absolute; left: 70px; right: 70px; top: 1450px; z-index: 5; display: flex; justify-content: center; }
+      .capbox { max-width: 900px; padding: 14px 30px 16px; border-radius: 22px; background: rgba(10,10,14,.58); text-align: center;
+                font-size: 46px; line-height: 1.25; font-weight: 800; }
+      .w { display: inline-block; }
+      .w.hl { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="39.8" data-width="1080" data-height="1920">
+      <div id="spk" data-layout-allow-overflow>
+        <video id="spkv" src="assets/speaker.mp4" muted playsinline data-start="0" data-duration="39.8" data-track-index="0"></video>
+      </div>
+      <div id="vig" class="clip" data-start="0" data-duration="39.8" data-track-index="1"></div>
+
+      <div id="c0" class="card">
+        <div class="frame" data-layout-allow-overflow><video id="c0v" class="bv" src="assets/broll/b0_books.mp4" muted playsinline data-start="0.2" data-duration="3.1" data-track-index="3"></video></div>
+        <div class="shade"></div><div class="sheen" data-layout-allow-overflow></div>
+        <div class="txt hook"><div class="kick">COMMUNICATION SKILLS</div><div class="big"><span class="six">6</span> BOOKS</div><div class="sub">that will change how you speak</div></div>
+      </div>
+      <div id="c1" class="card">
+        <div class="frame" data-layout-allow-overflow><video id="c1v" class="bv" src="assets/broll/b1_ted.mp4" muted playsinline data-start="3.55" data-duration="3.55" data-track-index="3"></video></div>
+        <div class="shade"></div><div class="sheen" data-layout-allow-overflow></div>
+        <div class="txt"><div class="kick">BOOK 01 <em>/ 06</em></div><div class="title"><span class="tw">Talk</span> <span class="tw">Like</span> <span class="tw">TED</span></div></div>
+      </div>
+      <div id="c2" class="card">
+        <div class="frame" data-layout-allow-overflow><video id="c2v" class="bv" src="assets/broll/b2_handshake.mp4" muted playsinline data-start="7.8" data-duration="4.6" data-track-index="3"></video></div>
+        <div class="shade"></div><div class="sheen" data-layout-allow-overflow></div>
+        <div class="txt"><div class="kick">BOOK 02 <em>/ 06</em></div><div class="title"><span class="tw">Never</span> <span class="tw">Split</span> <span class="tw">the</span> <span class="tw">Difference</span></div></div>
+      </div>
+      <div id="c3" class="card">
+        <div class="frame" data-layout-allow-overflow><video id="c3v" class="bv" src="assets/broll/b3_listen.mp4" muted playsinline data-start="13.3" data-duration="3.6" data-track-index="3"></video></div>
+        <div class="shade"></div><div class="sheen" data-layout-allow-overflow></div>
+        <div class="txt"><div class="kick">BOOK 03 <em>/ 06</em></div><div class="title"><span class="tw">Just</span> <span class="tw">Listen</span></div></div>
+      </div>
+      <div id="c4" class="card">
+        <div class="frame" data-layout-allow-overflow><video id="c4v" class="bv" src="assets/broll/b4_charisma.mp4" muted playsinline data-start="18.2" data-duration="3.8" data-track-index="3"></video></div>
+        <div class="shade"></div><div class="sheen" data-layout-allow-overflow></div>
+        <div class="txt"><div class="kick">BOOK 04 <em>/ 06</em></div><div class="title"><span class="tw">The</span> <span class="tw">Charisma</span> <span class="tw">Myth</span></div></div>
+      </div>
+      <div id="c5" class="card">
+        <div class="frame" data-layout-allow-overflow><video id="c5v" class="bv" src="assets/broll/b5_friends.mp4" muted playsinline data-start="22.7" data-duration="5.4" data-track-index="3"></video></div>
+        <div class="shade"></div><div class="sheen" data-layout-allow-overflow></div>
+        <div class="txt"><div class="kick">BOOK 05 <em>/ 06</em></div><div class="title"><span class="tw">How</span> <span class="tw">to</span> <span class="tw">Win</span> <span class="tw">Friends</span> <span class="tw">&amp;</span> <span class="tw">Influence</span> <span class="tw">People</span></div></div>
+      </div>
+      <div id="c6" class="card">
+        <div class="frame" data-layout-allow-overflow><video id="c6v" class="bv" src="assets/broll/b6_talk.mp4" muted playsinline data-start="28.75" data-duration="3.75" data-track-index="3"></video></div>
+        <div class="shade"></div><div class="sheen" data-layout-allow-overflow></div>
+        <div class="txt"><div class="kick">BOOK 06 <em>/ 06</em></div><div class="title"><span class="tw">How</span> <span class="tw">to</span> <span class="tw">Talk</span> <span class="tw">to</span> <span class="tw">Anyone</span></div></div>
+      </div>
+      <div id="c7" class="card">
+        <div class="frame" data-layout-allow-overflow><video id="c7v" class="bv" src="assets/broll/b7_read.mp4" muted playsinline data-start="32.8" data-duration="3.5" data-track-index="3"></video></div>
+        <div class="shade"></div><div class="sheen" data-layout-allow-overflow></div>
+        <div class="txt save"><div class="savepill"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.5L6 21z" fill="#ffd54a"/></svg><span>SAVE THIS LIST</span></div></div>
+      </div>
+
+      <div id="recap">
+        <div class="rk">YOUR READING LIST</div>
+        <div class="ri"><b>1</b><span>Talk Like TED</span></div>
+        <div class="ri"><b>2</b><span>Never Split the Difference</span></div>
+        <div class="ri"><b>3</b><span>Just Listen</span></div>
+        <div class="ri"><b>4</b><span>The Charisma Myth</span></div>
+        <div class="ri"><b>5</b><span>How to Win Friends &amp; Influence People</span></div>
+        <div class="ri"><b>6</b><span>How to Talk to Anyone</span></div>
+      </div>
+
+      <div id="cap0" class="cap clip" data-start="0.05" data-duration="1.45" data-track-index="5"><div class="capbox"><span class="w">To</span> <span class="w">build</span> <span class="w">your</span> <span class="w hl">communication</span> <span class="w hl">skills</span></div></div>
+      <div id="cap1" class="cap clip" data-start="1.5" data-duration="1.9" data-track-index="5"><div class="capbox"><span class="w">here</span> <span class="w">are</span> <span class="w hl">6</span> <span class="w hl">books</span> <span class="w">to</span> <span class="w">read</span></div></div>
+      <div id="cap2" class="cap clip" data-start="3.42" data-duration="1.84" data-track-index="5"><div class="capbox"><span class="w">First</span> <span class="w">—</span> <span class="w hl">Talk</span> <span class="w hl">Like</span> <span class="w hl">TED</span></div></div>
+      <div id="cap3" class="cap clip" data-start="5.28" data-duration="1.92" data-track-index="5"><div class="capbox"><span class="w">learn</span> <span class="w">to</span> <span class="w">speak</span> <span class="w">with</span> <span class="w hl">confidence</span></div></div>
+      <div id="cap4" class="cap clip" data-start="7.22" data-duration="2.82" data-track-index="5"><div class="capbox"><span class="w">Second</span> <span class="w">—</span> <span class="w hl">Never</span> <span class="w hl">Split</span> <span class="w hl">the</span> <span class="w hl">Difference</span></div></div>
+      <div id="cap5" class="cap clip" data-start="10.06" data-duration="2.46" data-track-index="5"><div class="capbox"><span class="w">sharpen</span> <span class="w">your</span> <span class="w hl">negotiation</span> <span class="w hl">skills</span></div></div>
+      <div id="cap6" class="cap clip" data-start="12.54" data-duration="2.5" data-track-index="5"><div class="capbox"><span class="w">Third</span> <span class="w">—</span> <span class="w hl">Just</span> <span class="w hl">Listen</span></div></div>
+      <div id="cap7" class="cap clip" data-start="15.06" data-duration="1.96" data-track-index="5"><div class="capbox"><span class="w">truly</span> <span class="w hl">understand</span> <span class="w">other</span> <span class="w">people</span></div></div>
+      <div id="cap8" class="cap clip" data-start="17.04" data-duration="3.18" data-track-index="5"><div class="capbox"><span class="w">Fourth</span> <span class="w">—</span> <span class="w hl">The</span> <span class="w hl">Charisma</span> <span class="w hl">Myth</span></div></div>
+      <div id="cap9" class="cap clip" data-start="20.24" data-duration="2.02" data-track-index="5"><div class="capbox"><span class="w hl">polish</span> <span class="w">your</span> <span class="w">personality</span></div></div>
+      <div id="cap10" class="cap clip" data-start="22.28" data-duration="2.94" data-track-index="5"><div class="capbox"><span class="w">Fifth</span> <span class="w">—</span> <span class="w hl">How</span> <span class="w hl">to</span> <span class="w hl">Win</span> <span class="w hl">Friends</span> <span class="w">&</span> <span class="w">Influence</span> <span class="w">People</span></div></div>
+      <div id="cap11" class="cap clip" data-start="25.24" data-duration="3.04" data-track-index="5"><div class="capbox"><span class="w">build</span> <span class="w hl">great</span> <span class="w hl">relationships</span> <span class="w">with</span> <span class="w">people</span></div></div>
+      <div id="cap12" class="cap clip" data-start="28.3" data-duration="2.36" data-track-index="5"><div class="capbox"><span class="w">Sixth</span> <span class="w">—</span> <span class="w hl">How</span> <span class="w hl">to</span> <span class="w hl">Talk</span> <span class="w hl">to</span> <span class="w hl">Anyone</span></div></div>
+      <div id="cap13" class="cap clip" data-start="30.68" data-duration="1.94" data-track-index="5"><div class="capbox"><span class="w">speak</span> <span class="w">to</span> <span class="w">anyone</span> <span class="w hl">fearlessly</span></div></div>
+      <div id="cap14" class="cap clip" data-start="32.64" data-duration="2.88" data-track-index="5"><div class="capbox"><span class="w hl">Save</span> <span class="w">these</span> <span class="w">6</span> <span class="w">books</span></div></div>
+      <div id="cap15" class="cap clip" data-start="35.54" data-duration="3.36" data-track-index="5"><div class="capbox"><span class="w">and</span> <span class="w">take</span> <span class="w">your</span> <span class="w">communication</span> <span class="w">to</span> <span class="w">the</span> <span class="w hl">next</span> <span class="w hl">level</span></div></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const D = 39.8;
+      const CAPS = [["#cap0", 0.05, 1.5], ["#cap1", 1.5, 3.4], ["#cap2", 3.42, 5.26], ["#cap3", 5.28, 7.2], ["#cap4", 7.22, 10.04], ["#cap5", 10.06, 12.52], ["#cap6", 12.54, 15.04], ["#cap7", 15.06, 17.02], ["#cap8", 17.04, 20.22], ["#cap9", 20.24, 22.26], ["#cap10", 22.28, 25.22], ["#cap11", 25.24, 28.28], ["#cap12", 28.3, 30.66], ["#cap13", 30.68, 32.62], ["#cap14", 32.64, 35.52], ["#cap15", 35.54, 38.9]], CARDS = [["c0", 0.2, 3.3], ["c1", 3.55, 7.1], ["c2", 7.8, 12.4], ["c3", 13.3, 16.9], ["c4", 18.2, 22.0], ["c5", 22.7, 28.1], ["c6", 28.75, 32.5], ["c7", 32.8, 36.3]], BEATS = [3.42, 7.22, 12.54, 17.04, 22.28, 28.3, 32.64], RS = 36.45;
+
+      // ---------- speaker: slow drift with a gentle punch-in on every new book
+      tl.set("#spkv", { scale: 1 }, 0);
+      tl.to("#spkv", { scale: 1.04, duration: BEATS[0], ease: "none" }, 0);
+      BEATS.forEach((b, i) => {
+        const e = i < BEATS.length - 1 ? BEATS[i + 1] : D;
+        const hi = i % 2 ? 1.07 : 1.09, lo = i % 2 ? 1.03 : 1.04;
+        tl.to("#spkv", { scale: hi, duration: 0.5, ease: "power2.out" }, b);
+        tl.to("#spkv", { scale: lo, duration: e - b - 0.5, ease: "none" }, b + 0.5);
+      });
+
+      // ---------- b-roll cards (wrappers are untimed; only the videos carry data-start)
+      tl.set([".card", "#recap"], { autoAlpha: 0 }, 0);
+      CARDS.forEach(([id, s, e]) => {
+        const c = "#" + id;
+        tl.fromTo(c, { autoAlpha: 0, y: -26, scale: 0.94, filter: "blur(10px)" },
+                     { autoAlpha: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, s);
+        tl.fromTo(c + "v", { scale: 1.12 }, { scale: 1.0, duration: e - s, ease: "none" }, s);
+        tl.fromTo(c + " .sheen", { x: 0 }, { x: 1400, duration: 0.9, ease: "power2.inOut" }, s + 0.35);
+        tl.to(c, { autoAlpha: 0, y: -18, scale: 0.97, filter: "blur(6px)", duration: 0.35, ease: "power2.in" }, e - 0.35);
+        tl.from(c + " .kick", { autoAlpha: 0, x: -24, duration: 0.4, ease: "power3.out" }, s + 0.3);
+        tl.from(c + " .tw", { autoAlpha: 0, y: 26, duration: 0.42, ease: "power3.out", stagger: 0.06 }, s + 0.4);
+      });
+      // hook card details
+      tl.from("#c0 .big", { autoAlpha: 0, scale: 0.86, duration: 0.55, ease: "power3.out" }, 0.45);
+      tl.from("#c0 .sub", { autoAlpha: 0, y: 18, duration: 0.45, ease: "power3.out" }, 0.9);
+      tl.fromTo("#c0 .six", { scale: 1 }, { scale: 1.18, duration: 0.18, yoyo: true, repeat: 1, ease: "power2.out" }, 2.28);
+      // save card
+      tl.from("#c7 .savepill", { autoAlpha: 0, y: 24, scale: 0.9, duration: 0.45, ease: "back.out(1.8)" }, 33.35);
+
+      // ---------- recap list
+      tl.fromTo("#recap", { autoAlpha: 0, y: -26, scale: 0.94, filter: "blur(10px)" },
+                          { autoAlpha: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, RS);
+      tl.from("#recap .rk", { autoAlpha: 0, x: -20, duration: 0.35, ease: "power3.out" }, RS + 0.2);
+      tl.from("#recap .ri", { autoAlpha: 0, x: -30, duration: 0.4, ease: "power3.out", stagger: 0.12 }, RS + 0.35);
+      tl.to("#recap", { autoAlpha: 0, duration: 0.4, ease: "power2.in" }, D - 0.45);
+
+      // ---------- subtitles: words rise in softly
+      CAPS.forEach(([sel, s, e]) => {
+        tl.from(sel + " .capbox", { autoAlpha: 0, y: 14, duration: 0.18, ease: "power2.out" }, s);
+        tl.from(sel + " .w", { autoAlpha: 0, y: 12, duration: 0.22, ease: "power2.out", stagger: 0.04 }, s);
+        tl.to(sel, { opacity: 0, duration: 0.1 }, e - 0.1);
+      });
+
+      tl.set({}, {}, D);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
