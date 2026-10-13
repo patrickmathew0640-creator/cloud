@@ -25,8 +25,9 @@
               box-shadow: 0 22px 60px rgba(0,0,0,.35), 0 0 0 3px rgba(255,255,255,.85); background: var(--ui); }
       .frame { position: absolute; inset: 0; overflow: hidden; border-radius: 30px; }
       .bv { position: absolute; left: 0; top: 0; width: 840px; height: 472px; object-fit: cover; }
-      .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 38%, rgba(0,0,0,.74) 100%); }
-      .hook .shade { background: linear-gradient(180deg, rgba(10,10,16,.35), rgba(10,10,16,.68)); }
+      .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.62) 62%, rgba(0,0,0,.9) 100%); }
+      .hook .shade { background: linear-gradient(180deg, rgba(10,10,16,.45), rgba(10,10,16,.72)); }
+      .hook .bv { filter: blur(5px) brightness(.8); }
       .sheen { position: absolute; top: -40px; left: -300px; width: 180px; height: 560px; transform: rotate(18deg); z-index: 4;
                background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.22), rgba(255,255,255,0)); }
       .txt { position: absolute; left: 44px; right: 44px; bottom: 34px; }
@@ -39,23 +40,15 @@
       .acc { color: var(--accent); display: inline-block; }
       .txt.hook .sub { margin-top: 14px; font-size: 38px; font-weight: 600; opacity: .95; }
 
+      .toast { position: absolute; right: 40px; top: 132px; padding: 12px 22px; border-radius: 16px; background: #2bd67b; color: #0b2a18;
+               font-size: 26px; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+      .video .bv { filter: saturate(1.05); }
+
       /* ---------- UI mock-up cards ---------- */
       .ui { position: absolute; inset: 0; padding: 34px 44px; background: radial-gradient(circle at 85% 0%, #2b2f4a 0%, var(--ui) 60%); }
       .uihead .title { font-size: 46px; text-shadow: none; }
       .cursor { position: absolute; left: 0; top: 0; width: 46px; height: 46px; z-index: 5; filter: drop-shadow(0 4px 8px rgba(0,0,0,.5)); }
       .cursor svg { width: 100%; height: 100%; }
-      /* copy */
-      .tpl { position: absolute; left: 44px; right: 44px; top: 170px; height: 260px; display: flex; gap: 22px; }
-      .thumb { width: 230px; flex: none; border-radius: 20px; overflow: hidden; position: relative;
-               background: linear-gradient(160deg, #3b2a6e, #12142a); border: 2px solid var(--line); }
-      .orb { position: absolute; left: 50%; top: 50%; width: 130px; height: 130px; margin: -65px 0 0 -65px; border-radius: 50%;
-             background: radial-gradient(circle at 35% 30%, #fff 0%, #9ad7ff 18%, #6a5bff 55%, #2a1a6e 100%); box-shadow: 0 0 60px rgba(120,110,255,.7); }
-      .pbox { flex: 1; position: relative; border-radius: 20px; background: var(--ui2); border: 2px solid var(--line); padding: 18px 22px; }
-      .plabel { font-size: 18px; font-weight: 800; letter-spacing: .18em; color: var(--mute); }
-      .ptext { margin-top: 8px; font-size: 22px; line-height: 1.45; font-weight: 500; color: rgba(255,255,255,.88); }
-      .copybtn { position: absolute; right: 18px; bottom: 16px; height: 50px; padding: 0 22px; border-radius: 14px; background: var(--accent); color: var(--ink);
-                 font-size: 22px; font-weight: 800; display: flex; align-items: center; }
-      .copybtn .c2 { position: absolute; left: 0; right: 0; text-align: center; opacity: 0; }
       /* paste */
       .chat { position: absolute; left: 44px; right: 44px; top: 170px; height: 260px; border-radius: 22px; background: #f5f2ec; padding: 20px 24px; color: #2b2a27; }
       .chatname { font-size: 24px; font-weight: 800; color: var(--clay); }
@@ -93,30 +86,26 @@
       <div id="vig" class="clip" data-start="0" data-duration="25.6" data-track-index="1"></div>
 
       <div id="c0" class="card hook"><div class="sheen" data-layout-allow-overflow></div>
-        <div class="frame" data-layout-allow-overflow><video id="c0v" class="bv" src="assets/broll/b0_cubes.mp4" muted playsinline data-start="0.2" data-duration="3.2" data-track-index="3"></video></div><div class="shade"></div><div class="txt hook"><div class="kick">JUST ONE PROMPT</div><div class="big"><span class="acc">3D</span> WEBSITE</div><div class="sub">built for you in minutes</div></div>
+        <div class="frame" data-layout-allow-overflow><video id="c0v" class="bv" src="assets/broll/s_hook.mp4" muted playsinline data-start="0.2" data-duration="3.2" data-track-index="3"></video></div><div class="shade"></div><div class="txt hook"><div class="kick">JUST ONE PROMPT</div><div class="big"><span class="acc">3D</span> WEBSITE</div><div class="sub">built for you in minutes</div></div>
       </div>
       <div id="c1" class="card video"><div class="sheen" data-layout-allow-overflow></div>
-        <div class="frame" data-layout-allow-overflow><video id="c1v" class="bv" src="assets/broll/b1_browse.mp4" muted playsinline data-start="3.75" data-duration="4.2" data-track-index="3"></video></div><div class="shade"></div><div class="txt"><div class="kick">THE SECRET</div><div class="title"><span class="tw">Free</span> <span class="tw">3D</span> <span class="tw">website</span> <span class="tw">templates</span></div></div>
+        <div class="frame" data-layout-allow-overflow><video id="c1v" class="bv" src="assets/broll/s_browse.mp4" muted playsinline data-start="3.75" data-duration="4.2" data-track-index="3"></video></div><div class="shade"></div><div class="txt"><div class="kick">THREEUI.COM</div><div class="title"><span class="tw">Free</span> <span class="tw">3D</span> <span class="tw">website</span> <span class="tw">templates</span></div></div>
       </div>
       <div id="c2" class="card video"><div class="sheen" data-layout-allow-overflow></div>
-        <div class="frame" data-layout-allow-overflow><video id="c2v" class="bv" src="assets/broll/b2_tablet.mp4" muted playsinline data-start="8.2" data-duration="1.95" data-track-index="3"></video></div><div class="shade"></div><div class="txt"><div class="kick">STEP 1</div><div class="title"><span class="tw">Pick</span> <span class="tw">a</span> <span class="tw">design</span> <span class="tw">you</span> <span class="tw">like</span></div></div>
+        <div class="frame" data-layout-allow-overflow><video id="c2v" class="bv" src="assets/broll/s_pick.mp4" muted playsinline data-start="8.2" data-duration="1.95" data-track-index="3"></video></div><div class="shade"></div><div class="txt"><div class="kick">STEP 1</div><div class="title"><span class="tw">Pick</span> <span class="tw">a</span> <span class="tw">design</span> <span class="tw">you</span> <span class="tw">like</span></div></div>
       </div>
-      <div id="c3" class="card copy"><div class="sheen" data-layout-allow-overflow></div>
-        <div class="ui"><div class="uihead"><div class="kick">STEP 2</div><div class="title"><span class="tw">Copy</span> <span class="tw">the</span> <span class="tw">prompt</span></div></div>
-          <div class="tpl"><div class="thumb"><div class="orb"></div></div>
-            <div class="pbox"><div class="plabel">PROMPT</div><div class="ptext">Create a stunning 3D landing page with a floating glass hero object, smooth scroll animations and soft gradient lighting…</div>
-              <div class="copybtn"><span class="c1">Copy prompt</span><span class="c2">✓ Copied</span></div></div></div>
-          <div class="cursor" id="c3cur"><svg viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.6L9.6 21z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg></div></div>
+      <div id="c3" class="card video"><div class="sheen" data-layout-allow-overflow></div>
+        <div class="frame" data-layout-allow-overflow><video id="c3v" class="bv" src="assets/broll/s_copy.mp4" muted playsinline data-start="10.25" data-duration="2.15" data-track-index="3"></video></div><div class="shade"></div><div class="txt"><div class="kick">STEP 2</div><div class="title"><span class="tw">Copy</span> <span class="tw">the</span> <span class="tw">prompt</span></div></div><div class="toast">✓ Prompt copied</div>
       </div>
       <div id="c4" class="card paste"><div class="sheen" data-layout-allow-overflow></div>
         <div class="ui"><div class="uihead"><div class="kick">STEP 3</div><div class="title"><span class="tw">Paste</span> <span class="tw">it</span> <span class="tw">into</span> <span class="tw">Claude</span> <span class="tw">AI</span></div></div>
           <div class="chat"><div class="chatname">Claude AI</div>
-            <div class="inbox"><div class="ph">How can I help you today?</div><div class="typed">Create a stunning 3D landing page with a floating glass hero object, smooth scroll animations and soft gradient lighting…</div>
+            <div class="inbox"><div class="ph">How can I help you today?</div><div class="typed"># Integrate &lt;KageLandingPage /&gt; from ThreeUI using its exact source. You are working in an existing application. Implement this component…</div>
               <div class="send"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
           <div class="cursor" id="c4cur"><svg viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.6L9.6 21z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg></div></div>
       </div>
       <div id="c5" class="card video"><div class="sheen" data-layout-allow-overflow></div>
-        <div class="frame" data-layout-allow-overflow><video id="c5v" class="bv" src="assets/broll/b5_3d.mp4" muted playsinline data-start="16.85" data-duration="4.55" data-track-index="3"></video></div><div class="shade"></div><div class="txt"><div class="kick">THE RESULT</div><div class="title"><span class="tw">Your</span> <span class="tw">own</span> <span class="tw">stunning</span> <span class="tw">3D</span> <span class="tw">website</span></div></div>
+        <div class="frame" data-layout-allow-overflow><video id="c5v" class="bv" src="assets/broll/s_result.mp4" muted playsinline data-start="16.85" data-duration="4.55" data-track-index="3"></video></div><div class="shade"></div><div class="txt"><div class="kick">THE RESULT</div><div class="title"><span class="tw">Your</span> <span class="tw">own</span> <span class="tw">stunning</span> <span class="tw">3D</span> <span class="tw">website</span></div></div>
       </div>
       <div id="c6" class="card comment"><div class="sheen" data-layout-allow-overflow></div>
         <div class="ui"><div class="uihead"><div class="kick">WANT THE LINK?</div><div class="title"><span class="tw">Comment</span> <span class="tw">“3D”</span> <span class="tw">below</span></div></div>
@@ -144,7 +133,7 @@
     <script>
       const tl = gsap.timeline({ paused: true });
       const D = 25.6;
-      const CAPS = [["#cap0", 0.05, 1.42], ["#cap1", 1.44, 3.56], ["#cap2", 3.58, 5.92], ["#cap3", 5.94, 8.24], ["#cap4", 8.26, 10.22], ["#cap5", 10.24, 12.44], ["#cap6", 12.46, 14.52], ["#cap7", 14.54, 16.02], ["#cap8", 16.04, 16.92], ["#cap9", 16.94, 18.4], ["#cap10", 18.42, 21.7], ["#cap11", 21.72, 23.38], ["#cap12", 23.4, 25.5]], CARDS = [["c0", 0.2, 3.4, "hook"], ["c1", 3.75, 7.95, "video"], ["c2", 8.2, 10.15, "video"], ["c3", 10.25, 12.4, "copy"], ["c4", 12.5, 16.0, "paste"], ["c5", 16.85, 21.4, "video"], ["c6", 21.7, 25.6, "comment"]], BEATS = [3.58, 8.26, 10.24, 12.46, 16.04, 21.72];
+      const CAPS = [["#cap0", 0.05, 1.42], ["#cap1", 1.44, 3.56], ["#cap2", 3.58, 5.92], ["#cap3", 5.94, 8.24], ["#cap4", 8.26, 10.22], ["#cap5", 10.24, 12.44], ["#cap6", 12.46, 14.52], ["#cap7", 14.54, 16.02], ["#cap8", 16.04, 16.92], ["#cap9", 16.94, 18.4], ["#cap10", 18.42, 21.7], ["#cap11", 21.72, 23.38], ["#cap12", 23.4, 25.5]], CARDS = [["c0", 0.2, 3.4, "hook"], ["c1", 3.75, 7.95, "video"], ["c2", 8.2, 10.15, "video"], ["c3", 10.25, 12.4, "video"], ["c4", 12.5, 16.0, "paste"], ["c5", 16.85, 21.4, "video"], ["c6", 21.7, 25.6, "comment"]], BEATS = [3.58, 8.26, 10.24, 12.46, 16.04, 21.72];
 
       // ---------- speaker: slow drift with a gentle punch-in on every beat
       tl.set("#spkv", { scale: 1 }, 0);
@@ -162,7 +151,7 @@
         const c = "#" + id;
         tl.fromTo(c, { autoAlpha: 0, y: -26, scale: 0.94, filter: "blur(10px)" },
                      { autoAlpha: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, s);
-        if (kind === "video" || kind === "hook") tl.fromTo(c + "v", { scale: 1.12 }, { scale: 1.0, duration: e - s, ease: "none" }, s);
+        if (kind === "video" || kind === "hook") tl.fromTo(c + "v", { scale: kind === "hook" ? 1.12 : 1.05 }, { scale: 1.0, duration: e - s, ease: "none" }, s);
         tl.fromTo(c + " .sheen", { x: 0 }, { x: 1400, duration: 0.9, ease: "power2.inOut" }, s + 0.35);
         if (e < D) tl.to(c, { autoAlpha: 0, y: -18, scale: 0.97, filter: "blur(6px)", duration: 0.35, ease: "power2.in" }, e - 0.35);
         else tl.to(c, { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, D - 0.3);
@@ -176,15 +165,8 @@
       tl.from("#c0 .sub", { autoAlpha: 0, y: 18, duration: 0.45, ease: "power3.out" }, 0.95);
       tl.fromTo("#c0 .acc", { scale: 1 }, { scale: 1.18, duration: 0.18, yoyo: true, repeat: 1, ease: "power2.out" }, 1.98);
 
-      // copy mock: template slides in, cursor clicks "Copy prompt"
-      tl.from("#c3 .tpl", { autoAlpha: 0, y: 30, duration: 0.45, ease: "power3.out" }, 10.55);
-      tl.fromTo("#c3 .orb", { rotation: 0, scale: 0.92 }, { rotation: 40, scale: 1.05, duration: 2.1, ease: "sine.inOut" }, 10.3);
-      tl.fromTo("#c3cur", { x: 420, y: 460, autoAlpha: 0 }, { x: 700, y: 395, autoAlpha: 1, duration: 0.7, ease: "power2.inOut" }, 10.8);
-      tl.to("#c3cur", { scale: 0.82, duration: 0.08, yoyo: true, repeat: 1 }, 11.55);
-      tl.to("#c3 .copybtn", { scale: 0.93, duration: 0.08, yoyo: true, repeat: 1 }, 11.55);
-      tl.to("#c3 .copybtn", { backgroundColor: "#2bd67b", duration: 0.15 }, 11.62);
-      tl.to("#c3 .c1", { opacity: 0, duration: 0.1 }, 11.62);
-      tl.to("#c3 .c2", { opacity: 1, duration: 0.15 }, 11.66);
+      // copy step: toast pops when the captured cursor clicks "Copy Prompt"
+      tl.fromTo("#c3 .toast", { autoAlpha: 0, y: -12, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.3, ease: "back.out(2)" }, 11.7 + 0.05);
 
       // paste mock: chat box appears, prompt pastes in, cursor hits send
       tl.from("#c4 .chat", { autoAlpha: 0, y: 30, duration: 0.45, ease: "power3.out" }, 12.8);

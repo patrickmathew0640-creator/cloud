@@ -132,8 +132,9 @@ TEMPLATE = r"""<!doctype html>
               box-shadow: 0 22px 60px rgba(0,0,0,.35), 0 0 0 3px rgba(255,255,255,.85); background: var(--ui); }
       .frame { position: absolute; inset: 0; overflow: hidden; border-radius: 30px; }
       .bv { position: absolute; left: 0; top: 0; width: 840px; height: 472px; object-fit: cover; }
-      .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 38%, rgba(0,0,0,.74) 100%); }
-      .hook .shade { background: linear-gradient(180deg, rgba(10,10,16,.35), rgba(10,10,16,.68)); }
+      .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.62) 62%, rgba(0,0,0,.9) 100%); }
+      .hook .shade { background: linear-gradient(180deg, rgba(10,10,16,.45), rgba(10,10,16,.72)); }
+      .hook .bv { filter: blur(5px) brightness(.8); }
       .sheen { position: absolute; top: -40px; left: -300px; width: 180px; height: 560px; transform: rotate(18deg); z-index: 4;
                background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.22), rgba(255,255,255,0)); }
       .txt { position: absolute; left: 44px; right: 44px; bottom: 34px; }
@@ -146,7 +147,7 @@ TEMPLATE = r"""<!doctype html>
       .acc { color: var(--accent); display: inline-block; }
       .txt.hook .sub { margin-top: 14px; font-size: 38px; font-weight: 600; opacity: .95; }
 
-      .toast { position: absolute; right: 40px; top: 96px; padding: 12px 22px; border-radius: 16px; background: #2bd67b; color: #0b2a18;
+      .toast { position: absolute; right: 40px; top: 132px; padding: 12px 22px; border-radius: 16px; background: #2bd67b; color: #0b2a18;
                font-size: 26px; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
       .video .bv { filter: saturate(1.05); }
 
