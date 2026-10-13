@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 DUR = 25.6
-MUSIC = "audio/Life_of_Riley.mp3"   # "Life of Riley" by Kevin MacLeod (incompetech.com), CC BY 4.0
+MUSIC = "audio/Digital_Clouds.mp3"   # "Digital Clouds" from Mixkit (mixkit.co), Mixkit License - free, no attribution required
 SR = 48000
 
 

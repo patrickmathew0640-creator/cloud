@@ -2,7 +2,8 @@
 
 Times are seconds on the source timeline (25.6s, Tamil voice-over). Cards live in the empty wall area
 above the speaker's head (y 64-536); her face sits at roughly y 660-1200 and is never covered.
-Cards are either Mixkit B-roll ("video") or animated UI mock-ups ("copy", "paste", "comment").
+Cards are either screen captures of threeui.com ("hook", "video"; made with capture.mjs) or animated
+UI mock-ups ("paste", "comment").
 
 The source is iPhone HLG HDR, so assets/speaker.mp4 is tone-mapped to SDR bt709 first and the render
 uses --sdr (see ../edit4/build.py for the exact ffmpeg prep command):
@@ -33,23 +34,25 @@ CAPTIONS = [
 
 # (id, kind, clip, start, end, kicker, title)
 CARDS = [
-    ("c0", "hook", "b0_cubes", 0.20, 3.40, "", ""),
-    ("c1", "video", "b1_browse", 3.75, 7.95, "THE SECRET", "Free 3D website templates"),
-    ("c2", "video", "b2_tablet", 8.20, 10.15, "STEP 1", "Pick a design you like"),
-    ("c3", "copy", "", 10.25, 12.40, "STEP 2", "Copy the prompt"),
+    ("c0", "hook", "s_hook", 0.20, 3.40, "", ""),
+    ("c1", "video", "s_browse", 3.75, 7.95, "THREEUI.COM", "Free 3D website templates"),
+    ("c2", "video", "s_pick", 8.20, 10.15, "STEP 1", "Pick a design you like"),
+    ("c3", "video", "s_copy", 10.25, 12.40, "STEP 2", "Copy the prompt"),
     ("c4", "paste", "", 12.50, 16.00, "STEP 3", "Paste it into Claude AI"),
-    ("c5", "video", "b5_3d", 16.85, 21.40, "THE RESULT", "Your own stunning 3D website"),
+    ("c5", "video", "s_result", 16.85, 21.40, "THE RESULT", "Your own stunning 3D website"),
     ("c6", "comment", "", 21.70, DURATION, "WANT THE LINK?", "Comment “3D” below"),
 ]
+COPY_CLICK = 11.70  # the cursor clicks "Copy Prompt" 1.45s into the s_copy capture
 
 # speaker punch-ins on each new beat
 BEATS = [3.58, 8.26, 10.24, 12.46, 16.04, 21.72]
 
 SFX = [("whoosh_soft", round(c[3] - 0.05, 2), 0.16) for c in CARDS]
-SFX += [("click", 11.55, 0.35), ("pop", 11.62, 0.08), ("click", 14.95, 0.35), ("click", 15.45, 0.35),
+SFX += [("click", COPY_CLICK, 0.35), ("pop", COPY_CLICK + 0.08, 0.08), ("click", 14.95, 0.35), ("click", 15.45, 0.35),
         ("ding", 16.10, 0.10), ("click", 23.95, 0.3), ("click", 24.15, 0.3), ("click", 24.80, 0.35), ("pop", 24.86, 0.08)]
 
-PROMPT = "Create a stunning 3D landing page with a floating glass hero object, smooth scroll animations and soft gradient lighting…"
+# opening lines of the real prompt threeui.com copies for the Kage template
+PROMPT = "# Integrate &lt;KageLandingPage /&gt; from ThreeUI using its exact source. You are working in an existing application. Implement this component…"
 CURSOR = '<svg viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.6L9.6 21z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>'
 SEND = '<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 
@@ -82,13 +85,9 @@ def card_html(cid, kind, clip, start, end, kicker, title):
                     '<div class="sub">built for you in minutes</div></div>')
         else:
             text = f'<div class="txt">{head(kicker, title)}</div>'
+            if cid == "c3":
+                text += '<div class="toast">✓ Prompt copied</div>'
         body = vid + text
-    elif kind == "copy":
-        body = f'''<div class="ui"><div class="uihead">{head(kicker, title)}</div>
-          <div class="tpl"><div class="thumb"><div class="orb"></div></div>
-            <div class="pbox"><div class="plabel">PROMPT</div><div class="ptext">{PROMPT}</div>
-              <div class="copybtn"><span class="c1">Copy prompt</span><span class="c2">✓ Copied</span></div></div></div>
-          <div class="cursor" id="{cid}cur">{CURSOR}</div></div>'''
     elif kind == "paste":
         body = f'''<div class="ui"><div class="uihead">{head(kicker, title)}</div>
           <div class="chat"><div class="chatname">Claude AI</div>
@@ -147,23 +146,15 @@ TEMPLATE = r"""<!doctype html>
       .acc { color: var(--accent); display: inline-block; }
       .txt.hook .sub { margin-top: 14px; font-size: 38px; font-weight: 600; opacity: .95; }
 
+      .toast { position: absolute; right: 40px; top: 96px; padding: 12px 22px; border-radius: 16px; background: #2bd67b; color: #0b2a18;
+               font-size: 26px; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+      .video .bv { filter: saturate(1.05); }
+
       /* ---------- UI mock-up cards ---------- */
       .ui { position: absolute; inset: 0; padding: 34px 44px; background: radial-gradient(circle at 85% 0%, #2b2f4a 0%, var(--ui) 60%); }
       .uihead .title { font-size: 46px; text-shadow: none; }
       .cursor { position: absolute; left: 0; top: 0; width: 46px; height: 46px; z-index: 5; filter: drop-shadow(0 4px 8px rgba(0,0,0,.5)); }
       .cursor svg { width: 100%; height: 100%; }
-      /* copy */
-      .tpl { position: absolute; left: 44px; right: 44px; top: 170px; height: 260px; display: flex; gap: 22px; }
-      .thumb { width: 230px; flex: none; border-radius: 20px; overflow: hidden; position: relative;
-               background: linear-gradient(160deg, #3b2a6e, #12142a); border: 2px solid var(--line); }
-      .orb { position: absolute; left: 50%; top: 50%; width: 130px; height: 130px; margin: -65px 0 0 -65px; border-radius: 50%;
-             background: radial-gradient(circle at 35% 30%, #fff 0%, #9ad7ff 18%, #6a5bff 55%, #2a1a6e 100%); box-shadow: 0 0 60px rgba(120,110,255,.7); }
-      .pbox { flex: 1; position: relative; border-radius: 20px; background: var(--ui2); border: 2px solid var(--line); padding: 18px 22px; }
-      .plabel { font-size: 18px; font-weight: 800; letter-spacing: .18em; color: var(--mute); }
-      .ptext { margin-top: 8px; font-size: 22px; line-height: 1.45; font-weight: 500; color: rgba(255,255,255,.88); }
-      .copybtn { position: absolute; right: 18px; bottom: 16px; height: 50px; padding: 0 22px; border-radius: 14px; background: var(--accent); color: var(--ink);
-                 font-size: 22px; font-weight: 800; display: flex; align-items: center; }
-      .copybtn .c2 { position: absolute; left: 0; right: 0; text-align: center; opacity: 0; }
       /* paste */
       .chat { position: absolute; left: 44px; right: 44px; top: 170px; height: 260px; border-radius: 22px; background: #f5f2ec; padding: 20px 24px; color: #2b2a27; }
       .chatname { font-size: 24px; font-weight: 800; color: var(--clay); }
@@ -226,7 +217,7 @@ TEMPLATE = r"""<!doctype html>
         const c = "#" + id;
         tl.fromTo(c, { autoAlpha: 0, y: -26, scale: 0.94, filter: "blur(10px)" },
                      { autoAlpha: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, s);
-        if (kind === "video" || kind === "hook") tl.fromTo(c + "v", { scale: 1.12 }, { scale: 1.0, duration: e - s, ease: "none" }, s);
+        if (kind === "video" || kind === "hook") tl.fromTo(c + "v", { scale: kind === "hook" ? 1.12 : 1.05 }, { scale: 1.0, duration: e - s, ease: "none" }, s);
         tl.fromTo(c + " .sheen", { x: 0 }, { x: 1400, duration: 0.9, ease: "power2.inOut" }, s + 0.35);
         if (e < D) tl.to(c, { autoAlpha: 0, y: -18, scale: 0.97, filter: "blur(6px)", duration: 0.35, ease: "power2.in" }, e - 0.35);
         else tl.to(c, { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, D - 0.3);
@@ -240,15 +231,8 @@ TEMPLATE = r"""<!doctype html>
       tl.from("#c0 .sub", { autoAlpha: 0, y: 18, duration: 0.45, ease: "power3.out" }, 0.95);
       tl.fromTo("#c0 .acc", { scale: 1 }, { scale: 1.18, duration: 0.18, yoyo: true, repeat: 1, ease: "power2.out" }, 1.98);
 
-      // copy mock: template slides in, cursor clicks "Copy prompt"
-      tl.from("#c3 .tpl", { autoAlpha: 0, y: 30, duration: 0.45, ease: "power3.out" }, 10.55);
-      tl.fromTo("#c3 .orb", { rotation: 0, scale: 0.92 }, { rotation: 40, scale: 1.05, duration: 2.1, ease: "sine.inOut" }, 10.3);
-      tl.fromTo("#c3cur", { x: 420, y: 460, autoAlpha: 0 }, { x: 700, y: 395, autoAlpha: 1, duration: 0.7, ease: "power2.inOut" }, 10.8);
-      tl.to("#c3cur", { scale: 0.82, duration: 0.08, yoyo: true, repeat: 1 }, 11.55);
-      tl.to("#c3 .copybtn", { scale: 0.93, duration: 0.08, yoyo: true, repeat: 1 }, 11.55);
-      tl.to("#c3 .copybtn", { backgroundColor: "#2bd67b", duration: 0.15 }, 11.62);
-      tl.to("#c3 .c1", { opacity: 0, duration: 0.1 }, 11.62);
-      tl.to("#c3 .c2", { opacity: 1, duration: 0.15 }, 11.66);
+      // copy step: toast pops when the captured cursor clicks "Copy Prompt"
+      tl.fromTo("#c3 .toast", { autoAlpha: 0, y: -12, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.3, ease: "back.out(2)" }, {{COPY_CLICK}} + 0.05);
 
       // paste mock: chat box appears, prompt pastes in, cursor hits send
       tl.from("#c4 .chat", { autoAlpha: 0, y: 30, duration: 0.45, ease: "power3.out" }, 12.8);
@@ -292,7 +276,7 @@ def build():
             .replace("{{CAPS_JS}}", json.dumps([[f"#cap{i}", s, e] for i, (s, e, _) in enumerate(CAPTIONS)]))
             .replace("{{CARDS_JS}}", json.dumps([[c[0], c[3], c[4], c[1]] for c in CARDS]))
             .replace("{{BEATS_JS}}", json.dumps(BEATS))
-            .replace("{{D}}", str(DURATION)))
+            .replace("{{COPY_CLICK}}", str(COPY_CLICK)).replace("{{D}}", str(DURATION)))
     open("index.html", "w").write(html)
     json.dump(sorted(SFX, key=lambda c: c[1]), open("sfx_cues.json", "w"), indent=1)
     print(f"index.html: {len(CAPTIONS)} captions, {len(CARDS)} cards; {len(SFX)} sfx cues")
